@@ -1,0 +1,176 @@
+:root {
+	/*=START-OF-PUBLIC-API*/
+	--fill: white;
+	--line: black;
+	--font-family: monospace;
+	/* =page= */
+	--page-fill: var(--fill);
+	--page-line: var(--line);
+	--scrollbar-bg: var(--fill);
+	--scrollbar-fg: var(--line);
+	--focus-outline: var(--page-line);
+	--drop-target-outline: var(--focus-outline);
+
+	/* =machine= */
+	--machine-fill: var(--page-fill);
+	--machine-line: var(--page-line);
+	--machine-border-width: 1px;
+	--machine-shadow-color: var(--page-fill);
+	--prominent-fill: var(--machine-line);
+	--prominent-line: var(--machine-fill);
+	--recording-fill: var(--prominent-fill);
+	--recording-line: var(--prominent-line);
+	--poweroff-fill: var(--recording-fill);
+	--poweroff-line: var(--recording-line);
+
+	/* =controls= */
+	--button-border-radius: 0;
+	--control-fill: var(--machine-fill);
+	--control-line: var(--machine-line);
+	--master-controls-fill: var(--control-fill);
+	--master-controls-line: var(--control-line);
+	--master-controls-shadow-color: var(--machine-shadow-color);
+	--settings-fill: var(--master-controls-fill);
+	--settings-line: var(--master-controls-line);
+	--settings-button-fill: var(--settings-line);
+	--settings-button-line: var(--settings-fill);
+	--settings-button-shadow-color: var(--master-controls-shadow-color);
+	--layer-selector-fill: var(--controls-fill);
+	--layer-selector-line: var(--controls-line);
+	--layer-selector-border-radius: var(--button-border-radius);
+	--selected-layer-selector-fill: var(--prominent-fill);
+	--selected-layer-selector-line: var(--prominent-line);
+	--layer-options-fill: var(--selected-layer-selector-fill);
+	--layer-options-line: var(--selected-layer-selector-line);
+
+	/* =screen= */
+	--screen-fill: var(--prominent-fill);
+	--screen-line: var(--prominent-line);
+	--region-fill: var(--machine-fill);
+	--region-line: var(--machine-line);
+	--drawing-region-fill: var(--region-fill);
+	--drawing-region-line: var(--region-line);
+	--screen-selector-fill: var(--screen-fill);
+	--screen-selector-line: var(--screen-line);
+	--screen-selector-button-fill: var(--screen-fill);
+	--screen-selector-button-line: var(--screen-line);
+	--screen-selector-button-shadow-color: var(--machine-shadow-color);
+	--selected-screen-selector-button-fill: var(--screen-line);
+	--selected-screen-selector-button-line: var(--screen-fill);
+
+	/* =grid= */
+	--grid-fill: var(--machine-fill);
+	--grid-line: var(--machine-line);
+
+	/* =box= */
+	/* todo the colours here might all need to be internal to grid */
+	--box-border-radius: var(--button-border-radius);
+	--box-border-width: var(--machine-border-width);
+	--box-on-fill: var(--prominent-fill);
+	--box-on-line: var(--prominent-line);
+	--box-wav-line: var(--box-on-line);
+	--box-off-fill: var(--grid-fill);
+	--box-off-line: var(--grid-line);
+	--selected-box-outline: var(--focus-outline);
+	--box-shadow-color: var(--machine-shadow-color);
+	/* :3d_glasses_emoji: */
+	--pan-left-mix: red;
+	--quiet-mix: white;
+	--pan-right-mix: blue;
+	--box-pan-left-mix: var(--pan-left-mix);
+	--box-quiet-mix: var(--quiet-mix);
+	--box-pan-right-mix: var(--pan-right-mix);
+	/* *END-OF-PUBLIC-API* */
+	background: var(--page-fill);
+}
+
+body {
+	background: var(--page-fill);
+}
+
+/* =EXAMPLE-THEMES* */
+[theme="cherries"] {
+	--cherries-light: #ffe9ed;
+	--cherries-dark: #cc3366;
+	--holy-light: white;
+	--holy-dark: black;
+	--cherries-yellow: #ffd807;
+	--2013-body-grey: #333;
+	--orla-foster-2003-bermuda-cocktail-number-3: #3399ff;
+
+	--settings-fill: var(--orla-foster-2003-bermuda-cocktail-number-3);
+	--settings-line: var(--holy-light);
+
+	--font-family: qp, iosevka, monaco, monospace;
+	--line: var(--cherries-dark);
+	--fill: color-mix(in srgb, var(--cherries-light) 80%, var(--holy-light));
+
+	--machine-shadow-color: color-mix(
+		in srgb,
+		var(--cherries-light) 90%,
+		var(--holy-dark)
+	);
+	--screen-selector-button-shadow-color: color-mix(
+		in srgb,
+		var(--cherries-dark) 88%,
+		var(--holy-dark)
+	);
+	--settings-button-shadow-color: color-mix(
+		in srgb,
+		var(--settings-fill) 75%,
+		var(--holy-dark)
+	);
+	--machine-fill: var(--cherries-light);
+	--region-fill: var(--cherries-yellow);
+	--region-line: var(--2013-body-grey);
+	--drawing-region-fill: #00ff99ee;
+	--focus-outline: var(--orla-foster-2003-bermuda-cocktail-number-3);
+	--selected-box-outline: black;
+	--drop-target-outline: #00ffcc;
+	--button-border-radius: 4px;
+	--layer-selector-border-radius: 2px;
+	/* --grid-fill: var(--holy-light); */
+	--box-off-fill: var(--cherries-light);
+	--box-shadow-color: color-mix(
+		in srgb,
+		var(--cherries-dark) 12%,
+		var(--holy-light)
+	);
+}
+
+/* ====*==== */
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-regular.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-light.ttf") format("truetype");
+	font-display: swap;
+	font-weight: 200;
+}
+
+@font-face {
+	font-family: fs;
+	src: url("/aux/fonts/fs.woff");
+	font-display: swap;
+}
+
+* {
+	scrollbar-color: var(--scrollbar-bg) var(--scrollbar-fg);
+}
+
+html {
+	font-size: 2em;
+	line-height: 1.15;
+	background: var(--page-fill);
+}
+
+body {
+	/* remove margin from mosaic or whatever */
+	margin: 0;
+	background: var(--page-fill);
+}

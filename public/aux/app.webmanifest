@@ -1,0 +1,8 @@
+{
+	"name": "deluge party",
+	"start_url": ".",
+	"description": "deluge utilities",
+	"scope": "/",
+	"theme_color": "#cc3366",
+	"background_color": "#ffe9ed"
+}

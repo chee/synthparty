@@ -1,0 +1,41 @@
+{
+	"private": true,
+	"name": "deluge",
+	"type": "module",
+	"devDependencies": {
+		"prettier": "^3.0.3"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"scripts": {
+		"start": "deno run --allow-read --allow-net ./start.ts public -p 54321 --cors"
+	},
+	"dependencies": {
+		"@types/audioworklet": "^0.0.50"
+	},
+	"prettier": {
+		"printWidth": 79,
+		"trailingComma": "none",
+		"semi": false,
+		"singleQuote": false,
+		"useTabs": true,
+		"bracketSpacing": false,
+		"bracketSameLine": true,
+		"arrowParens": "avoid",
+		"overrides": [
+			{
+				"files": "*.js",
+				"options": {
+					"parser": "babel-ts"
+				}
+			},
+			{
+				"files": "package.json",
+				"options": {
+					"parser": "json-stringify"
+				}
+			}
+		]
+	}
+}
