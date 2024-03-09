@@ -47,14 +47,17 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	let bytesPerSample = 2
 	let blockAlign = numChannels * bytesPerSample
 	let samplelength = samples.length * bytesPerSample
-	let buffer = new ArrayBuffer(44 + samplelength)
+	let head = 44
+	let tail = 32
+	let bufferlength = head + samplelength + tail
+	let buffer = new ArrayBuffer(bufferlength)
 	let view = new DataView(buffer)
 
 	let offset = 0
 	// RIFF identifier
 	writeString(view, offset, "RIFF")
 	// RIFF chunk length
-	view.setUint32((offset += 4), 36 + samplelength, true)
+	view.setUint32((offset += 4), bufferlength - 8, true)
 	// RIFF type
 	writeString(view, (offset += 4), "WAVE")
 	// format chunk identifier
@@ -79,28 +82,28 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	view.setUint32((offset += 4), samplelength, true)
 	floatTo16BitPCM(view, (offset += 4), samples)
 
-	// /* write the smpl chunk for multisamples */
-	// writeString(view, (offset += datalength), "smpl")
+	/* write the smpl chunk for multisamples */
+	writeString(view, (offset += samplelength), "smpl")
 
-	// // chunk size
-	// view.setUint32((offset += 4), 0x20, true)
+	// chunk size
+	view.setUint32((offset += 4), tail - 8, true)
 
-	// // manufacturer. should i make it 0x01000041 for Roland? selling knock-off
-	// // Roland wave files down the market
-	// view.setUint32((offset += 4), 0, true)
+	// manufacturer. should i make it 0x01000041 for Roland? selling knock-off
+	// Roland wave files down the market
+	view.setUint32((offset += 4), 0, true)
 
-	// // product.
-	// view.setUint32((offset += 4), 0, true)
+	// product.
+	view.setUint32((offset += 4), 0, true)
 
-	// // sample period: sample-rate 44.1k
-	// view.setUint32((offset += 4), 0x5893, true)
+	// sample period: sample-rate 44.1k
+	view.setUint32((offset += 4), 0x5893, true)
 
-	// // midi note 0-127, if anyone ever adds more than 127 rows i don't know what
-	// // will happen to them
-	// view.setUint32((offset += 4), 0x16, true)
+	// midi note 0-127, if anyone ever adds more than 127 rows i don't know what
+	// will happen to them
+	view.setUint32((offset += 4), note, true)
 
-	// // view.setUint32((offset += 4), 0, true)
-	// // writeString(view, (offset +=4), "chee")
+	view.setUint32((offset += 4), 0, true)
+	writeString(view, (offset += 4), "chee")
 	return buffer
 }
 
