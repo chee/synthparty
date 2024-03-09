@@ -12,7 +12,8 @@
 		"start": "deno run --allow-read --allow-net ./start.ts public -p 54321 --cors"
 	},
 	"dependencies": {
-		"@types/audioworklet": "^0.0.50"
+		"@types/audioworklet": "^0.0.50",
+		"client-zip": "^2.4.4"
 	},
 	"prettier": {
 		"printWidth": 79,
