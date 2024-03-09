@@ -20,7 +20,10 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/** @param {AudioBuffer} audiobuffer */
+/**
+ * @param {AudioBuffer} audiobuffer
+ * @param {number} index
+ */
 export default function audioBufferToWav(audiobuffer, index) {
 	let numChannels = audiobuffer.numberOfChannels
 	let sampleRate = audiobuffer.sampleRate
@@ -35,7 +38,7 @@ export default function audioBufferToWav(audiobuffer, index) {
 		result = audiobuffer.getChannelData(0)
 	}
 
-	return encodeWAV(result, sampleRate, numChannels, index)
+	return encodeWAV(result, sampleRate, numChannels, index + 1)
 }
 
 /**
@@ -98,7 +101,7 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	// sample period: sample-rate 44.1k
 	view.setUint32((offset += 4), 0x5893, true)
 
-	// midi note 0-127, if anyone ever adds more than 127 rows i don't know what
+	// midi note 1-127, if anyone ever adds more than 127 rows i don't know what
 	// will happen to them
 	view.setUint32((offset += 4), note, true)
 
