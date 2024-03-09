@@ -16,7 +16,6 @@
 		"@interactjs/interactjs": "^1.10.26",
 		"@types/audioworklet": "^0.0.50",
 		"client-zip": "^2.4.4",
-		"htm": "^3.1.1",
 		"interactjs": "^1.10.26"
 	},
 	"prettier": {
