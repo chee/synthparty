@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /** @param {AudioBuffer} audiobuffer */
-export default function audioBufferToWav(audiobuffer) {
+export default function audioBufferToWav(audiobuffer, index) {
 	let numChannels = audiobuffer.numberOfChannels
 	let sampleRate = audiobuffer.sampleRate
 
@@ -35,7 +35,7 @@ export default function audioBufferToWav(audiobuffer) {
 		result = audiobuffer.getChannelData(0)
 	}
 
-	return encodeWAV(result, sampleRate, numChannels)
+	return encodeWAV(result, sampleRate, numChannels, index)
 }
 
 /**
@@ -43,40 +43,64 @@ export default function audioBufferToWav(audiobuffer) {
  * @param {number} sampleRate
  * @param {number} numChannels
  */
-export function encodeWAV(samples, sampleRate, numChannels) {
+export function encodeWAV(samples, sampleRate, numChannels, note) {
 	let bytesPerSample = 2
 	let blockAlign = numChannels * bytesPerSample
-
-	let buffer = new ArrayBuffer(44 + samples.length * bytesPerSample)
+	let samplelength = samples.length * bytesPerSample
+	let buffer = new ArrayBuffer(44 + samplelength)
 	let view = new DataView(buffer)
 
+	let offset = 0
 	// RIFF identifier
-	writeString(view, 0, "RIFF")
+	writeString(view, offset, "RIFF")
 	// RIFF chunk length
-	view.setUint32(4, 36 + samples.length * bytesPerSample, true)
+	view.setUint32((offset += 4), 36 + samplelength, true)
 	// RIFF type
-	writeString(view, 8, "WAVE")
+	writeString(view, (offset += 4), "WAVE")
 	// format chunk identifier
-	writeString(view, 12, "fmt ")
+	writeString(view, (offset += 4), "fmt ")
 	// format chunk length
-	view.setUint32(16, 16, true)
+	view.setUint32(16, (offset += 4), true)
 	// sample format (raw)
-	view.setUint16(20, 1, true)
+	view.setUint16((offset += 4), 1, true)
 	// channel count
-	view.setUint16(22, numChannels, true)
+	view.setUint16((offset += 2), numChannels, true)
 	// sample rate
-	view.setUint32(24, sampleRate, true)
+	view.setUint32((offset += 2), sampleRate, true)
 	// byte rate (sample rate * block align)
-	view.setUint32(28, sampleRate * blockAlign, true)
+	view.setUint32((offset += 4), sampleRate * blockAlign, true)
 	// block align (channel count * bytes per sample)
-	view.setUint16(32, blockAlign, true)
+	view.setUint16((offset += 4), blockAlign, true)
 	// bits per sample
-	view.setUint16(34, 8 * bytesPerSample, true)
+	view.setUint16((offset += 2), 8 * bytesPerSample, true)
 	// data chunk identifier
-	writeString(view, 36, "data")
+	writeString(view, (offset += 2), "data")
 	// data chunk length
-	view.setUint32(40, samples.length * bytesPerSample, true)
-	floatTo16BitPCM(view, 44, samples)
+	view.setUint32((offset += 4), samplelength, true)
+	floatTo16BitPCM(view, (offset += 4), samples)
+
+	// /* write the smpl chunk for multisamples */
+	// writeString(view, (offset += datalength), "smpl")
+
+	// // chunk size
+	// view.setUint32((offset += 4), 0x20, true)
+
+	// // manufacturer. should i make it 0x01000041 for Roland? selling knock-off
+	// // Roland wave files down the market
+	// view.setUint32((offset += 4), 0, true)
+
+	// // product.
+	// view.setUint32((offset += 4), 0, true)
+
+	// // sample period: sample-rate 44.1k
+	// view.setUint32((offset += 4), 0x5893, true)
+
+	// // midi note 0-127, if anyone ever adds more than 127 rows i don't know what
+	// // will happen to them
+	// view.setUint32((offset += 4), 0x16, true)
+
+	// // view.setUint32((offset += 4), 0, true)
+	// // writeString(view, (offset +=4), "chee")
 	return buffer
 }
 
