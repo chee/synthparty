@@ -18,7 +18,22 @@
 	<link rel="manifest" href="/aux/app.webmanifest">
 
 	<main>
+		<input type="text" value="new kit" id="name"><br>
+		<button id="add">add</button>
+		<section id="rows" class="rows">
+		</section>
+		<button id="download">download</button>
 	</main>
+
+	<template id="sound">
+		<deluge-sound>
+			<template shadowrootmode="open">
+				<input type="text" id="name">
+				<input type="file" id="file">
+				<button id="audition">audition</button>
+			</template>
+		</deluge-sound>
+	</template>
 
 	<audio
 		class="iphone-silence"

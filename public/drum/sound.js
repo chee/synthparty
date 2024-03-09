@@ -1,13 +1,25 @@
 import {createElement} from "./xml.js"
+import wav from "./vendor/audiobuffer-to-wav.js"
 
 export default class Sound {
 	name = "new sound"
 
 	/**
 	 * @param {string} name
+	 * @param {AudioBuffer} audiobuffer
 	 */
-	constructor(name) {
+	constructor(name, audiobuffer) {
 		this.name = name
+		this.audiobuffer = audiobuffer
+	}
+
+	blob() {
+		return new Blob([wav(this.audiobuffer)])
+	}
+
+	/** @param {string} kitName */
+	filename(kitName) {
+		return `SAMPLES/${kitName}/${this.name}.wav`
 	}
 
 	/** @param {import("./kit.js").default} kit */
@@ -19,7 +31,7 @@ export default class Sound {
 		sound.append(
 			createElement(kit.xml, "osc1", {
 				type: "sample",
-				fileName: `SAMPLES/${kit.name}/${this.name}.wav`
+				fileName: this.filename(kit.name)
 			})
 		)
 

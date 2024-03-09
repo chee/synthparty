@@ -174,3 +174,8 @@ body {
 	margin: 0;
 	background: var(--page-fill);
 }
+
+.rows {
+	display: flex;
+	flex-direction: column;
+}
