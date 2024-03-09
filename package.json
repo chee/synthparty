@@ -3,6 +3,7 @@
 	"name": "deluge",
 	"type": "module",
 	"devDependencies": {
+		"@interactjs/types": "^1.10.26",
 		"prettier": "^3.0.3"
 	},
 	"peerDependencies": {
@@ -12,8 +13,11 @@
 		"start": "deno run --allow-read --allow-net ./start.ts public -p 54321 --cors"
 	},
 	"dependencies": {
+		"@interactjs/interactjs": "^1.10.26",
 		"@types/audioworklet": "^0.0.50",
-		"client-zip": "^2.4.4"
+		"client-zip": "^2.4.4",
+		"htm": "^3.1.1",
+		"interactjs": "^1.10.26"
 	},
 	"prettier": {
 		"printWidth": 79,

@@ -17,23 +17,131 @@
 	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png">
 	<link rel="manifest" href="/aux/app.webmanifest">
 
-	<main>
-		<input type="text" value="new kit" id="name"><br>
-		<button id="add">add</button>
-		<section id="rows" class="rows">
-		</section>
-		<button id="download">download</button>
-	</main>
+	<deluge-kit>
+		<template shadowrootmode="open">
+			<h1>deluge kit creator</h1>
+			<header>
+				<label>
+					<input type="text" value="new kit" id="name">
+				</label>
+				<deluge-button id="add" label="+ add"></deluge-button>
+				<deluge-button id="download" label="download zip"></deluge-button>
+			</header>
+
+			<deluge-sources>
+				<slot/>
+			</deluge-sources>
+
+			<style>
+				h1 {
+					margin: 0;
+					font-size: 1rem;
+				}
+				header {
+					display: flex;
+					align-items: end;
+					gap: 1em;
+				}
+
+				.row {
+					margin-top: 1rem;
+					display: flex;
+					gap: 0.5rem;
+				}
+
+				#add {
+					margin-top: 1rem;
+				}
+
+				#name {
+					display: block;
+				}
+
+				deluge-sources {
+					display: flex;
+					flex-direction: column;
+				}
+			</style>
+		</template>
+	</deluge-kit>
 
 	<template id="sound">
-		<deluge-sound>
+		<deluge-sound class="row">
 			<template shadowrootmode="open">
-				<input type="text" id="name">
-				<input type="file" id="file">
-				<button id="audition">audition</button>
+				<div class="arrows">
+					<button id="up" label="move up">↑</button>
+					<button id="down" label="move down">↓</button>
+				</div>
+				<input id="name" type="text">
+				<deluge-button id="browse" label="browse"></deluge-button>
+				<deluge-button id="audition" label="audition"></deluge-button>
+
+				<style>
+					.arrows {
+						display: flex;
+						flex-direction: column;
+						gap: 4px;
+					}
+
+					.arrows button {
+						height: 1rem;
+						width: 1rem;
+						padding: 0;
+						box-shadow: none;
+						border: none;
+					}
+				</style>
 			</template>
 		</deluge-sound>
 	</template>
+
+	<style id="global-styles">
+		button {
+			cursor: pointer;
+			word-wrap: anywhere;
+			border: 1px solid var(--line);
+			background: var(--offset);
+			border-radius: var(--button-border-px);
+			font-weight: bold;
+			padding: 1em;
+			box-shadow: var(--shadow-px) var(--shadow-px) var(--shadow);
+			font-weight: bold;
+			font-family: qp, monospace;
+		}
+
+		button:hover {
+			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px) var(--heavy-shadow);
+		}
+
+		button:active {
+			box-shadow: inset var(--shadow-px) var(--shadow-px) rgba(0, 0, 0, 0.2);
+		}
+
+		input {
+			padding: 1em;
+		}
+
+		input[type="text"] {
+			border: 1px solid;
+			box-shadow: var(--shadow-px) var(--shadow-px) var(--shadow);
+		}
+
+		input[type="text"]:focus {
+			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px) var(--heavy-shadow);
+			outline: 1px solid var(--green);
+		}
+
+		label {
+			margin-top: 1rem;
+		}
+
+		label > input {
+			margin-top: 0.2rem;
+		}
+		#download {
+			background: var(--greem);
+		}
+	</style>
 
 	<audio
 		class="iphone-silence"

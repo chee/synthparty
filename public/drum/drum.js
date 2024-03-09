@@ -1,55 +1,47 @@
 import Kit from "./kit.js"
+import adjectives from "./lib/adjectives.js"
+import nouns from "./lib/nouns.js"
+import rand from "./lib/rand.js"
+import * as elements from "./elements/init.js"
+elements.init()
 import Sound from "./sound.js"
 
-let kit = new Kit()
-window.kit = kit
+let kit = new Kit(rand(adjectives) + " " + rand(nouns))
+let kitElement = document.querySelector("deluge-kit")
+kitElement.kit = kit
 
-let nameInput = document.querySelector("#name")
-nameInput.addEventListener("input", () => {
-	kit.name = nameInput.value
-})
-let addButton = document.querySelector("#add")
-let rows = document.querySelector("#rows")
-let soundTemplate = document.querySelector("template")
-
-let context = new AudioContext()
-let iphoneSilenceElement = document.querySelector("audio")
-
-addButton.addEventListener("click", async () => {
-	await context.resume()
-	iphoneSilenceElement.play()
-	rows.prepend(soundTemplate.content.cloneNode(true))
-	let soundElement = rows.querySelector("deluge-sound")
-
-	/** @type {HTMLInputElement} */
-	let fileInput = soundElement.shadowRoot.querySelector("#file")
-
-	fileInput.addEventListener("change", async () => {
-		let [file] = Array.from(fileInput.files)
-		let audiobuffer = await context.decodeAudioData(await file.arrayBuffer())
-		let sound = new Sound(
-			file.name.replace(/(.*)\.[^.]+$/, (_, c) => c),
-			audiobuffer
-		)
-		kit.sounds.push(sound)
-		/** @type {HTMLInputElement} */
-		let nameInput = soundElement.shadowRoot.querySelector("#name")
-		nameInput.value = sound.name.replace(/\.{wav,mp3,m4a,ogg}$/, "")
-		nameInput.addEventListener("input", () => {
-			sound.name = nameInput.value
-		})
-		let audition = soundElement.shadowRoot.querySelector("button")
-		audition.addEventListener("click", () => {
-			let bs = new AudioBufferSourceNode(context, {
-				buffer: audiobuffer
-			})
-			bs.connect(context.destination)
-			bs.start()
-		})
-	})
+kitElement.when("audition", index => {
+	kit.getSoundFromUiIndex(index).audition()
 })
 
-let download = document.querySelector("#download")
-download.addEventListener("click", () => {
+kitElement.when("move-down", index => {
+	kit.moveSound(index, "down")
+	kitElement.kit = kit
+})
+
+kitElement.when("move-up", index => {
+	kit.moveSound(index, "up")
+	kitElement.kit = kit
+})
+
+kitElement.when("browse", async index => {
+	kit.sounds[kit.getSoundIndexFromUiIndex(index)] = await Sound.browse()
+	kitElement.kit = kit
+})
+
+kitElement.when("add-sound", async () => {
+	kit.sounds = kit.sounds.concat(await Sound.browse({multiple: true}))
+	kitElement.kit = kit
+})
+
+kitElement.when("set-kit-name", name => {
+	kit.name = name
+})
+
+kitElement.when("set-sound-name", ({name, index}) => {
+	kit.getSoundFromUiIndex(index).name = name
+})
+
+kitElement.when("download", () => {
 	kit.download()
 })
