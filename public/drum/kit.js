@@ -42,7 +42,7 @@ export default class Kit {
 	 */
 	moveSound(currentIndex, direction) {
 		let nextIndex = 0
-		if (direction == "down") {
+		if (direction == "up") {
 			nextIndex = currentIndex + 1
 			if (nextIndex >= this.sounds.length) return
 		} else {

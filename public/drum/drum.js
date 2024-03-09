@@ -15,12 +15,12 @@ kitElement.when("audition", index => {
 })
 
 kitElement.when("move-down", index => {
-	kit.moveSound(index, "down")
+	kit.moveSound(kit.getSoundIndexFromUiIndex(index), "down")
 	kitElement.kit = kit
 })
 
 kitElement.when("move-up", index => {
-	kit.moveSound(index, "up")
+	kit.moveSound(kit.getSoundIndexFromUiIndex(index), "up")
 	kitElement.kit = kit
 })
 
