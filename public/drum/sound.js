@@ -9,6 +9,8 @@ let iphoneSilenceElement = document.querySelector("audio")
 export default class Sound {
 	name = "new sound"
 	color = rand(colours)
+	/** @type AudioBufferSourceNode */
+	#buffersource
 
 	static async browse({multiple = false} = {}) {
 		let handles = await showOpenFilePicker({multiple})
@@ -41,12 +43,16 @@ export default class Sound {
 	audition() {
 		context.resume()
 		iphoneSilenceElement.play()
+		if (this.#buffersource) {
+			this.#buffersource.stop()
+		}
 		let buffersource = new AudioBufferSourceNode(context, {
 			buffer: this.audiobuffer
 		})
 		buffersource.connect(context.destination)
 		buffersource.start()
 		buffersource.onended = () => iphoneSilenceElement.pause()
+		this.#buffersource = buffersource
 	}
 
 	/** @param {string} kitName */
