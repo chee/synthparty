@@ -1,0 +1,3 @@
+#!/bin/sh
+unzip -d /Volumes/DELUGE/ "$1"
+diskutil unmount /Volumes/DELUGE
