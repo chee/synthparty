@@ -15,5 +15,6 @@ export default [
 	"things",
 	"chances",
 	"horses",
-	"blossom"
+	"blossom",
+	"party"
 ]
