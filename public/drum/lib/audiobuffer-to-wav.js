@@ -24,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @param {AudioBuffer} audiobuffer
  * @param {number} index
  */
-export default function audioBufferToWav(audiobuffer, index) {
+export default function audioBufferToWav(audiobuffer, index = 0) {
 	let numChannels = audiobuffer.numberOfChannels
 	let sampleRate = audiobuffer.sampleRate
 
