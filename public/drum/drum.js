@@ -15,22 +15,26 @@ kitElement.when("audition", index => {
 })
 
 kitElement.when("move-down", index => {
-	kit.moveSound(kit.getSoundIndexFromUiIndex(index), "down")
+	kit.nudgeSound(kit.getSoundIndexFromUiIndex(index), "down")
 	kitElement.kit = kit
 })
 
 kitElement.when("move-up", index => {
-	kit.moveSound(kit.getSoundIndexFromUiIndex(index), "up")
+	kit.nudgeSound(kit.getSoundIndexFromUiIndex(index), "up")
 	kitElement.kit = kit
 })
 
 kitElement.when("browse", async index => {
-	kit.sounds[kit.getSoundIndexFromUiIndex(index)] = await Sound.browse()
+	let [sound] = await Sound.browse({
+		multiple: false
+	})
+	kit.getSoundFromUiIndex(index).replace(sound)
 	kitElement.kit = kit
 })
 
 kitElement.when("add-sound", async () => {
-	kit.sounds = kit.sounds.concat(await Sound.browse({multiple: true}))
+	let sounds = await Sound.browse({multiple: true})
+	kit.addSounds(sounds)
 	kitElement.kit = kit
 })
 
@@ -42,6 +46,8 @@ kitElement.when("set-sound-name", ({name, index}) => {
 	kit.getSoundFromUiIndex(index).name = name
 })
 
-kitElement.when("download", () => {
-	kit.download()
+kitElement.when("download", event => {
+	kit.download({
+		sortable: !event.shiftKey
+	})
 })

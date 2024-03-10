@@ -10,9 +10,9 @@ export default class DelugeKit extends PartyElement {
 
 	connectedCallback() {
 		customElements.whenDefined("deluge-button").then(() => {
-			this.$("#download").when("click", () =>
-				this.announce("download", this.kit)
-			)
+			this.$("#download").when("click", (_, event) => {
+				this.announce("download", event)
+			})
 
 			this.$("#add").addEventListener("click", () =>
 				this.announce("add-sound", this.kit)

@@ -8,7 +8,7 @@
  */
 
 /** @param {ArrayBuffer} arrayBuffer */
-export function decodeAiffToAudioBuffer(arrayBuffer) {
+export default function decodeAiffToAudioBuffer(arrayBuffer) {
 	const audioCtx = new AudioContext()
 	const dataView = new DataView(arrayBuffer)
 
