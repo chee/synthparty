@@ -42,19 +42,20 @@ export default class DelugeKit extends PartyElement {
 			this.sourcesElement.lastElementChild.remove()
 		}
 		while (kit.sounds.length > this.sourcesElement.children.length) {
+			/** @type {HTMLTemplateElement} */
 			let soundTemplate = document.querySelector("template#sound")
 			let soundElement = soundTemplate.content.cloneNode(true)
 			this.sourcesElement.append(soundElement)
 		}
-		kit.sounds.forEach((sound, index) => {
-			/** @type {import("./sound-element.js").default} */
-			let el =
+		for (let [index, sound] of kit.sounds.entries()) {
+			let el = /** @type {import("./sound-element.js").default} */ (
 				this.sourcesElement.children[
 					this.sourcesElement.children.length - 1 - index
 				]
+			)
 			el.name = sound.name
 			el.color = sound.color
-		})
+		}
 	}
 }
 
