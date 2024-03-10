@@ -133,16 +133,15 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	encoder.uint32(0)
 	// product.
 	encoder.uint32(0)
-
 	// sample period: sample-rate 44.1k
 	encoder.uint32(0x5893)
-
-	// midi note 1-127, if anyone ever adds more than 127 rows i don't know what
+	// midi note 0-127, if anyone ever adds more than 127 rows i don't know what
 	// will happen to them
 	encoder.uint32(note)
-	// midi pitch fraction
+	// midi pitch fraction (this is a tiny tiny tiny pitch bump that should be
+	// imperceptible, but forces the deluge to recognize a midi note of 0 and not
+	// consider it disabled)
 	encoder.uint32(1)
-
 	// smpte format
 	encoder.uint32(0)
 	// smpte offset
@@ -161,15 +160,6 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	for (let sample of samples) {
 		encoder.uint16(webaudioSampleTo16BitPCM(sample))
 	}
-
-	// /* write the inst chunk for multisamples */
-	// encoder.string("chee")
-	// encoder.uint32(7)
-	// encoder.uint32(note)
-	// writeString(view, (offset += 4), "inst")
-	// // idgaf i'll write every chunk going
-	// view.setUint32((offset += 4), 7, true)
-	// view.setUint32((offset += 4), note, true)
 
 	return encoder.end()
 }
