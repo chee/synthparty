@@ -48,6 +48,8 @@ class Encoder {
 	#view
 	#offset = 0
 	#le = false
+	// todo don't actually need the length here if we store all the operations
+	// and only make the buffer at the end based on the size of "offset"
 	constructor(length = 0, {littleEndian = false} = {}) {
 		this.#buffer = new ArrayBuffer(length)
 		this.#view = new DataView(this.#buffer)
@@ -92,7 +94,7 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	let blockAlign = numChannels * bytesPerSample
 	let samplelength = samples.length * bytesPerSample
 	let headerlength = 44
-	let smplchunklength = 32
+	let smplchunklength = 48
 	// let instchunklength = 15
 	let bufferlength = headerlength + samplelength + smplchunklength // + instchunklength
 	let encoder = new Encoder(bufferlength, {littleEndian: true})
@@ -119,24 +121,16 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	encoder.uint16(blockAlign)
 	// bits per sample
 	encoder.uint16(8 * bytesPerSample)
-	// data chunk identifier
-	encoder.string("data")
-	// data chunk length
-	encoder.uint32(samplelength)
-	for (let sample of samples) {
-		encoder.uint16(webaudioSampleTo16BitPCM(sample))
-	}
+
 	/* write the smpl chunk for smart samplers like the synthstrom deluge */
 	encoder.string("smpl")
 	// chunk size less header
 	encoder.uint32(smplchunklength - 8)
-
 	// manufacturer. should i make it 0x01000041 for Roland? selling knock-off
 	// Roland wave files down the market. i wonder if there are any devices that
 	// do anything with that information. error: not an official microsoft® wave
 	// file
 	encoder.uint32(0)
-
 	// product.
 	encoder.uint32(0)
 
@@ -146,8 +140,27 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	// midi note 1-127, if anyone ever adds more than 127 rows i don't know what
 	// will happen to them
 	encoder.uint32(note)
+	// midi pitch fraction
 	encoder.uint32(1)
+
+	// smpte format
+	encoder.uint32(0)
+	// smpte offset
+	encoder.uint32(0)
+	// number loops (none)
+	encoder.uint32(0)
+	// sampler data length
+	encoder.uint32(4)
+	// sampler data
 	encoder.string("chee")
+
+	// data chunk identifier
+	encoder.string("data")
+	// data chunk length
+	encoder.uint32(samplelength)
+	for (let sample of samples) {
+		encoder.uint16(webaudioSampleTo16BitPCM(sample))
+	}
 
 	// /* write the inst chunk for multisamples */
 	// encoder.string("chee")
