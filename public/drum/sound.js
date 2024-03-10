@@ -34,8 +34,8 @@ export default class Sound {
 		this.audiobuffer = audiobuffer
 	}
 
-	blob() {
-		return new Blob([wav(this.audiobuffer)])
+	blob(index = 0) {
+		return new Blob([wav(this.audiobuffer, index)])
 	}
 
 	audition() {
