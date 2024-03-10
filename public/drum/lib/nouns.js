@@ -13,5 +13,7 @@ export default [
 	"computer",
 	"subject",
 	"things",
-	"chances"
+	"chances",
+	"horses",
+	"blossom"
 ]

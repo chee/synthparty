@@ -15,5 +15,8 @@ export default [
 	"shady",
 	"sweet",
 	"warm",
-	"fiery"
+	"fiery",
+	"cherry",
+	"thick",
+	"skinny"
 ]
