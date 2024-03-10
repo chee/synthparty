@@ -52,7 +52,7 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	let samplelength = samples.length * bytesPerSample
 	let head = 44
 	let tail = 32
-	let bufferlength = head + samplelength + tail
+	let bufferlength = head + samplelength + tail + 8 + 7
 	let buffer = new ArrayBuffer(bufferlength)
 	let view = new DataView(buffer)
 
@@ -107,6 +107,13 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 
 	view.setUint32((offset += 4), 0, true)
 	writeString(view, (offset += 4), "chee")
+
+	/* write the inst chunk for multisamples */
+	writeString(view, (offset += 4), "inst")
+	// idgaf i'll write every chunk going
+	view.setUint32((offset += 4), 7, true)
+	view.setUint32((offset += 4), note, true)
+
 	return buffer
 }
 
