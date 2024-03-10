@@ -1,6 +1,5 @@
 import {downloadZip} from "./vendor/client-zip.js"
 import {setAttributes, createElement} from "./lib/xml.js"
-import audioBufferToWav from "./lib/audiobuffer-to-wav.js"
 
 /**
  * @typedef {import("./sound.js").default} Sound
@@ -96,12 +95,10 @@ export default class Kit {
 			}
 		]
 
-		for (let sound of this.sounds) {
+		for (let [index, sound] of this.sounds.entries()) {
 			files.push({
 				name: sound.filename(this.name),
-				input: new Blob([
-					audioBufferToWav(sound.audiobuffer, this.sounds.indexOf(sound))
-				])
+				input: sound.blob(index)
 			})
 		}
 
