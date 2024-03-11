@@ -49,6 +49,20 @@ function pcmToAudiobuffer(
 	return audiobuffer
 }
 
+/** @param {AudioBuffer} audiobuffer */
+function sliceAudioBuffer(audiobuffer, start = 0, end = 0) {
+	let alicebartlett = new AudioBuffer({
+		length: end - start,
+		numberOfChannels: audiobuffer.numberOfChannels,
+		sampleRate: audiobuffer.sampleRate
+	})
+	for (let channel = 0; channel < audiobuffer.numberOfChannels; channel++) {
+		let channelData = audiobuffer.getChannelData(channel)
+		alicebartlett.copyToChannel(channelData.slice(start, end), channel)
+	}
+	return alicebartlett
+}
+
 export default class Sound {
 	index = -1
 	name = "new sound"
@@ -107,19 +121,27 @@ export default class Sound {
 			}
 		}
 
-		function rounde(num = 0) {
-			return 2 * Math.round(num / 2)
+		function op1tosample(num = 0) {
+			// i have NO IDEA why it's 2032, i don't understand how that relates to
+			// anything. not to 65536, not to 44100, not to 2147483646
+			// but i've tried all the other numbers and this is the best number,
+			// hands down, no question
+			return Math.round(num / 2032 / 8) * 8
 		}
 
 		// todo support op-1 field kits
 		if (op1Config && numberOfChannels == 1) {
 			return op1Config.start
 				.map((s, index) => {
-					let start = rounde(s / 2048)
-					let end = rounde(op1Config.end[index] / 2048)
-					console.log(op1Config.end[index], "e")
+					let e = op1Config.end[index]
+					let start = op1tosample(s)
+					let end = op1tosample(e)
+
 					if (start < end) {
-						let pcm = ssnd.slice(start, end)
+						let pcm = ssnd.slice(
+							start * numberOfChannels,
+							end * numberOfChannels
+						)
 
 						let audiobuffer = pcmToAudiobuffer(pcm, {
 							numberOfChannels,
