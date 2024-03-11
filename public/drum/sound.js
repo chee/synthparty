@@ -229,6 +229,15 @@ export default class Sound {
 			})
 		)
 
+		sound.append(
+			createElement(doc, "envelope1", {
+				attack: "0x80000000",
+				decay: "0xE6666654",
+				sustain: "0x7FFFFFD2",
+				release: "0x80000000"
+			})
+		)
+
 		return sound
 	}
 }
