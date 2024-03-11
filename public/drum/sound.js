@@ -49,20 +49,6 @@ function pcmToAudiobuffer(
 	return audiobuffer
 }
 
-/** @param {AudioBuffer} audiobuffer */
-function slice(audiobuffer, start = 0, end = 0) {
-	let alicebartlett = new AudioBuffer({
-		length: end - start,
-		numberOfChannels: audiobuffer.numberOfChannels,
-		sampleRate: audiobuffer.sampleRate
-	})
-	for (let channel = 0; channel < audiobuffer.numberOfChannels; channel++) {
-		let channelData = audiobuffer.getChannelData(channel)
-		alicebartlett.copyToChannel(channelData.slice(start, end), channel)
-	}
-	return alicebartlett
-}
-
 export default class Sound {
 	index = -1
 	name = "new sound"
@@ -127,19 +113,6 @@ export default class Sound {
 
 		// todo support op-1 field kits
 		if (op1Config && numberOfChannels == 1) {
-			let saudiobuffer = pcmToAudiobuffer(ssnd, {
-				numberOfChannels,
-				sampleRate
-			})
-
-			return op1Config.start.map((s, index) => {
-				let e = op1Config.end[index]
-				let start = s / 4096
-				let end = e / 4096
-				if (start < end) {
-					return new Sound(stdLayout[index], slice(saudiobuffer, start, end))
-				}
-			})
 			return op1Config.start
 				.map((s, index) => {
 					let start = rounde(s / 2048)
