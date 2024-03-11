@@ -25,8 +25,15 @@ export default class Sound {
 	index = -1
 	name = "new sound"
 	color = rand(colours)
+	loopMode = "once"
 	/** @type AudioBufferSourceNode */
 	#buffersource
+
+	static LoopMode = {
+		cut: "0",
+		once: "1",
+		loop: "2"
+	}
 
 	/** @param {ArrayBuffer} arraybuffer */
 	static fromAIF(arraybuffer, name = "") {
@@ -201,7 +208,8 @@ export default class Sound {
 		sound.append(
 			createElement(doc, "osc1", {
 				type: "sample",
-				fileName: this.filename(kitName, {sortable})
+				fileName: this.filename(kitName, {sortable}),
+				loopMode: Sound.LoopMode[this.loopMode]
 			})
 		)
 
