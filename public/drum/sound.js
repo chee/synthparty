@@ -82,21 +82,20 @@ export default class Sound {
 
 		function op1tosample(num = 0) {
 			// i have NO IDEA why it's 2032, i don't understand how that relates to
-			// anything. not to 65536, not to 44100, not to 2147483646
+			// anything. not to 65536, not to 44100, not to 2147483646, not to 12 seconds
 			// but i've tried all the other numbers and this is the best number,
 			// hands down, no question
-			return Math.floor(num / 2032 / 2) * 2
+			// the 1219.2 i got by 2032*12/20
+			let divisor = op1Config.stereo == true ? 1219.2 : 2032
+			return Math.floor(num / divisor / 2) * 2
 		}
 
-		console.log(op1Config)
-		// todo support op-1 field kits
-		if (op1Config && numberOfChannels == 1) {
+		if (op1Config) {
 			return op1Config.start
 				.map((s, index) => {
 					let e = op1Config.end[index]
 					let start = op1tosample(s)
 					let end = op1tosample(e)
-					console.log(start, end)
 
 					if (start < end) {
 						let pcm = ssnd.slice(
