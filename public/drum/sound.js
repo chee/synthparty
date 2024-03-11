@@ -3,6 +3,7 @@ import wav from "./lib/audiobuffer-to-wav.js"
 import showOpenFilePicker from "./lib/open-file-picker.js"
 import rand from "./lib/rand.js"
 import colours from "./lib/colours.js"
+import {decode16BitPCM} from "./lib/aif.js"
 let context = new AudioContext()
 let iphoneSilenceElement = document.querySelector("audio")
 
@@ -18,49 +19,6 @@ function readString(view, offset, length) {
 
 function removeExtension(filename = "") {
 	return filename.replace(/(.*)\.[^.]+$/, (_, c) => c)
-}
-
-/**
- * @param {ArrayBuffer} pcm
- */
-function pcmToAudiobuffer(
-	pcm,
-	/** @type {{numberOfChannels: number, sampleRate: number}} */
-	{numberOfChannels, sampleRate}
-) {
-	let audiobuffer = new AudioBuffer({
-		numberOfChannels,
-		length: pcm.byteLength / numberOfChannels / 2,
-		sampleRate
-	})
-	for (let channel = 0; channel < numberOfChannels; channel++) {
-		let channelData = audiobuffer.getChannelData(channel)
-		let view = new DataView(pcm)
-
-		for (
-			let i = 0, j = channel * 2;
-			i < channelData.length;
-			i++, j += numberOfChannels * 2
-		) {
-			let sample = view.getInt16(j, true)
-			channelData[i] = sample / 0x8000
-		}
-	}
-	return audiobuffer
-}
-
-/** @param {AudioBuffer} audiobuffer */
-function sliceAudioBuffer(audiobuffer, start = 0, end = 0) {
-	let alicebartlett = new AudioBuffer({
-		length: end - start,
-		numberOfChannels: audiobuffer.numberOfChannels,
-		sampleRate: audiobuffer.sampleRate
-	})
-	for (let channel = 0; channel < audiobuffer.numberOfChannels; channel++) {
-		let channelData = audiobuffer.getChannelData(channel)
-		alicebartlett.copyToChannel(channelData.slice(start, end), channel)
-	}
-	return alicebartlett
 }
 
 export default class Sound {
@@ -87,6 +45,7 @@ export default class Sound {
 				let _len = view.getUint32(offset + 4)
 				numberOfChannels = view.getInt16(offset + 8)
 				let _numSampleFrames = view.getUint32(offset + 10)
+				// `10` tells us this 16-bit audio
 				let _sampleSize = view.getInt16(offset + 14)
 				/* lmao i have no idea how to read a long	double */
 				// https://wiki.multimedia.cx/index.php/Audio_Interchange_File_Format
@@ -126,9 +85,10 @@ export default class Sound {
 			// anything. not to 65536, not to 44100, not to 2147483646
 			// but i've tried all the other numbers and this is the best number,
 			// hands down, no question
-			return Math.round(num / 2032 / 8) * 8
+			return Math.floor(num / 2032 / 2) * 2
 		}
 
+		console.log(op1Config)
 		// todo support op-1 field kits
 		if (op1Config && numberOfChannels == 1) {
 			return op1Config.start
@@ -136,6 +96,7 @@ export default class Sound {
 					let e = op1Config.end[index]
 					let start = op1tosample(s)
 					let end = op1tosample(e)
+					console.log(start, end)
 
 					if (start < end) {
 						let pcm = ssnd.slice(
@@ -143,18 +104,23 @@ export default class Sound {
 							end * numberOfChannels
 						)
 
-						let audiobuffer = pcmToAudiobuffer(pcm, {
+						let audiobuffer = decode16BitPCM(pcm, {
 							numberOfChannels,
-							sampleRate
+							sampleRate,
+							littleEndian: op1Config.drum_version == 2
 						})
 
-						return new Sound(stdLayout[index], audiobuffer)
+						return new Sound(audiobuffer, stdLayout[index])
 					}
 				})
 				.filter(Boolean)
 		} else {
-			let audiobuffer = pcmToAudiobuffer(ssnd, {numberOfChannels, sampleRate})
-			return new Sound(name, audiobuffer)
+			let audiobuffer = decode16BitPCM(ssnd, {
+				numberOfChannels,
+				sampleRate,
+				littleEndian: true
+			})
+			return new Sound(audiobuffer, name)
 		}
 	}
 
@@ -172,29 +138,28 @@ export default class Sound {
 		for (let fh of handles) {
 			let file = await fh.getFile()
 			let arraybuffer = await file.arrayBuffer()
+			let name = removeExtension(file.name)
 			if (["audio/aiff", "audio/x-aiff"].includes(file.type)) {
 				// activate scoundrel mode
 				try {
-					sounds = sounds.concat(
-						Sound.fromAIF(arraybuffer, removeExtension(file.name))
-					)
+					sounds = sounds.concat(Sound.fromAIF(arraybuffer, name))
 					continue
 				} catch (error) {
 					console.error(error)
 				}
 			}
 			let audiobuffer = await context.decodeAudioData(arraybuffer)
-			let sound = new Sound(removeExtension(file.name), audiobuffer)
+			let sound = new Sound(name, audiobuffer)
 			sounds.push(sound)
 		}
 		return sounds
 	}
 
-	/**
-	 * @param {string} name
+	/*
 	 * @param {AudioBuffer} audiobuffer
+	 * @param {string} name
 	 */
-	constructor(name, audiobuffer) {
+	constructor(audiobuffer, name) {
 		this.name = name
 		this.audiobuffer = audiobuffer
 	}
