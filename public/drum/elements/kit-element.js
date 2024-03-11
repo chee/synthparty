@@ -1,43 +1,72 @@
+import Kit from "../kit.js"
+import adjectives from "../lib/adjectives.js"
+import nouns from "../lib/nouns.js"
+import rand from "../lib/rand.js"
+import Sound from "../sound.js"
 import globalStyles from "./global-styles.js"
 import {PartyElement, partyElements} from "./party-elements.js"
 
 export default class DelugeKit extends PartyElement {
-	#name = this.$("#name")
+	nameElement = /** @type {HTMLInputElement} */ (this.$("#name"))
+	kit = new Kit(rand(adjectives) + " " + rand(nouns))
+
 	constructor() {
 		super()
 		this.shadowRoot.adoptedStyleSheets = [globalStyles]
 	}
 
 	connectedCallback() {
+		let kit = this.kit
 		customElements.whenDefined("deluge-button").then(() => {
 			this.$("#download").when("click", (_, event) => {
-				this.announce("download", event)
+				kit.download({
+					sortable: !event.shiftKey
+				})
 			})
 
-			this.$("#add").addEventListener("click", () =>
-				this.announce("add-sound", this.kit)
-			)
+			this.$("#add").addEventListener("click", async () => {
+				let sounds = await Sound.browse({multiple: true})
+				kit.addSounds(sounds)
+				this.update()
+			})
 		})
 		this.sourcesElement = this.shadowRoot.querySelector("deluge-sources")
-		this.#name.addEventListener("input", event =>
-			this.announce("set-kit-name", event.target.value)
+		this.nameElement.addEventListener(
+			"input",
+			() => (kit.name = this.nameElement.value)
 		)
+
 		this.sourcesElement.addEventListener("set-name", event => {
-			this.announce("set-sound-name", {
-				index: event.target.index,
-				name: event.detail
+			event.target.sound.name = event.detail
+		})
+
+		this.sourcesElement.addEventListener("browse", async event => {
+			let [sound] = await Sound.browse({
+				multiple: false
 			})
+			kit.sounds[event.target.sound.index].replace(sound)
+			event.target.sound = sound
+		})
+
+		this.sourcesElement.addEventListener("move-down", event => {
+			kit.nudgeSound(event.target.sound.index, "down")
+			this.update()
+		})
+
+		this.sourcesElement.addEventListener("move-up", event => {
+			kit.nudgeSound(event.target.sound.index, "up")
+			this.update()
+		})
+
+		this.sourcesElement.addEventListener("kill", event => {
+			kit.killSound(event.target.sound.index)
+			this.update()
 		})
 	}
 
-	/** @type {import("../kit.js").default} */
-	get kit() {
-		return this.get("kit")
-	}
-
-	set kit(kit) {
-		this.#name.value = kit.name
-
+	update() {
+		let kit = this.kit
+		this.nameElement.value = kit.name
 		while (kit.sounds.length < this.sourcesElement.children.length) {
 			this.sourcesElement.lastElementChild.remove()
 		}
@@ -47,14 +76,14 @@ export default class DelugeKit extends PartyElement {
 			let soundElement = soundTemplate.content.cloneNode(true)
 			this.sourcesElement.append(soundElement)
 		}
+
 		for (let [index, sound] of kit.sounds.entries()) {
 			let el = /** @type {import("./sound-element.js").default} */ (
 				this.sourcesElement.children[
 					this.sourcesElement.children.length - 1 - index
 				]
 			)
-			el.name = sound.name
-			el.color = sound.color
+			el.sound = sound
 		}
 	}
 }

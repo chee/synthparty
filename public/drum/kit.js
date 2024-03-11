@@ -38,20 +38,6 @@ export default class Kit {
 		sound.index = index
 	}
 
-	/**
-	 * @param {number} index
-	 */
-	getSoundFromUiIndex(index) {
-		return this.sounds[this.getSoundIndexFromUiIndex(index)]
-	}
-
-	/**
-	 * @param {number} index
-	 */
-	getSoundIndexFromUiIndex(index) {
-		return this.sounds.length - 1 - index
-	}
-
 	updateIndexes() {
 		for (let [index, sound] of this.sounds.entries()) {
 			sound.index = index
@@ -72,6 +58,14 @@ export default class Kit {
 			if (nextIndex < 0) return
 		}
 		this.swapSounds(currentIndex, nextIndex)
+	}
+
+	/**
+	 * @param {number} index
+	 */
+	killSound(index) {
+		this.sounds.splice(index, 1)
+		this.updateIndexes()
 	}
 
 	/**

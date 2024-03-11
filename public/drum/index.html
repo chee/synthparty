@@ -28,9 +28,7 @@
 				<deluge-button id="download" label="download zip"></deluge-button>
 			</header>
 
-			<deluge-sources>
-				<slot/>
-			</deluge-sources>
+			<deluge-sources></deluge-sources>
 
 			<style>
 				h1 {
@@ -72,6 +70,12 @@
 					<button id="up" label="move up">↑</button>
 					<button id="down" label="move down">↓</button>
 				</div>
+				<select id="loop-mode" label="loop mode">
+					<option value="cut">cut</option>
+					<option value="once">once</option>
+					<option value="loop">loop</option>
+				</select>
+				<button id="kill" label="delete sound">🗑</button>
 				<input id="name" type="text">
 				<deluge-button id="browse" label="browse"></deluge-button>
 				<deluge-button id="audition" label="audition"></deluge-button>
@@ -90,13 +94,22 @@
 						box-shadow: none;
 						border: none;
 					}
+					label {
+						display: flex;
+						flex-direction: column;
+						font-size: 0.5em;
+					}
+					label select {
+						padding: 0.25rem;
+						margin-top: 5px;
+					}
 				</style>
 			</template>
 		</deluge-sound>
 	</template>
 
 	<style id="global-styles">
-		button {
+		button, select {
 			cursor: pointer;
 			word-wrap: anywhere;
 			border: 1px solid var(--line);
@@ -109,11 +122,11 @@
 			font-family: qp, monospace;
 		}
 
-		button:hover {
+		button:hover, 	select:hover {
 			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px) var(--heavy-shadow);
 		}
 
-		button:active {
+		button:active, select:active {
 			box-shadow: inset var(--shadow-px) var(--shadow-px) rgba(0, 0, 0, 0.2);
 		}
 

@@ -154,9 +154,13 @@ export default class Sound {
 					console.error(error)
 				}
 			}
-			let audiobuffer = await context.decodeAudioData(arraybuffer)
-			let sound = new Sound(name, audiobuffer)
-			sounds.push(sound)
+			try {
+				let audiobuffer = await context.decodeAudioData(arraybuffer)
+				let sound = new Sound(audiobuffer, name)
+				sounds.push(sound)
+			} catch (error) {
+				console.error(error)
+			}
 		}
 		return sounds
 	}
@@ -177,9 +181,7 @@ export default class Sound {
 	audition() {
 		context.resume()
 		iphoneSilenceElement.play()
-		if (this.#buffersource) {
-			this.#buffersource.stop()
-		}
+		this.stop()
 		let buffersource = new AudioBufferSourceNode(context, {
 			buffer: this.audiobuffer
 		})
@@ -187,6 +189,12 @@ export default class Sound {
 		buffersource.start()
 		buffersource.onended = () => iphoneSilenceElement.pause()
 		this.#buffersource = buffersource
+	}
+
+	stop() {
+		if (this.#buffersource) {
+			this.#buffersource.stop()
+		}
 	}
 
 	/** @param {string} kitName */
