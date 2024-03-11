@@ -245,16 +245,16 @@ export default class Sound {
 /** standard layout of an op1 kit*/
 let stdLayout = [
 	"kick",
-	"kick_alt",
+	"kick (alt)",
 	"snare",
-	"snare_alt",
+	"snare (alt)",
 	"rimshot",
-	"clapsnap",
+	"clap-snap",
 	"perc",
 	"eight",
-	"hat",
+	"closed hat",
 	"pedal",
-	"open_hat",
+	"open hat",
 	"ten",
 	"eleven",
 	"ride",
@@ -263,9 +263,9 @@ let stdLayout = [
 	"noot",
 	"thirteen",
 	"fourteen",
-	"fx_1",
-	"fx_2",
-	"fx_3",
-	"fx_4",
-	"fx_5"
+	"fx 1",
+	"fx 2",
+	"fx 3",
+	"fx 4",
+	"fx 5"
 ]

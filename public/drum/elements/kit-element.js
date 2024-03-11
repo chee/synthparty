@@ -13,6 +13,7 @@ export default class DelugeKit extends PartyElement {
 	constructor() {
 		super()
 		this.shadowRoot.adoptedStyleSheets = [globalStyles]
+		this.nameElement.value = this.kit.name
 	}
 
 	connectedCallback() {
