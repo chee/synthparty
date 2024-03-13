@@ -42,9 +42,9 @@ export default class DelugeKit extends PartyElement {
 		})
 
 		this.sourcesElement.addEventListener("audition", event => {
-			if (event.target.sound.choke) {
+			if (event.target.sound.polyphonic == "choke") {
 				for (let sound of this.kit.sounds) {
-					if (sound.choke && sound != event.target.sound) {
+					if (sound.polyphonic == "choke" && sound != event.target.sound) {
 						sound.stop()
 					}
 				}
