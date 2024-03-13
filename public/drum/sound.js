@@ -34,6 +34,11 @@ export default class Sound {
 	custom1 = "pitch"
 	custom2 = "decimation"
 	custom3 = "bitcrush"
+	/** @type number? */
+	start
+	/** @type number? */
+	end
+
 	/** @type AudioBufferSourceNode[] */
 	#buffersources = []
 
@@ -103,7 +108,8 @@ export default class Sound {
 
 		function op1tosample(num = 0) {
 			// i have NO IDEA why it's 2032, i don't understand how that relates to
-			// anything. not to 65536, not to 44100, not to 2147483646, not to 12 seconds
+			// anything. not to 65536, not to 44100, not to 2147483646, not to 12
+			// seconds, not to 16 bits
 			// but i've tried all the other numbers and this is the best number,
 			// hands down, no question
 			// the 1219.2 i got by 2032*12/20
@@ -185,6 +191,8 @@ export default class Sound {
 	constructor(audiobuffer, name) {
 		this.name = name
 		this.audiobuffer = audiobuffer
+		this.start = 0
+		this.end = audiobuffer.length
 		let chowmein = this.name.toLowerCase()
 		if (chowmein.includes("kick")) {
 			this.sidechainSend = true
@@ -205,29 +213,30 @@ export default class Sound {
 		if (this.polyphonic != "poly") {
 			this.stop()
 		}
-		let buffer = this.audiobuffer
-		if (this.reversed) {
-			buffer = new AudioBuffer({
-				length: this.audiobuffer.length,
-				sampleRate: this.audiobuffer.sampleRate,
-				numberOfChannels: this.audiobuffer.numberOfChannels
-			})
-			for (
-				let channel = 0;
-				channel < this.audiobuffer.numberOfChannels;
-				channel++
-			) {
-				let from = this.audiobuffer.getChannelData(channel)
-				let i = from.length
-				let off = 0
-				let to = buffer.getChannelData(channel)
-				while (--i) {
-					to[off++] = from[i]
-				}
+		let start = this.start
+		let end = this.end
+		let playbuffer = new AudioBuffer({
+			length: end - start,
+			sampleRate: this.audiobuffer.sampleRate,
+			numberOfChannels: this.audiobuffer.numberOfChannels
+		})
+		for (
+			let channel = 0;
+			channel < this.audiobuffer.numberOfChannels;
+			channel++
+		) {
+			playbuffer.copyToChannel(
+				this.audiobuffer.getChannelData(channel).subarray(start, end),
+				channel
+			)
+
+			if (this.reversed) {
+				playbuffer.getChannelData(channel).reverse()
 			}
 		}
+
 		let buffersource = new AudioBufferSourceNode(context, {
-			buffer
+			buffer: playbuffer
 		})
 
 		buffersource.connect(context.destination)
@@ -241,6 +250,18 @@ export default class Sound {
 		while ((source = this.#buffersources.pop())) {
 			source.stop()
 		}
+	}
+
+	mono() {
+		let aub = this.audiobuffer
+		let mono = new Float32Array(aub.length)
+		for (let channel = 0; channel < aub.numberOfChannels; channel++) {
+			let data = aub.getChannelData(channel)
+			for (let i = 0; i < data.length; i++) {
+				mono[i] += data[i] / aub.numberOfChannels
+			}
+		}
+		return mono
 	}
 
 	/** @param {string} kitName */
@@ -260,16 +281,25 @@ export default class Sound {
 			polyphonic: this.polyphonic
 		})
 
-		sound.append(
-			createElement(doc, "osc1", {
-				type: "sample",
-				fileName: this.filename(kitName, {sortable}),
-				loopMode: Sound.SampleMode[this.loopMode],
-				reversed: +this.reversed + "",
-				linearInterpolation: +this.linearInterpolation + "",
-				timeStretchEnable: +this.timeStretch + ""
-			})
-		)
+		let osc = createElement(doc, "osc1", {
+			type: "sample",
+			fileName: this.filename(kitName, {sortable}),
+			loopMode: Sound.SampleMode[this.loopMode],
+			reversed: +this.reversed + "",
+			linearInterpolation: +this.linearInterpolation + "",
+			timeStretchEnable: +this.timeStretch + ""
+		})
+
+		sound.append(osc)
+
+		if (this.start || this.end) {
+			osc.append(
+				createElement(doc, "zone", {
+					startSamplePos: this.start || 0,
+					endSamplePos: this.end || this.audiobuffer.length
+				})
+			)
+		}
 
 		sound.append(
 			createElement(doc, "defaultParams", {

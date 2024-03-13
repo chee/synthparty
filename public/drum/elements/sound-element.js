@@ -40,6 +40,7 @@ export default class DelugeSound extends PartyElement {
 		})
 		this.$("#reversed").addEventListener("change", event => {
 			this.sound.reversed = event.target.checked
+			this.$("#editor").draw()
 		})
 		this.$("#sidechain-send").addEventListener("change", event => {
 			this.sound.sidechainSend = event.target.checked
@@ -69,6 +70,7 @@ export default class DelugeSound extends PartyElement {
 		this.$("#linear-interpolation").checked = sound.linearInterpolation
 		this.$("#time-stretch").checked = sound.timeStretch
 		this.$("#slot").textContent = sound.index.toString().padStart(3, "0")
+		this.$("#editor").sound = sound
 	}
 }
 partyElements.define("deluge-sound", DelugeSound)

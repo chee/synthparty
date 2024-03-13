@@ -162,6 +162,8 @@
 					<button id="mix">mix</button>
 				</section>
 
+				<deluge-waveform id="editor"></deluge-waveform>
+
 				<section id="meta">
 					<button id="browse" class="flat-button">replace</button>
 					<button id="audition" class="flat-button" label="audition">
@@ -189,7 +191,7 @@
 							"handle controls controls controls controls meta";
 
 						grid-template-areas:
-							"handle header   header   header      meta"
+							"handle header   header   header    meta"
 							"handle controls controls controls  meta"
 							"handle controls controls controls  meta"
 							"handle controls controls controls  meta";
@@ -202,9 +204,12 @@
 						--changed: var(--greem);
 					}
 
-					host[editor] {
+					/* :host[editor] */
+					:host {
+						/* 4th column for when we have multiple editor buttons (adsr & mix) */
 						grid-template-areas:
 							"handle header   header   header   header   editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
 							"handle controls controls controls controls editor editor editor editor meta"
 							"handle controls controls controls controls editor editor editor editor meta"
 							"handle controls controls controls controls editor editor editor editor meta";
@@ -271,13 +276,10 @@
 					#controls {
 						grid-area: controls;
 						display: grid;
-						/* TODO add editor controls */
-						grid-template-columns: auto auto auto auto;
 						grid-template-columns: auto auto auto auto;
 						grid-template-rows: auto auto auto;
-						/* background: var(--line);
-							color: var(--fill); */
-						/* gap: var(--gap); */
+						background: var(--fill);
+						color: var(--line);
 					}
 
 					#controls label,
@@ -370,6 +372,20 @@
 
 					#controls button {
 						background: var(--fill);
+					}
+
+					#editor {
+						grid-area: editor;
+						--waveform-fill: #333;
+						--waveform-line: white;
+						--waveform-off: #444;
+						--waveform-start: #30fc93;
+						--waveform-end: #ff3588;
+						background: var(--waveform-fill);
+					}
+
+					#canvas {
+						height: 100%;
 					}
 
 					#meta {
