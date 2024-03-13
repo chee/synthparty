@@ -21,15 +21,34 @@ function removeExtension(filename = "") {
 	return filename.replace(/(.*)\.[^.]+$/, (_, c) => c)
 }
 
+function p2p(transposition = 0) {
+	return 2 ** (transposition / 12)
+}
+
 export default class Sound {
 	index = -1
 	name = "new sound"
 	color = rand(colours)
 	loopMode = "once"
-	/** @type AudioBufferSourceNode */
-	#buffersource
+	choke = false
+	reversed = false
+	timeStretch = false
+	linearInterpolation = false
+	sidechainSend = false
+	pitchAdjust = -10
+	custom1 = "pitch"
+	custom2 = "decimation"
+	custom3 = "bitcrush"
+	/** @type {AudioBufferSourceNode|HTMLAudioElement} */
+	#player
 
-	static LoopMode = {
+	static CustomOption = {
+		pitch: "pitch",
+		bitcrush: "bitcrushAmount",
+		decimation: "sampleRateReduction"
+	}
+
+	static SampleMode = {
 		cut: "0",
 		once: "1",
 		loop: "2"
@@ -97,7 +116,7 @@ export default class Sound {
 			return Math.floor(num / divisor / 2) * 2
 		}
 
-		if (op1Config) {
+		if (op1Config && op1Config.drum_version) {
 			return op1Config.start
 				.map((s, index) => {
 					let e = op1Config.end[index]
@@ -115,7 +134,6 @@ export default class Sound {
 							sampleRate,
 							littleEndian: op1Config.drum_version == 2
 						})
-
 						return new Sound(audiobuffer, stdLayout[index])
 					}
 				})
@@ -165,35 +183,89 @@ export default class Sound {
 		return sounds
 	}
 
-	/*
+	/**
 	 * @param {AudioBuffer} audiobuffer
 	 * @param {string} name
 	 */
 	constructor(audiobuffer, name) {
 		this.name = name
 		this.audiobuffer = audiobuffer
+		let chowmein = this.name.toLowerCase()
+		if (chowmein.includes("kick")) {
+			this.sidechainSend = true
+		} else if (chowmein.match(/\b(hat|pedal)\b/)) {
+			// hats choke each other
+			// owo
+			this.choke = true
+		}
 	}
 
-	blob() {
-		return new Blob([wav(this.audiobuffer, this.index)])
+	blob(ab = this.audiobuffer) {
+		return new Blob([wav(ab, this.index)])
+	}
+
+	url() {
+		return URL.createObjectURL(this.blob())
 	}
 
 	audition() {
 		context.resume()
 		iphoneSilenceElement.play()
 		this.stop()
-		let buffersource = new AudioBufferSourceNode(context, {
-			buffer: this.audiobuffer
-		})
-		buffersource.connect(context.destination)
-		buffersource.start()
-		buffersource.onended = () => iphoneSilenceElement.pause()
-		this.#buffersource = buffersource
+		if (this.timeStretch) {
+			let audio = new Audio()
+			audio.src = this.url()
+			if (this.pitchAdjust) {
+				audio.playbackRate = p2p(this.pitchAdjust)
+			}
+			if (this.reversed) {
+				audio.playbackRate = -1
+			}
+			console.log(audio.playbackRate)
+			audio.play()
+			this.#player = audio
+		} else {
+			let buffer = this.audiobuffer
+			if (this.reversed) {
+				buffer = new AudioBuffer({
+					length: this.audiobuffer.length,
+					sampleRate: this.audiobuffer.sampleRate,
+					numberOfChannels: this.audiobuffer.numberOfChannels
+				})
+				for (
+					let channel = 0;
+					channel < this.audiobuffer.numberOfChannels;
+					channel++
+				) {
+					let from = this.audiobuffer.getChannelData(channel)
+					let i = from.length
+					let off = 0
+					let to = buffer.getChannelData(channel)
+					while (--i) {
+						to[off++] = from[i]
+					}
+				}
+			}
+			let source = new AudioBufferSourceNode(context, {
+				buffer,
+				playbackRate: this.pitchAdjust ? p2p(this.pitchAdjust) : 1
+			})
+			source.connect(context.destination)
+			source.start()
+			source.onended = () => iphoneSilenceElement.pause()
+			this.#player = source
+		}
 	}
 
 	stop() {
-		if (this.#buffersource) {
-			this.#buffersource.stop()
+		if (this.#player) {
+			if (this.#player instanceof HTMLAudioElement) {
+				this.#player.pause()
+				iphoneSilenceElement.pause()
+			} else if (this.#player instanceof AudioBufferSourceNode) {
+				this.#player.stop()
+				iphoneSilenceElement.pause()
+			}
 		}
 	}
 
@@ -210,14 +282,17 @@ export default class Sound {
 	}) {
 		let sound = createElement(doc, "sound", {
 			name: this.name,
-			sideChainSend: this.index == 0 ? 2147483647 : 0
+			sideChainSend: this.sidechainSend ? 2147483647 : 0
 		})
 
 		sound.append(
 			createElement(doc, "osc1", {
 				type: "sample",
 				fileName: this.filename(kitName, {sortable}),
-				loopMode: Sound.LoopMode[this.loopMode]
+				loopMode: Sound.SampleMode[this.loopMode],
+				reversed: +this.reversed + "",
+				linearInterpolation: +this.linearInterpolation + "",
+				timeStretchEnable: +this.timeStretch + ""
 			})
 		)
 
@@ -237,6 +312,38 @@ export default class Sound {
 				release: "0x80000000"
 			})
 		)
+
+		let modKnobs = createElement(doc, "modKnobs")
+		sound.append(modKnobs)
+		function knob(controlsParam = "", patchAmountFromSource = "") {
+			let opts = patchAmountFromSource
+				? {controlsParam, patchAmountFromSource}
+				: {controlsParam}
+			return createElement(doc, "modKnob", opts)
+		}
+		modKnobs.append(knob("pan"))
+		modKnobs.append(knob("volumePostFX"))
+		modKnobs.append(knob("lpfResonance"))
+		modKnobs.append(knob("lpfFrequency"))
+		modKnobs.append(knob("env1Release"))
+		modKnobs.append(knob("env1Attack"))
+		modKnobs.append(knob("delayFeedback"))
+		modKnobs.append(knob("delayRate"))
+		modKnobs.append(knob("reverbAmount"))
+		modKnobs.append(knob("volumePostReverbSend", "compressor"))
+		modKnobs.append(knob("pitch", "lfo1"))
+		modKnobs.append(knob("lfo1Rate"))
+		modKnobs.append(knob(Sound.CustomOption[this.custom1]))
+		modKnobs.append(knob("stutterRate"))
+		modKnobs.append(knob(Sound.CustomOption[this.custom3]))
+		modKnobs.append(knob(Sound.CustomOption[this.custom2]))
+
+		if (this.choke) {
+			// todo maybe i should be using something like hyperhtml
+			let poly = createElement(doc, "polyphony")
+			poly.textContent = "2"
+			sound.append(poly)
+		}
 
 		return sound
 	}
