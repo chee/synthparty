@@ -26,7 +26,7 @@ export default class Sound {
 	name = "new sound"
 	color = rand(colours)
 	loopMode = "once"
-	choke = false
+	polyphonic = "auto"
 	reversed = false
 	timeStretch = false
 	linearInterpolation = false
@@ -191,7 +191,7 @@ export default class Sound {
 		} else if (chowmein.match(/\b(hat|pedal)\b/)) {
 			// hats choke each other
 			// owo
-			this.choke = true
+			this.polyphonic = "choke"
 		}
 	}
 
@@ -254,7 +254,8 @@ export default class Sound {
 	}) {
 		let sound = createElement(doc, "sound", {
 			name: this.name,
-			sideChainSend: this.sidechainSend ? 2147483647 : 0
+			sideChainSend: this.sidechainSend ? 2147483647 : 0,
+			polyphonic: this.polyphonic
 		})
 
 		sound.append(
@@ -309,13 +310,6 @@ export default class Sound {
 		modKnobs.append(knob("stutterRate"))
 		modKnobs.append(knob(Sound.CustomOption[this.custom3]))
 		modKnobs.append(knob(Sound.CustomOption[this.custom2]))
-
-		if (this.choke) {
-			// todo maybe i should be using something like hyperhtml
-			let poly = createElement(doc, "polyphony")
-			poly.textContent = "2"
-			sound.append(poly)
-		}
 
 		return sound
 	}

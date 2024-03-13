@@ -35,8 +35,8 @@ export default class DelugeSound extends PartyElement {
 		this.$("#loop-mode").addEventListener("change", event => {
 			this.sound.loopMode = event.target.value
 		})
-		this.$("#choke").addEventListener("change", event => {
-			this.sound.choke = event.target.checked
+		this.$("#polyphonic").addEventListener("change", event => {
+			this.sound.polyphonic = event.target.value
 		})
 		this.$("#reversed").addEventListener("change", event => {
 			this.sound.reversed = event.target.checked
@@ -63,7 +63,7 @@ export default class DelugeSound extends PartyElement {
 		this.$("#audition").style.background = sound.color
 		this.style.border = `1px solid ${sound.color}`
 		this.$("#loop-mode").value = sound.loopMode
-		this.$("#choke").checked = sound.choke
+		this.$("#polyphonic").value = sound.polyphonic
 		this.$("#reversed").checked = sound.reversed
 		this.$("#sidechain-send").checked = sound.sidechainSend
 		this.$("#linear-interpolation").checked = sound.linearInterpolation

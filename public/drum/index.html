@@ -99,8 +99,14 @@
 					</label>
 
 					<label>
-						choke
-						<input id="choke" type="checkbox" />
+						poly
+						<select id="polyphonic" label="polyphony mode">
+							<option value="auto">auto</option>
+							<option value="poly">poly</option>
+							<option value="mono">mono</option>
+							<option value="legato">legato</option>
+							<option value="choke">choke</option>
+						</select>
 					</label>
 
 					<label>
@@ -289,6 +295,9 @@
 					}
 
 					#loop-mode:has(> option[value="once"]:not(:checked)) {
+						background-color: var(--changed);
+					}
+					#polyphonic:has(> option[value="auto"]:not(:checked)) {
 						background-color: var(--changed);
 					}
 					#custom1:has(> option[value="pitch"]:not(:checked)) {
