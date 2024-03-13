@@ -2,6 +2,9 @@ import {partyElements, PartyElement} from "./party-elements.js"
 import Sound from "../sound.js"
 
 export default class DelugeSound extends PartyElement {
+	/** @type Sound */
+	#sound
+
 	constructor() {
 		super()
 		this.$("#audition").addEventListener("click", () => {
@@ -51,22 +54,21 @@ export default class DelugeSound extends PartyElement {
 
 	/** @type {Sound} */
 	get sound() {
-		return this.get("sound")
+		return this.#sound
 	}
 
 	set sound(sound) {
-		this.set("sound", sound, () => {
-			this.$("#name").value = sound.name
-			this.$("#audition").style.background = sound.color
-			this.style.border = `1px solid ${sound.color}`
-			this.$("#loop-mode").value = sound.loopMode
-			this.$("#choke").checked = sound.choke
-			this.$("#reversed").checked = sound.reversed
-			this.$("#sidechain-send").checked = sound.sidechainSend
-			this.$("#linear-interpolation").checked = sound.linearInterpolation
-			this.$("#time-stretch").checked = sound.timeStretch
-			this.$("#slot").textContent = sound.index.toString().padStart(3, "0")
-		})
+		this.#sound = sound
+		this.$("#name").value = sound.name
+		this.$("#audition").style.background = sound.color
+		this.style.border = `1px solid ${sound.color}`
+		this.$("#loop-mode").value = sound.loopMode
+		this.$("#choke").checked = sound.choke
+		this.$("#reversed").checked = sound.reversed
+		this.$("#sidechain-send").checked = sound.sidechainSend
+		this.$("#linear-interpolation").checked = sound.linearInterpolation
+		this.$("#time-stretch").checked = sound.timeStretch
+		this.$("#slot").textContent = sound.index.toString().padStart(3, "0")
 	}
 }
 partyElements.define("deluge-sound", DelugeSound)

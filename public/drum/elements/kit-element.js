@@ -86,6 +86,7 @@ export default class DelugeKit extends PartyElement {
 					this.sourcesElement.children.length - 1 - index
 				]
 			)
+
 			el.sound = sound
 		}
 	}
