@@ -21,10 +21,6 @@ function removeExtension(filename = "") {
 	return filename.replace(/(.*)\.[^.]+$/, (_, c) => c)
 }
 
-function p2p(transposition = 0) {
-	return 2 ** (transposition / 12)
-}
-
 export default class Sound {
 	index = -1
 	name = "new sound"
@@ -35,12 +31,11 @@ export default class Sound {
 	timeStretch = false
 	linearInterpolation = false
 	sidechainSend = false
-	pitchAdjust = -10
 	custom1 = "pitch"
 	custom2 = "decimation"
 	custom3 = "bitcrush"
-	/** @type {AudioBufferSourceNode|HTMLAudioElement} */
-	#player
+	/** @type AudioBufferSourceNode */
+	#buffersource
 
 	static CustomOption = {
 		pitch: "pitch",
@@ -200,72 +195,49 @@ export default class Sound {
 		}
 	}
 
-	blob(ab = this.audiobuffer) {
-		return new Blob([wav(ab, this.index)])
-	}
-
-	url() {
-		return URL.createObjectURL(this.blob())
+	blob() {
+		return new Blob([wav(this.audiobuffer, this.index)])
 	}
 
 	audition() {
 		context.resume()
 		iphoneSilenceElement.play()
 		this.stop()
-		if (this.timeStretch) {
-			let audio = new Audio()
-			audio.src = this.url()
-			if (this.pitchAdjust) {
-				audio.playbackRate = p2p(this.pitchAdjust)
-			}
-			if (this.reversed) {
-				audio.playbackRate = -1
-			}
-			console.log(audio.playbackRate)
-			audio.play()
-			this.#player = audio
-		} else {
-			let buffer = this.audiobuffer
-			if (this.reversed) {
-				buffer = new AudioBuffer({
-					length: this.audiobuffer.length,
-					sampleRate: this.audiobuffer.sampleRate,
-					numberOfChannels: this.audiobuffer.numberOfChannels
-				})
-				for (
-					let channel = 0;
-					channel < this.audiobuffer.numberOfChannels;
-					channel++
-				) {
-					let from = this.audiobuffer.getChannelData(channel)
-					let i = from.length
-					let off = 0
-					let to = buffer.getChannelData(channel)
-					while (--i) {
-						to[off++] = from[i]
-					}
+		this.audiobuffer
+		let buffer = this.audiobuffer
+		if (this.reversed) {
+			buffer = new AudioBuffer({
+				length: this.audiobuffer.length,
+				sampleRate: this.audiobuffer.sampleRate,
+				numberOfChannels: this.audiobuffer.numberOfChannels
+			})
+			for (
+				let channel = 0;
+				channel < this.audiobuffer.numberOfChannels;
+				channel++
+			) {
+				let from = this.audiobuffer.getChannelData(channel)
+				let i = from.length
+				let off = 0
+				let to = buffer.getChannelData(channel)
+				while (--i) {
+					to[off++] = from[i]
 				}
 			}
-			let source = new AudioBufferSourceNode(context, {
-				buffer,
-				playbackRate: this.pitchAdjust ? p2p(this.pitchAdjust) : 1
-			})
-			source.connect(context.destination)
-			source.start()
-			source.onended = () => iphoneSilenceElement.pause()
-			this.#player = source
 		}
+		let buffersource = new AudioBufferSourceNode(context, {
+			buffer
+		})
+
+		buffersource.connect(context.destination)
+		buffersource.start()
+		buffersource.onended = () => iphoneSilenceElement.pause()
+		this.#buffersource = buffersource
 	}
 
 	stop() {
-		if (this.#player) {
-			if (this.#player instanceof HTMLAudioElement) {
-				this.#player.pause()
-				iphoneSilenceElement.pause()
-			} else if (this.#player instanceof AudioBufferSourceNode) {
-				this.#player.stop()
-				iphoneSilenceElement.pause()
-			}
+		if (this.#buffersource) {
+			this.#buffersource.stop()
 		}
 	}
 
