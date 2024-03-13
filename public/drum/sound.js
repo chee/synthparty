@@ -34,8 +34,8 @@ export default class Sound {
 	custom1 = "pitch"
 	custom2 = "decimation"
 	custom3 = "bitcrush"
-	/** @type AudioBufferSourceNode */
-	#buffersource
+	/** @type AudioBufferSourceNode[] */
+	#buffersources = []
 
 	static CustomOption = {
 		pitch: "pitch",
@@ -202,8 +202,9 @@ export default class Sound {
 	audition() {
 		context.resume()
 		iphoneSilenceElement.play()
-		this.stop()
-		this.audiobuffer
+		if (this.polyphonic != "poly") {
+			this.stop()
+		}
 		let buffer = this.audiobuffer
 		if (this.reversed) {
 			buffer = new AudioBuffer({
@@ -232,12 +233,13 @@ export default class Sound {
 		buffersource.connect(context.destination)
 		buffersource.start()
 		buffersource.onended = () => iphoneSilenceElement.pause()
-		this.#buffersource = buffersource
+		this.#buffersources.push(buffersource)
 	}
 
 	stop() {
-		if (this.#buffersource) {
-			this.#buffersource.stop()
+		let source
+		while ((source = this.#buffersources.pop())) {
+			source.stop()
 		}
 	}
 
