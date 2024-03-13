@@ -41,12 +41,14 @@ export default class DelugeKit extends PartyElement {
 			event.target.sound.name = event.detail
 		})
 
-		this.sourcesElement.addEventListener("browse", async event => {
-			let [sound] = await Sound.browse({
-				multiple: false
-			})
-			kit.sounds[event.target.sound.index].replace(sound)
-			event.target.sound = sound
+		this.sourcesElement.addEventListener("audition", event => {
+			if (event.target.sound.choke) {
+				for (let sound of this.kit.sounds) {
+					if (sound.choke && sound != event.target.sound) {
+						sound.stop()
+					}
+				}
+			}
 		})
 
 		this.sourcesElement.addEventListener("move-down", event => {
