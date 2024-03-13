@@ -1,30 +1,30 @@
 <!doctype html>
 <html lang="en-ca" theme="cherries">
-	<meta charset="utf-8">
+	<meta charset="utf-8" />
 	<title>deluge party</title>
-	<meta name="description" content="create deluge kit">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="drum.css">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="application-name" content="bento">
-	<meta name="apple-mobile-web-app-title" content="bento">
-	<meta name="theme-color" content="#ffe9ed">
-	<meta property="og:title" content="deluge party">
-	<meta property="og:description" content="for synthstrom deluge">
-	<meta property="og:image" content="/aux/apple-touch-icon.png">
-	<meta name="twitter:card" content="summary">
-	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png">
-	<link rel="manifest" href="/aux/app.webmanifest">
+	<meta name="description" content="create deluge kit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="drum.css" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="bento" />
+	<meta name="apple-mobile-web-app-title" content="bento" />
+	<meta name="theme-color" content="#ffe9ed" />
+	<meta property="og:title" content="deluge party" />
+	<meta property="og:description" content="for synthstrom deluge" />
+	<meta property="og:image" content="/aux/apple-touch-icon.png" />
+	<meta name="twitter:card" content="summary" />
+	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png" />
+	<link rel="manifest" href="/aux/app.webmanifest" />
 
 	<deluge-kit>
 		<template shadowrootmode="open">
 			<h1>deluge kit creator</h1>
 			<header>
 				<label>
-					<input type="text" value="new kit" id="name">
+					<input type="text" value="new kit" id="name" />
 				</label>
-				<deluge-button id="add" label="+ add"></deluge-button>
+				<deluge-button id="add" label="+ add sounds"></deluge-button>
 				<deluge-button id="download" label="download zip"></deluge-button>
 			</header>
 
@@ -41,12 +41,6 @@
 					gap: 1em;
 				}
 
-				.row {
-					margin-top: 1rem;
-					display: flex;
-					gap: 0.5rem;
-				}
-
 				#add {
 					margin-top: 1rem;
 				}
@@ -59,49 +53,372 @@
 					display: flex;
 					flex-direction: column;
 				}
+
+				deluge-sound {
+					margin-top: 1rem;
+					box-shadow: 0 0 0 1px var(--line);
+				}
 			</style>
 		</template>
 	</deluge-kit>
 
 	<template id="sound">
-		<deluge-sound class="row">
+		<deluge-sound>
 			<template shadowrootmode="open">
-				<div class="arrows">
-					<button id="up" label="move up">↑</button>
-					<button id="down" label="move down">↓</button>
-				</div>
-				<select id="loop-mode" label="loop mode">
-					<option value="cut">cut</option>
-					<option value="once">once</option>
-					<option value="loop">loop</option>
-				</select>
-				<button id="kill" label="delete sound">🗑</button>
-				<input id="name" type="text">
-				<deluge-button id="browse" label="browse"></deluge-button>
-				<deluge-button id="audition" label="audition"></deluge-button>
+				<section id="handle">
+					<button
+						id="up"
+						title="move sound up"
+						label="move up"
+						class="flat-button">
+						↑
+					</button>
+					<div id="grabby">✣</div>
+					<button
+						id="down"
+						title="move sound down"
+						label="move down"
+						class="flat-button">
+						↓
+					</button>
+				</section>
+
+				<header>
+					<div id="slot">000</div>
+					<input id="name" type="text" />
+				</header>
+
+				<section id="controls">
+					<label for="loop-mode">
+						mode
+						<select id="loop-mode" label="loop mode">
+							<option value="cut">cut</option>
+							<option value="once">once</option>
+							<option value="loop">loop</option>
+						</select>
+					</label>
+
+					<label>
+						choke
+						<input id="choke" type="checkbox" />
+					</label>
+
+					<label>
+						reversed
+						<input id="reversed" type="checkbox" />
+					</label>
+
+					<label>
+						sidechain
+						<input id="sidechain-send" type="checkbox" />
+					</label>
+					<button id="waveform">waveform</button>
+
+					<label style="display: none">
+						pitch/speed
+						<input id="time-stretch" type="checkbox" />
+					</label>
+
+					<label style="display: none">
+						interpolation
+						<input id="linear-interpolation" type="checkbox" />
+					</label>
+
+					<button id="envelope">envelope</button>
+
+					<label class="custom">
+						custom 1
+						<select id="custom1" label="custom gold knob 1 purpose">
+							<option value="pitch" selected>pitch</option>
+							<option value="bitcrush">bitcrush</option>
+							<option value="decimation">decimation</option>
+						</select>
+					</label>
+
+					<label class="custom">
+						custom 2
+						<select id="custom2" label="custom gold knob 2 purpose">
+							<option value="pitch">pitch</option>
+							<option value="bitcrush">bitcrush</option>
+							<option value="decimation" selected>decimation</option>
+						</select>
+					</label>
+
+					<label class="custom">
+						custom 3
+						<select id="custom3" label="custom gold knob 3 purpose">
+							<option value="pitch">pitch</option>
+							<option value="bitcrush" selected>bitcrush</option>
+							<option value="decimation">decimation</option>
+						</select>
+					</label>
+
+					<button id="mix">mix</button>
+				</section>
+
+				<section id="meta">
+					<button id="browse" class="flat-button">replace</button>
+					<button id="audition" class="flat-button" label="audition">
+						▶
+					</button>
+				</section>
+
+				<button id="kill" class="flat-button">×</button>
 
 				<style>
-					.arrows {
-						display: flex;
-						flex-direction: column;
-						gap: 4px;
+					* {
+						box-sizing: border-box;
+					}
+					:host {
+						border-radius: 0;
+						box-shadow: 2px 2px var(--shadow);
+						font-weight: bold;
+						font-family: qp, monospace;
+						display: grid;
+						/* TODO add editor controls */
+						grid-template-areas:
+							"handle header   header   header   header   meta"
+							"handle controls controls controls controls meta"
+							"handle controls controls controls controls meta"
+							"handle controls controls controls controls meta";
+
+						grid-template-areas:
+							"handle header   header   header      meta"
+							"handle controls controls controls  meta"
+							"handle controls controls controls  meta"
+							"handle controls controls controls  meta";
+						position: relative;
+						/* background: var(--line);
+							color: var(--fill); */
+						gap: 0px;
+						padding: 0;
+						--fill: white;
+						--changed: var(--greem);
 					}
 
-					.arrows button {
-						height: 1rem;
-						width: 1rem;
-						padding: 0;
-						box-shadow: none;
-						border: none;
+					host[editor] {
+						grid-template-areas:
+							"handle header   header   header   header   editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta";
 					}
-					label {
+
+					button {
+						appearance: none;
+					}
+
+					#handle {
+						grid-area: handle;
+						background: var(--offset);
+						color: var(--line);
 						display: flex;
 						flex-direction: column;
-						font-size: 0.5em;
+						text-align: center;
 					}
-					label select {
-						padding: 0.25rem;
-						margin-top: 5px;
+
+					#handle button {
+						cursor: pointer;
+						color: currentcolor;
+					}
+
+					#handle > * {
+						height: 33%;
+						padding: var(--gap);
+						box-shadow: none;
+						border: none;
+						background: transparent;
+
+						font-size: 1rem;
+					}
+
+					#grabby {
+						/* 						cursor: move; */
+						line-height: 2em;
+						color: transparent;
+					}
+
+					header {
+						grid-area: header;
+						display: flex;
+						background: var(--fill);
+						color: var(--line);
+					}
+
+					#slot {
+						background: var(--cherries-light);
+						color: var(--cherries-dark);
+						line-height: 2;
+						padding: 0 4px;
+					}
+
+					#name {
+						flex: 1;
+						border: none;
+						font-family: var(--font-family);
+						font-size: 1rem;
+						height: 100%;
+						background: var(--fill);
+						color: var(--line);
+					}
+
+					#controls {
+						grid-area: controls;
+						display: grid;
+						/* TODO add editor controls */
+						grid-template-columns: auto auto auto auto;
+						grid-template-columns: auto auto auto auto;
+						grid-template-rows: auto auto auto;
+						/* background: var(--line);
+							color: var(--fill); */
+						/* gap: var(--gap); */
+					}
+
+					#controls label,
+					#controls button {
+						background: white;
+						color: var(--line);
+						padding: 4px;
+					}
+
+					#controls .custom,
+					#controls .custom select {
+						background: color-mix(in srgb, #ffcc00 50%, var(--fill));
+						color: black;
+						display: none;
+					}
+
+					#loop-mode:has(> option[value="once"]:not(:checked)) {
+						background-color: var(--changed);
+					}
+					#custom1:has(> option[value="pitch"]:not(:checked)) {
+						background-color: var(--changed);
+					}
+					#custom2:has(> option[value="decimation"]:not(:checked)) {
+						background-color: var(--changed);
+					}
+					#custom3:has(> option[value="bitcrush"]:not(:checked)) {
+						background-color: var(--changed);
+					}
+
+					#controls label {
+						display: flex;
+						flex-direction: column;
+						font-weight: normal;
+						font-size: 0.8rem;
+					}
+
+					#controls button,
+					#controls select {
+						appearance: none;
+						border: none;
+						background: transparent;
+						color: var(--line);
+						cursor: pointer;
+						font-family: var(--font-family);
+						font-weight: bold;
+						font-size: 0.9rem;
+					}
+
+					#controls [type="checkbox"] {
+						appearance: none;
+						border: none;
+						font-family: var(--font-family);
+						font-weight: bold;
+						font-size: 1rem;
+						background: transparent;
+					}
+
+					#controls [type="checkbox"]:before {
+						display: block;
+						content: "no";
+					}
+
+					#controls [type="checkbox"]:checked:before {
+						display: block;
+						content: "yes";
+						background: var(--changed);
+					}
+
+					#controls #time-stretch:before {
+						content: "linked";
+					}
+
+					#controls #time-stretch:checked:before {
+						content: "independent";
+						font-size: 0.7em;
+						line-height: 1.8;
+						background: var();
+					}
+
+					#controls #linear-interpolation:before {
+						content: "sinc";
+					}
+
+					#controls #linear-interpolation:checked:before {
+						content: "linear";
+					}
+
+					#controls button {
+						background: var(--fill);
+					}
+
+					#meta {
+						grid-area: meta;
+						display: flex;
+						flex-direction: column;
+						background: var(--line);
+						color: var(--fill);
+						gap: var(--gap);
+					}
+
+					#meta button {
+						cursor: pointer;
+						height: 50%;
+						background: var(--fill);
+						color: var(--line);
+						border: none;
+						font-family: var(--font-family);
+					}
+
+					#meta #browse {
+						background: var(--offset);
+					}
+
+					#kill {
+						position: absolute;
+						top: 0;
+						right: 0;
+						height: 1rem;
+						width: 1rem;
+						transform: translate(50%, -50%);
+						border-radius: 100%;
+						background: var(--cherries-dark);
+						color: var(--cherries-light);
+						border: 0;
+						cursor: pointer;
+					}
+
+					#controls #waveform {
+						background: var(--cherries-light);
+					}
+
+					#controls #envelope {
+						background: #f4ffee;
+					}
+
+					#controls #mix {
+						background: #eef8ff;
+					}
+
+					#waveform,
+					#envelope,
+					#mix {
+						display: none;
+					}
+
+					#meta #audition {
+						color: black;
 					}
 				</style>
 			</template>
@@ -109,7 +426,8 @@
 	</template>
 
 	<style id="global-styles">
-		button, select {
+		button,
+		select {
 			cursor: pointer;
 			word-wrap: anywhere;
 			border: 1px solid var(--line);
@@ -122,11 +440,14 @@
 			font-family: qp, monospace;
 		}
 
-		button:hover, 	select:hover {
-			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px) var(--heavy-shadow);
+		button:hover,
+		select:hover {
+			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px)
+				var(--heavy-shadow);
 		}
 
-		button:active, select:active {
+		button:active,
+		select:active {
 			box-shadow: inset var(--shadow-px) var(--shadow-px) rgba(0, 0, 0, 0.2);
 		}
 
@@ -140,12 +461,9 @@
 		}
 
 		input[type="text"]:focus {
-			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px) var(--heavy-shadow);
+			box-shadow: var(--heavy-shadow-px) var(--heavy-shadow-px)
+				var(--heavy-shadow);
 			outline: 1px solid var(--green);
-		}
-
-		label {
-			margin-top: 1rem;
 		}
 
 		label > input {
@@ -161,7 +479,7 @@
 		src="/aux/iphone-silence.flac"
 		loop
 		autoplay
-		preload="auto">
-	</audio>
+		preload="auto"></audio>
 
 	<script type="module" src="drum.js"></script>
+</html>
