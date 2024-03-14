@@ -21,10 +21,12 @@ export default class DelugeSound extends PartyElement {
 			)
 		})
 		this.$("#waveform").addEventListener("click", () => {
-			this.editor = "waveform"
+			this.sound.editorMode = "waveform"
+			this.sound = this.sound
 		})
 		this.$("#mix").addEventListener("click", () => {
-			this.editor = "mix"
+			this.sound.editorMode = "mix"
+			this.sound = this.sound
 		})
 		this.$("#browse").addEventListener("click", async () => {
 			let [sound] = await Sound.browse({
@@ -55,7 +57,7 @@ export default class DelugeSound extends PartyElement {
 		})
 		this.$("#reversed").addEventListener("change", event => {
 			this.sound.reversed = event.target.checked
-			this.$("#editor").draw()
+			this.$(`deluge-${this.sound.editorMode}`).draw()
 		})
 		this.$("#sidechain-send").addEventListener("change", event => {
 			this.sound.sidechainSend = event.target.checked
@@ -79,6 +81,7 @@ export default class DelugeSound extends PartyElement {
 		this.$("#audition").style.background = sound.color
 		this.style.border = `1px solid ${sound.color}`
 		this.style.setProperty("--sound-color", sound.color)
+		this.setAttribute("editor", sound.editorMode)
 		this.$("#loop-mode").value = sound.loopMode
 		this.$("#polyphonic").value = sound.polyphonic
 		this.$("#reversed").checked = sound.reversed
@@ -89,19 +92,6 @@ export default class DelugeSound extends PartyElement {
 		this.$("deluge-waveform").sound = sound
 		this.$("deluge-mix").sound = sound
 		this.$("deluge-envelope").sound = sound
-	}
-
-	get editor() {
-		return this.getAttribute("editor")
-	}
-
-	set editor(editor) {
-		if (editor == this.editor) {
-			this.removeAttribute("editor")
-		} else {
-			this.setAttribute("editor", editor)
-			this.sound = this.sound
-		}
 	}
 }
 partyElements.define("deluge-sound", DelugeSound)

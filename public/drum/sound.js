@@ -29,6 +29,7 @@ export default class Sound {
 	index = -1
 	name = "new sound"
 	color = rand(colours)
+	editorMode = "waveform"
 	/** @type {"cut"|"once"|"loop"} */
 	loopMode = "once"
 	polyphonic = "auto"
@@ -43,8 +44,26 @@ export default class Sound {
 	start
 	/** @type number? */
 	end
-	volume = 50
-	pan = 25
+	#volume = 50
+	#pan = 25
+
+	get volume() {
+		return this.#volume
+	}
+
+	set volume(volume) {
+		this.gainNode.gain.value = volume / 50
+		this.#volume = volume
+	}
+
+	get pan() {
+		return this.#pan
+	}
+
+	set pan(pan) {
+		this.panNode.pan.value = (pan / 50) * 2 - 1
+		this.#pan = pan
+	}
 
 	/** @type AudioBufferSourceNode[] */
 	#buffersources = []
@@ -232,6 +251,10 @@ export default class Sound {
 			this.polyphonic = "choke"
 		}
 
+		this.gainNode = new GainNode(context)
+		this.panNode = new StereoPannerNode(context)
+		this.gainNode.connect(this.panNode)
+		this.panNode.connect(context.destination)
 		this.normalize()
 	}
 
@@ -248,6 +271,7 @@ export default class Sound {
 			}
 
 			if (maxSampleVolume != 0) {
+				this.volume = 50 * maxSampleVolume
 				let mult = (1 / maxSampleVolume) * 0.99
 				for (
 					let sampleIndex = 0;
@@ -280,7 +304,7 @@ export default class Sound {
 		}
 
 		this.#buffersources.push(buffersource)
-		buffersource.connect(context.destination)
+		buffersource.connect(this.gainNode)
 		buffersource.start()
 	}
 

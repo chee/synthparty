@@ -21,17 +21,13 @@ export default class DelugeEditor extends PartyElement {
 		this.context = canvas.getContext("2d")
 		this.attachShadow({mode: "open"})
 		this.shadowRoot.appendChild(this.canvas)
-		canvas.style.height = "100%"
+		canvas.style.height = "200px"
 		canvas.style.width = "400px"
 		this.addEventListener("mousedown", this.#mousedown)
 	}
 
-	get parentSoundElement() {
-		return this.getRootNode().host
-	}
-
 	get editorMode() {
-		return this.parentSoundElement.editor
+		return this.sound.editorMode
 	}
 
 	/** @param {MouseEvent} event */
@@ -77,7 +73,7 @@ export default class DelugeEditor extends PartyElement {
 	}
 
 	get height() {
-		return this.empx * DelugeEditor.DPI
+		return this.clientHeight
 	}
 
 	connectedCallback() {

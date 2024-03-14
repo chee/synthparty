@@ -7,13 +7,15 @@ let DPI = DelugeEditor.DPI
 export default class DelugeMix extends DelugeEditor {
 	/** @param {import("./editor-element.js").MouseMessage} message */
 	mouse(message) {
-		let {type, mouse} = message
-		let pan = Math.round((mouse.x / this.canvas.width) * Sound.DynamicRange)
-		let volume =
+		let {mouse} = message
+		this.sound.pan = Math.round(
+			(mouse.x / this.canvas.width) * Sound.DynamicRange
+		)
+
+		this.sound.volume =
 			Sound.DynamicRange -
-			Math.round((mouse.y / this.canvas.width) * Sound.DynamicRange)
-		this.sound.pan = pan
-		this.sound.volume = volume
+			Math.round((mouse.y / this.canvas.height) * (Sound.DynamicRange + 1))
+
 		this.draw()
 	}
 
@@ -39,7 +41,7 @@ export default class DelugeMix extends DelugeEditor {
 		let b = Sound.DynamicRange
 		let h = height
 		let w = width
-		let quietY = ((b - this.sound.volume) / b) * h * 2
+		let quietY = ((b - this.sound.volume) / b) * h
 		let panX = (this.sound.pan / b) * w
 		context.strokeStyle = "white"
 		context.strokeStyle = "#fff"

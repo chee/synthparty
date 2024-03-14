@@ -58,7 +58,7 @@ export default class DelugeWaveform extends DelugeEditor {
 	}
 
 	draw() {
-		if (this.parentSoundElement.editor != "waveform") {
+		if (this.editorMode != "waveform") {
 			return
 		}
 		let [canvas, context] = [this.canvas, this.context]
