@@ -7,7 +7,11 @@ import {decode16BitPCM, isAIF} from "./lib/aif.js"
 let context = new AudioContext()
 let iphoneSilenceElement = document.querySelector("audio")
 
-/** @param {DataView} view */
+/**
+ * @param {DataView} view
+ * @param {number} offset
+ * @param {number} length
+ */
 function readString(view, offset, length) {
 	let chars = []
 	for (let i = offset; i <= offset + length - 1; i++) {
@@ -121,25 +125,31 @@ export default class Sound {
 
 		if (op1Config && op1Config.drum_version) {
 			return op1Config.start
-				.map((s, index) => {
-					let e = op1Config.end[index]
-					let start = op1tosample(s)
-					let end = op1tosample(e)
+				.map(
+					/**
+					 * @param {number} s
+					 * @param {number} index
+					 */
+					(s, index) => {
+						let e = op1Config.end[index]
+						let start = op1tosample(s)
+						let end = op1tosample(e)
 
-					if (start < end) {
-						let pcm = ssnd.slice(
-							start * numberOfChannels,
-							end * numberOfChannels
-						)
+						if (start < end) {
+							let pcm = ssnd.slice(
+								start * numberOfChannels,
+								end * numberOfChannels
+							)
 
-						let audiobuffer = decode16BitPCM(pcm, {
-							numberOfChannels,
-							sampleRate,
-							littleEndian: op1Config.drum_version == 2
-						})
-						return new Sound(audiobuffer, stdLayout[index])
+							let audiobuffer = decode16BitPCM(pcm, {
+								numberOfChannels,
+								sampleRate,
+								littleEndian: op1Config.drum_version == 2
+							})
+							return new Sound(audiobuffer, stdLayout[index])
+						}
 					}
-				})
+				)
 				.filter(Boolean)
 		} else {
 			let audiobuffer = decode16BitPCM(ssnd, {
@@ -164,26 +174,25 @@ export default class Sound {
 		let sounds = []
 		for (let fh of handles) {
 			let file = await fh.getFile()
-			let arraybuffer = await file.arrayBuffer()
-			let name = removeExtension(file.name)
-			if (isAIF(file)) {
-				// activate scoundrel mode
-				try {
-					sounds = sounds.concat(Sound.fromAIF(arraybuffer, name))
-					continue
-				} catch (error) {
-					console.error(error)
-				}
-			}
 			try {
-				let audiobuffer = await context.decodeAudioData(arraybuffer)
-				let sound = new Sound(audiobuffer, name)
-				sounds.push(sound)
+				sounds.push(await Sound.fromFile(file))
 			} catch (error) {
 				console.error(error)
 			}
 		}
 		return sounds
+	}
+
+	/** @param {File} file */
+	static async fromFile(file) {
+		let arraybuffer = await file.arrayBuffer()
+		let name = removeExtension(file.name)
+		if (isAIF(file)) {
+			// activate scoundrel mode
+			return Sound.fromAIF(arraybuffer, name)
+		}
+		let audiobuffer = await context.decodeAudioData(arraybuffer)
+		return new Sound(audiobuffer, name)
 	}
 
 	/**
@@ -196,12 +205,40 @@ export default class Sound {
 		this.start = 0
 		this.end = audiobuffer.length
 		let chowmein = this.name.toLowerCase()
+
 		if (chowmein.includes("kick")) {
 			this.sidechainSend = true
 		} else if (chowmein.match(/\b(hat|pedal)\b/)) {
 			// hats choke each other
 			// owo
 			this.polyphonic = "choke"
+		}
+
+		this.normalize()
+	}
+
+	normalize() {
+		for (
+			let channelIdx = 0;
+			channelIdx < this.audiobuffer.numberOfChannels;
+			channelIdx++
+		) {
+			let channel = this.audiobuffer.getChannelData(channelIdx)
+			let maxSampleVolume = 0
+			for (let f32 of channel) {
+				maxSampleVolume = Math.max(Math.abs(f32), maxSampleVolume)
+			}
+
+			if (maxSampleVolume != 0) {
+				let mult = (1 / maxSampleVolume) * 0.99
+				for (
+					let sampleIndex = 0;
+					sampleIndex < channel.byteLength;
+					sampleIndex++
+				) {
+					channel[sampleIndex] *= mult
+				}
+			}
 		}
 	}
 
