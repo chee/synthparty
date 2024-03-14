@@ -1,6 +1,8 @@
 import {partyElements} from "./party-elements.js"
 import DelugeEditor from "./editor-element.js"
 
+let DPI = DelugeEditor.DPI
+
 export default class DelugeMix extends DelugeEditor {
 	/** @param {import("./editor-element.js").MouseMessage} message */
 	mouse(message) {

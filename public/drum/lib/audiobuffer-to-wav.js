@@ -183,6 +183,7 @@ function interleave(inputL, inputR) {
 	return result
 }
 
+/** @param {number} sample */
 function webaudioSampleTo16BitPCM(sample) {
 	let clample = Math.max(-1, Math.min(1, sample))
 	return clample < 0 ? clample * 0x8000 : clample * 0x7fff
