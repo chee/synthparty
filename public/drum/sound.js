@@ -25,6 +25,7 @@ export default class Sound {
 	index = -1
 	name = "new sound"
 	color = rand(colours)
+	/** @type {"cut"|"once"|"loop"} */
 	loopMode = "once"
 	polyphonic = "auto"
 	reversed = false
@@ -207,16 +208,33 @@ export default class Sound {
 		return new Blob([wav(this.audiobuffer, this.index)])
 	}
 
-	audition() {
+	noteOn() {
 		context.resume()
 		iphoneSilenceElement.play()
 		if (this.polyphonic != "poly") {
 			this.stop()
 		}
-		let start = this.start
-		let end = this.end
+
+		let buffersource = new AudioBufferSourceNode(context, {
+			buffer: this.getPlaybuffer()
+		})
+		if (this.loopMode == "loop") {
+			buffersource.loop = true
+		}
+		this.#buffersources.push(buffersource)
+		buffersource.connect(context.destination)
+		buffersource.start()
+	}
+
+	noteOff() {
+		if (this.loopMode != "once") {
+			this.#buffersources.pop()?.stop()
+		}
+	}
+
+	getPlaybuffer() {
 		let playbuffer = new AudioBuffer({
-			length: end - start,
+			length: this.end - this.start,
 			sampleRate: this.audiobuffer.sampleRate,
 			numberOfChannels: this.audiobuffer.numberOfChannels
 		})
@@ -226,7 +244,9 @@ export default class Sound {
 			channel++
 		) {
 			playbuffer.copyToChannel(
-				this.audiobuffer.getChannelData(channel).subarray(start, end),
+				this.audiobuffer
+					.getChannelData(channel)
+					.subarray(this.start, this.end),
 				channel
 			)
 
@@ -234,15 +254,7 @@ export default class Sound {
 				playbuffer.getChannelData(channel).reverse()
 			}
 		}
-
-		let buffersource = new AudioBufferSourceNode(context, {
-			buffer: playbuffer
-		})
-
-		buffersource.connect(context.destination)
-		buffersource.start()
-		buffersource.onended = () => iphoneSilenceElement.pause()
-		this.#buffersources.push(buffersource)
+		return playbuffer
 	}
 
 	stop() {

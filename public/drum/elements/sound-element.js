@@ -9,7 +9,16 @@ export default class DelugeSound extends PartyElement {
 		super()
 		this.$("#audition").addEventListener("click", () => {
 			this.announce("audition")
-			this.sound.audition()
+		})
+		this.$("#audition").addEventListener("mousedown", () => {
+			this.sound.noteOn()
+			window.addEventListener(
+				"mouseup",
+				() => {
+					this.sound.noteOff()
+				},
+				{once: true}
+			)
 		})
 		this.$("#browse").addEventListener("click", async () => {
 			let [sound] = await Sound.browse({
