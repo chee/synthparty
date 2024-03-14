@@ -212,7 +212,7 @@ export default class Sound {
 		for (let fh of handles) {
 			let file = await fh.getFile()
 			try {
-				sounds.push(await Sound.fromFile(file))
+				sounds = sounds.concat(await Sound.fromFile(file))
 			} catch (error) {
 				console.error(error)
 			}
@@ -224,6 +224,7 @@ export default class Sound {
 	static async fromFile(file) {
 		let arraybuffer = await file.arrayBuffer()
 		let name = removeExtension(file.name)
+
 		if (isAIF(file)) {
 			// activate scoundrel mode
 			return Sound.fromAIF(arraybuffer, name)

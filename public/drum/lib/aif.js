@@ -33,8 +33,6 @@ export function decode16BitPCM(
 export function isAIF(file) {
 	return (
 		["audio/aiff", "audio/x-aiff"].includes(file.type) ||
-		(file.type == "" &&
-			"webkitRelativePath" in file &&
-			file.name.match(/\.aif(f|c)?$/))
+		(file.type == "" && file.name.match(/\.aif(f|c)?$/))
 	)
 }

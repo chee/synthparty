@@ -74,8 +74,7 @@ export default class DelugeKit extends PartyElement {
 				if (item.kind == "file") {
 					let file = item.getAsFile()
 					try {
-						console.log(file.name)
-						sounds.push(await Sound.fromFile(file))
+						sounds = sounds.concat(await Sound.fromFile(file))
 					} catch (error) {
 						console.error(error)
 					}
