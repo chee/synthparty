@@ -1,100 +1,18 @@
-import {partyElements, PartyElement} from "./party-elements.js"
-import Sound from "../sound.js"
+import {partyElements} from "./party-elements.js"
+import DelugeEditor from "./editor-element.js"
 
-export default class DelugeWaveform extends PartyElement {
-	static DPI = 4
-	/** @type Sound */
-	#sound
-
-	constructor() {
-		super()
-		let canvas = document.createElement("canvas")
-		this.canvas = canvas
-		this.context = canvas.getContext("2d")
-		this.attachShadow({mode: "open"})
-		this.shadowRoot.appendChild(this.canvas)
-		canvas.style.height = "5em"
-		canvas.style.width = "400px"
-		this.addEventListener("mousedown", this.#mousedown)
-	}
-
-	/** @param {MouseEvent} event */
-	#mousedown(event) {
-		// assumes nothing ever changes size while you're trying to trim a sample
-		let bounds = this.canvas.getBoundingClientRect()
-		let mouse = resolveMouseFromEvent(event, bounds)
-		this.#mouse({type: "start", mouse})
-		/** @param {MouseEvent} event */
-		let mousemove = event => {
-			let mouse = resolveMouseFromEvent(event, bounds)
-			this.#mouse({type: "move", mouse})
-		}
-		window.addEventListener("mousemove", mousemove)
-
-		/** @param {MouseEvent} event */
-		let mouseend = event => {
-			let mouse = resolveMouseFromEvent(event, bounds)
-			this.#mouse({type: "end", mouse})
-			window.removeEventListener("mousemove", mousemove)
-		}
-
-		window.addEventListener("mouseup", mouseend, {once: true})
-	}
-
-	/** @param {{
-		type: "start" | "move" | "end",
-		mouse: {x: number, y: number}
-	} | {
-	  type: "start" | "move" | "end",
-	  mouse: {x: number, y: number}
-	}} message */
-	#mouse(message) {
+export default class DelugeWaveform extends DelugeEditor {
+	/** @param {import("./editor-element.js").MouseMessage} message */
+	mouse(message) {
 		let {type, mouse} = message
 		if (type == "start") {
 			this.startDrawingRegion(mouse.x)
 		} else if (type == "move") {
 			this.drawingRegionX = mouse.x
+			this.draw()
 		} else {
 			this.finishDrawingRegion(mouse.x)
 		}
-	}
-
-	get empx() {
-		let box = document.createElement("div")
-		box.style.width = "1em"
-		box.style.visibility = "hidden"
-		this.shadowRoot.appendChild(box)
-		let empx = box.clientWidth
-		this.shadowRoot.removeChild(box)
-		return empx
-	}
-
-	get width() {
-		return this.clientWidth
-	}
-
-	get height() {
-		return this.empx * DelugeWaveform.DPI
-	}
-
-	connectedCallback() {
-		this.canvas.width = this.width * DelugeWaveform.DPI
-		this.canvas.height = this.height * DelugeWaveform.DPI
-	}
-
-	/** @type {Sound} */
-	get sound() {
-		return this.#sound
-	}
-
-	set sound(sound) {
-		this.#sound = sound
-		this.draw()
-	}
-
-	/** @param {string} prop */
-	getStyle(prop) {
-		return getComputedStyle(this).getPropertyValue("--" + prop)
 	}
 
 	get styles() {
@@ -104,15 +22,6 @@ export default class DelugeWaveform extends PartyElement {
 		let start = this.getStyle("waveform-start") || "#f00"
 		let end = this.getStyle("waveform-end") || "#0f0"
 		return {fill, line, start, end, off}
-	}
-
-	clear() {
-		let [canvas, context] = [this.canvas, this.context]
-		let {width, height} = canvas
-		context.restore()
-		context.fillStyle = context.strokeStyle = this.styles.fill
-		context.clearRect(0, 0, width, height)
-		context.lineWidth = DelugeWaveform.DPI
 	}
 
 	draw() {
@@ -130,6 +39,11 @@ export default class DelugeWaveform extends PartyElement {
 		let end = this.sound.end
 		let pixelStart = start * xm
 		let pixelEnd = end * xm - 4
+		if (this.sound.reversed) {
+			pixelStart = canvas.width - pixelStart
+			pixelEnd = canvas.width - pixelEnd
+			;[pixelStart, pixelEnd] = [pixelEnd, pixelStart]
+		}
 
 		context.fillStyle = styles.off
 		context.fillRect(0, 0, pixelStart, canvas.height)
@@ -137,13 +51,26 @@ export default class DelugeWaveform extends PartyElement {
 		context.fillStyle = styles.off
 		context.fillRect(pixelEnd, 0, canvas.width, canvas.height)
 
-		this.drawSampleLine({samples, x: 0, xm})
+		this.drawSampleLine({
+			samples: this.sound.reversed ? samples.toReversed() : samples,
+			x: 0,
+			xm
+		})
 
-		let flip = this.sound.reversed
-		context.fillStyle = flip ? styles.end : styles.start
+		context.fillStyle = styles.start
 		context.fillRect(pixelStart, 0, 4, canvas.height)
-		context.fillStyle = flip ? styles.start : styles.end
+		context.fillStyle = styles.end
 		context.fillRect(pixelEnd, 0, 4, canvas.height)
+
+		if (this.regionIsBeingDrawn) {
+			context.fillStyle = "#00ffcc66"
+			let start = this.drawingRegionStart
+			let end = this.drawingRegionX
+			if (start > end) {
+				;[start, end] = [end, start]
+			}
+			context.fillRect(start, 0, end - start, canvas.height)
+		}
 	}
 
 	drawingRegionStart = 0
@@ -170,6 +97,12 @@ export default class DelugeWaveform extends PartyElement {
 		;[start, end] = [start / m, end / m]
 		if (start > end) {
 			;[start, end] = [end, start]
+		}
+		if (this.sound.reversed) {
+			;[start, end] = [
+				this.sound.audiobuffer.length - end,
+				this.sound.audiobuffer.length - start
+			]
 		}
 		if ((start | 0) == (end | 0)) {
 			;[start, end] = [0, this.sound.audiobuffer.length]
@@ -230,41 +163,3 @@ export default class DelugeWaveform extends PartyElement {
 }
 
 partyElements.define("deluge-waveform", DelugeWaveform)
-
-/**
- * @param {{x: number, y: number}} clientXY
- * @param {DOMRect} bounds
- * @returns {{x: number, y: number}} corrected
- */
-function resolveMouse(clientXY, bounds) {
-	return {
-		x:
-			clientXY.x < bounds.left
-				? 0
-				: // the bounds are the effective size
-					clientXY.x > bounds.right
-					? bounds.width * DelugeWaveform.DPI
-					: // multiplied for the REAL canvas size
-						(clientXY.x - bounds.left) * DelugeWaveform.DPI,
-		y:
-			clientXY.y < bounds.top
-				? 0
-				: clientXY.y > bounds.bottom
-					? bounds.height * DelugeWaveform.DPI
-					: (clientXY.y - bounds.top) * DelugeWaveform.DPI
-	}
-}
-
-/**
- * @param {MouseEvent | Touch} event
- * @param {DOMRect} bounds
- */
-function resolveMouseFromEvent(event, bounds) {
-	return resolveMouse(
-		{
-			x: event.clientX,
-			y: event.clientY
-		},
-		bounds
-	)
-}

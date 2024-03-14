@@ -81,5 +81,17 @@ export default class DelugeSound extends PartyElement {
 		this.$("#slot").textContent = sound.index.toString().padStart(3, "0")
 		this.$("#editor").sound = sound
 	}
+
+	get mode() {
+		return this.getAttribute("mode")
+	}
+
+	set mode(mode) {
+		this.setAttribute("mode", mode)
+		let next = document.createElement(`deluge-${mode}`)
+		next.id = "editor"
+		this.$("#editor").replaceWith(next)
+		next.sound = this.sound
+	}
 }
 partyElements.define("deluge-sound", DelugeSound)

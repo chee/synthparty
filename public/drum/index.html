@@ -63,7 +63,7 @@
 	</deluge-kit>
 
 	<template id="sound">
-		<deluge-sound>
+		<deluge-sound editor="waveform">
 			<template shadowrootmode="open">
 				<section id="handle">
 					<button
@@ -183,18 +183,12 @@
 						font-weight: bold;
 						font-family: qp, monospace;
 						display: grid;
-						/* TODO add editor controls */
 						grid-template-areas:
-							"handle header   header   header   header   meta"
-							"handle controls controls controls controls meta"
-							"handle controls controls controls controls meta"
-							"handle controls controls controls controls meta";
-
-						grid-template-areas:
-							"handle header   header   header    meta"
-							"handle controls controls controls  meta"
-							"handle controls controls controls  meta"
-							"handle controls controls controls  meta";
+							"handle header   header   header   header   editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta"
+							"handle controls controls controls controls editor editor editor editor meta";
 						position: relative;
 						/* background: var(--line);
 							color: var(--fill); */
@@ -202,17 +196,6 @@
 						padding: 0;
 						--fill: white;
 						--changed: var(--greem);
-					}
-
-					/* :host[editor] */
-					:host {
-						/* 4th column for when we have multiple editor buttons (adsr & mix) */
-						grid-template-areas:
-							"handle header   header   header   header   editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta";
 					}
 
 					button {
