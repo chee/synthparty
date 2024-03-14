@@ -1,4 +1,4 @@
-import {createElement} from "./lib/xml.js"
+import {createElement, renderNumber as int32} from "./lib/xml.js"
 import wav from "./lib/audiobuffer-to-wav.js"
 import showOpenFilePicker from "./lib/open-file-picker.js"
 import rand from "./lib/rand.js"
@@ -43,9 +43,13 @@ export default class Sound {
 	start
 	/** @type number? */
 	end
+	volume = 50
+	pan = 25
 
 	/** @type AudioBufferSourceNode[] */
 	#buffersources = []
+
+	static DynamicRange = 50
 
 	static CustomOption = {
 		pitch: "pitch",
@@ -57,6 +61,20 @@ export default class Sound {
 		cut: "0",
 		once: "1",
 		loop: "2"
+	}
+
+	static PatchSource = {
+		lfo1: "lfo1",
+		lfo2: "lfo2",
+		env1: "env1",
+		env2: "env2",
+		velo: "velo",
+		note: "note",
+		comp: "comp",
+		rand: "rand",
+		pres: "pres",
+		mpeX: "mpeX",
+		mpeY: "mpeY"
 	}
 
 	/** @param {ArrayBuffer} arraybuffer */
@@ -355,9 +373,11 @@ export default class Sound {
 
 		sound.append(
 			createElement(doc, "defaultParams", {
-				oscAVolume: "0x7FFFFFFF",
-				oscBVolume: "0x80000000",
-				lpfFrequency: "0x7FFFFFFF"
+				oscAVolume: int32(50),
+				oscBVolume: int32(0),
+				lpfFrequency: int32(50),
+				volume: int32(this.volume),
+				pan: int32(this.pan)
 			})
 		)
 

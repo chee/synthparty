@@ -31,8 +31,6 @@
 			<deluge-sources></deluge-sources>
 
 			<style>
-
-
 				h1 {
 					margin: 0;
 					font-size: 1rem;
@@ -120,7 +118,6 @@
 						sidechain
 						<input id="sidechain-send" type="checkbox" />
 					</label>
-					<button id="waveform">waveform</button>
 
 					<label style="display: none">
 						pitch/speed
@@ -131,8 +128,6 @@
 						interpolation
 						<input id="linear-interpolation" type="checkbox" />
 					</label>
-
-					<button id="envelope">envelope</button>
 
 					<label class="custom">
 						custom 1
@@ -160,11 +155,19 @@
 							<option value="decimation">decimation</option>
 						</select>
 					</label>
-
-					<button id="mix">mix</button>
 				</section>
 
-				<deluge-waveform id="editor"></deluge-waveform>
+				<nav id="mode-selector">
+					<button id="waveform">wav</button>
+					<button id="envelope">env</button>
+					<button id="mix">mix</button>
+				</nav>
+
+				<div id="editor">
+					<deluge-waveform class="editor"></deluge-waveform>
+					<deluge-envelope class="editor"></deluge-envelope>
+					<deluge-mix class="editor"></deluge-mix>
+				</div>
 
 				<section id="meta">
 					<button id="browse" class="flat-button">replace</button>
@@ -186,11 +189,11 @@
 						font-family: qp, monospace;
 						display: grid;
 						grid-template-areas:
-							"handle header   header   header   header   editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta"
-							"handle controls controls controls controls editor editor editor editor meta";
+							"handle header   header   header   modesel meta"
+							"handle controls controls controls modesel meta"
+							"handle controls controls controls modesel meta"
+							"handle controls controls controls modesel meta"
+							"handle controls controls controls modesel meta";
 						position: relative;
 						/* background: var(--line);
 							color: var(--fill); */
@@ -198,6 +201,15 @@
 						padding: 0;
 						--fill: white;
 						--changed: var(--greem);
+					}
+
+					:host([editor]) {
+						grid-template-areas:
+							"handle header   header   header   modesel editor editor editor editor meta"
+							"handle controls controls controls modesel editor editor editor editor meta"
+							"handle controls controls controls modesel editor editor editor editor meta"
+							"handle controls controls controls modesel editor editor editor editor meta"
+							"handle controls controls controls modesel editor editor editor editor meta";
 					}
 
 					button {
@@ -261,8 +273,8 @@
 					#controls {
 						grid-area: controls;
 						display: grid;
-						grid-template-columns: auto auto auto auto;
-						grid-template-rows: auto auto auto;
+						grid-template-columns: auto auto;
+						grid-template-rows: auto auto;
 						background: var(--fill);
 						color: var(--line);
 					}
@@ -304,6 +316,7 @@
 						font-size: 0.8rem;
 					}
 
+					#mode-selector button,
 					#controls button,
 					#controls select {
 						appearance: none;
@@ -355,6 +368,7 @@
 						content: "linear";
 					}
 
+					#mode-selector button,
 					#controls button {
 						background: var(--fill);
 					}
@@ -367,6 +381,11 @@
 						--waveform-start: #30fc93;
 						--waveform-end: #ff3588;
 						background: var(--waveform-fill);
+						display: none;
+					}
+
+					:host([editor]) #editor {
+						display: block;
 					}
 
 					#canvas {
@@ -409,23 +428,51 @@
 						cursor: pointer;
 					}
 
-					#controls #waveform {
+					#mode-selector {
+						display: flex;
+						flex-direction: column;
+						grid-area: modesel;
+						background: var(--greem);
+						background: var(--sound-color);
+						gap: 1px;
+						padding: 1px;
+					}
+
+					#mode-selector button {
+						flex: 1;
+					}
+
+					#mode-selector #waveform {
 						background: var(--cherries-light);
 					}
 
-					#controls #envelope {
-						background: #f4ffee;
+					.editor {
+						display: none;
 					}
 
-					#controls #mix {
+					:host([editor="waveform"]) deluge-waveform,
+					:host([editor="envelope"]) deluge-envelope,
+					:host([editor="mix"]) deluge-mix {
+						display: block;
+						width: 100%;
+						height: 100%;
+					}
+
+					:host([editor="waveform"]) #waveform,
+					:host([editor="envelope"]) #envelope ,
+					:host([editor="mix"]) #mix {
+						box-shadow: inset 4px 4px #00000033;
+					}
+
+					#mode-selector #envelope {
+						background: #f4ffee;
+						display: none;
+					}
+
+					#mode-selector #mix {
 						background: #eef8ff;
 					}
 
-					#waveform,
-					#envelope,
-					#mix {
-						display: none;
-					}
 
 					#meta #audition {
 						color: black;

@@ -1,4 +1,5 @@
 import "./waveform-element.js"
+import "./mix-element.js"
 import "./button-element.js"
 import "./kit-element.js"
 import "./sound-element.js"
