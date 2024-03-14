@@ -110,7 +110,8 @@ export default class Sound {
 		function op1tosample(num = 0) {
 			// i have NO IDEA why it's 2032, i don't understand how that relates to
 			// anything. not to 65536, not to 44100, not to 2147483646, not to 12
-			// seconds, not to 16 bits
+			// seconds, not to 16 bits. kara points out that it is 127*16, which
+			// _are_ both computer numbers. but why?
 			// but i've tried all the other numbers and this is the best number,
 			// hands down, no question
 			// the 1219.2 i got by 2032*12/20
@@ -218,9 +219,11 @@ export default class Sound {
 		let buffersource = new AudioBufferSourceNode(context, {
 			buffer: this.getPlaybuffer()
 		})
+
 		if (this.loopMode == "loop") {
 			buffersource.loop = true
 		}
+
 		this.#buffersources.push(buffersource)
 		buffersource.connect(context.destination)
 		buffersource.start()
