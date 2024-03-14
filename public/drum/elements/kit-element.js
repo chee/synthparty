@@ -14,6 +14,76 @@ export default class DelugeKit extends PartyElement {
 		super()
 		this.shadowRoot.adoptedStyleSheets = [globalStyles]
 		this.nameElement.value = this.kit.name
+		this.addEventListener("dragenter", this.#dragenter)
+		this.addEventListener("dragover", this.#dragover)
+		this.addEventListener("dragleave", this.#dragleave)
+		this.addEventListener("drop", this.#drop)
+	}
+
+	/* this runs once when drag enters the target's zone */
+	/** @param {DragEvent} event */
+	async #dragenter(event) {
+		event.preventDefault()
+		let {items} = event.dataTransfer
+		for (let item of Array.from(items)) {
+			// TODO restrict to supported formats by trying to decode a silent
+			// audio item of all the formats anyone supports?
+			if (item.kind == "file") {
+				if (item.type.startsWith("audio/")) {
+					this.setAttribute("drop-target", "drop-target")
+				} else {
+					console.debug(`unsupported type: ${item.kind}, ${event.type}`)
+				}
+			}
+		}
+		event.preventDefault()
+	}
+
+	/* runs a billion times per sec while you're holding an item over screen*/
+	/** @param {DragEvent} event */
+	async #dragover(event) {
+		event.preventDefault()
+
+		let {items} = event.dataTransfer
+		for (let item of Array.from(items)) {
+			// TODO restrict to supported formats by trying to decode a silent audio
+			// item of all the formats anyone supports?
+			if (item.kind == "file") {
+				if (item.type.startsWith("audio/")) {
+					this.setAttribute("drop-target", "")
+				} else {
+					console.error(`unsupported type: ${item.kind}, ${event.type}`)
+				}
+			}
+		}
+	}
+
+	/** @param {DragEvent} event */
+	async #dragleave(event) {
+		event.preventDefault()
+		this.removeAttribute("drop-target")
+	}
+
+	/** @param {DragEvent} event */
+	async #drop(event) {
+		this.removeAttribute("drop-target")
+		if (event.dataTransfer.items) {
+			let sounds = []
+			event.preventDefault()
+			for (let item of Array.from(event.dataTransfer.items)) {
+				if (item.kind == "file") {
+					let file = item.getAsFile()
+					try {
+						console.log(file.name)
+						sounds.push(await Sound.fromFile(file))
+					} catch (error) {
+						console.error(error)
+					}
+				}
+			}
+			this.kit.addSounds(sounds)
+			this.update()
+		}
 	}
 
 	connectedCallback() {

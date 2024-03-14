@@ -53,6 +53,10 @@ deluge-kit {
 	padding-top: 1em;
 }
 
+[drop-target] {
+	outline: 1em dotted var(--greem);
+}
+
 @font-face {
 	font-family: qp;
 	src: url("/aux/fonts/iosevka-qp-regular.ttf") format("truetype");
