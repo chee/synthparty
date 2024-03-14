@@ -26,3 +26,15 @@ export function decode16BitPCM(
 	}
 	return audiobuffer
 }
+
+/**
+ * @param {File} file
+ */
+export function isAIF(file) {
+	return (
+		["audio/aiff", "audio/x-aiff"].includes(file.type) ||
+		(file.type == "" &&
+			"webkitRelativePath" in file &&
+			file.name.match(/\.aif(f|c)?$/))
+	)
+}

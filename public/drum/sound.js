@@ -3,7 +3,7 @@ import wav from "./lib/audiobuffer-to-wav.js"
 import showOpenFilePicker from "./lib/open-file-picker.js"
 import rand from "./lib/rand.js"
 import colours from "./lib/colours.js"
-import {decode16BitPCM} from "./lib/aif.js"
+import {decode16BitPCM, isAIF} from "./lib/aif.js"
 let context = new AudioContext()
 let iphoneSilenceElement = document.querySelector("audio")
 
@@ -166,7 +166,7 @@ export default class Sound {
 			let file = await fh.getFile()
 			let arraybuffer = await file.arrayBuffer()
 			let name = removeExtension(file.name)
-			if (["audio/aiff", "audio/x-aiff"].includes(file.type)) {
+			if (isAIF(file)) {
 				// activate scoundrel mode
 				try {
 					sounds = sounds.concat(Sound.fromAIF(arraybuffer, name))
