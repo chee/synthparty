@@ -36,8 +36,13 @@ html {
 	font-size: 1.4em;
 	line-height: 1.15;
 	background: var(--fill);
-	color: var(--line);
+	color: var(--cherries-dark);
 	background: var(--cherries-light);
+}
+
+figcaption {
+	color: var(--line);
+	margin-top: 1em;
 }
 
 body {
@@ -85,4 +90,14 @@ figure {
 	font-family: fs;
 	src: url("/aux/fonts/fs.woff");
 	font-display: swap;
+}
+
+select {
+	border: 4px solid var(--cherries-dark);
+	padding: 1em;
+	background: white;
+	color: var(--cherries-dark);
+	font-weight: bold;
+	font-size: 0.8em;
+	margin-top: 1em;
 }

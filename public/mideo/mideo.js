@@ -186,7 +186,6 @@ window.addEventListener("dragenter", async function (event) {
 	let {items} = event.dataTransfer
 	for (let item of Array.from(items)) {
 		if (item.kind == "file") {
-			console.log("hey there")
 			if (item.type.startsWith("video/")) {
 				html.setAttribute("drop-target", "drop-target")
 			} else {
