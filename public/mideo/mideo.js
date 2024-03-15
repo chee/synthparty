@@ -110,22 +110,32 @@ let midi = await navigator.requestMIDIAccess({
 	// sysex: true
 })
 
-let inputs = [...midi.inputs]
-let [, delugeInput] = inputs.find(([string, device]) =>
-	device.name.startsWith("Deluge")
-)
+let select = document.createElement("select")
+let inputs = Object.fromEntries(midi.inputs.entries())
+/** @type {MIDIInput} */
+let currentInput = null
+for (let input in inputs) {
+	let option = document.createElement("option")
+	option.value = input
+	option.textContent = inputs[input].name
+	if (inputs[input].name == "Deluge Port 1") {
+		option.selected = true
+	}
+	select.append(option)
+}
 
-let deluge = await delugeInput.open()
+document.querySelector("aside").append(select)
+change()
 
 let MidiMessage = {
 	NoteOff: 0x8,
 	NoteOn: 0x9,
 	Pressure: 0xa,
 	CC: 0xb,
-	bend: 0xe
+	Bend: 0xe
 }
 
-deluge.addEventListener("midimessage", event => {
+function midimessage(event) {
 	let data = event.data
 	let [msg] = data
 	let byte = msg.toString(16)
@@ -151,13 +161,23 @@ deluge.addEventListener("midimessage", event => {
 			mideo.video.play()
 		}
 	}
-})
+}
 
-window.mideo = mideo
+async function change() {
+	if (currentInput) {
+		currentInput.removeEventListener("midimessage", midimessage)
+		currentInput.close()
+		currentInput = null
+	}
+	let input = (currentInput = inputs[select.value])
 
-// navigator.permissions.query({name: "midi", sysex: true}).then(permission => {
-// 	console.log(permission, permission.state)
-// })
+	if (input) {
+		let device = await input.open()
+		device.addEventListener("midimessage", midimessage)
+	}
+}
+
+select.addEventListener("change", change)
 
 let html = document.documentElement
 
