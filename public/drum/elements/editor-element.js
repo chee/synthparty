@@ -8,6 +8,10 @@ import Sound from "../sound.js"
 	}} MouseMessage
  */
 
+const IS_BASICALLY_A_PHONE =
+	typeof window != "undefined" &&
+	window.matchMedia("(pointer: coarse)").matches
+
 /** @abstract */
 export default class DelugeEditor extends PartyElement {
 	static DPI = 4
@@ -23,7 +27,11 @@ export default class DelugeEditor extends PartyElement {
 		this.shadowRoot.appendChild(this.canvas)
 		canvas.style.height = "200px"
 		canvas.style.width = "400px"
-		this.addEventListener("mousedown", this.#mousedown)
+		if (IS_BASICALLY_A_PHONE) {
+			this.addEventListener("touchstart", this.#touchstart)
+		} else {
+			this.addEventListener("mousedown", this.#mousedown)
+		}
 	}
 
 	get editorMode() {
@@ -51,6 +59,41 @@ export default class DelugeEditor extends PartyElement {
 		}
 
 		window.addEventListener("mouseup", mouseend, {once: true})
+	}
+
+	// this is super naïve
+	/** @param {TouchEvent} event */
+	#touchstart(event) {
+		// assumes nothing ever changes size while you're fingering
+		let bounds = this.canvas.getBoundingClientRect()
+		let finger = event.touches.item(0)
+		let mouse = resolveMouseFromEvent(finger, bounds)
+		this.mouse({type: "start", mouse})
+
+		/** @param {TouchEvent} event */
+		let move = event => {
+			let moved = findFinger(finger, event.changedTouches)
+
+			if (moved) {
+				let mouse = resolveMouseFromEvent(moved, bounds)
+				this.mouse({type: "move", mouse})
+			}
+		}
+		window.addEventListener("touchmove", move)
+		window.addEventListener(
+			"touchend",
+			/** @param {TouchEvent} event */
+			event => {
+				let lost = findFinger(finger, event.changedTouches)
+				let missing = !findFinger(finger, event.targetTouches)
+				if (lost && missing) {
+					let mouse = resolveMouseFromEvent(lost, bounds)
+					this.mouse({type: "end", mouse})
+					window.removeEventListener("touchmove", move)
+				}
+			},
+			{once: true}
+		)
 	}
 
 	/** @param {MouseMessage} _message */
@@ -155,5 +198,18 @@ function resolveMouseFromEvent(event, bounds) {
 			y: event.clientY
 		},
 		bounds
+	)
+}
+
+/**
+ * @param {Touch} finger
+ * @param {TouchList} touches
+ * @returns {Touch?}
+ */
+function findFinger(finger, touches) {
+	return [].find.call(
+		touches,
+		/** @param {Touch} touch */
+		touch => touch.identifier == finger.identifier
 	)
 }
