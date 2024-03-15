@@ -1,138 +1,120 @@
-let canvas = document.querySelector("canvas")
-let gl = canvas.getContext("webgl2")
+export {}
+import * as three from "./vendor/three.module.js"
 
-let index = 0
-let program = gl.createProgram()
-
-function attachShaders() {
-	program = gl.createProgram()
-	let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
-	let content = document.getElementById("fragment").value
-
-	gl.shaderSource(fragmentShader, content.replace("<%index%>", index))
-	gl.compileShader(fragmentShader)
-	gl.attachShader(program, fragmentShader)
-
-	let vertexShader = gl.createShader(gl.VERTEX_SHADER)
-	gl.shaderSource(vertexShader, document.getElementById("vertex").value)
-	gl.compileShader(vertexShader)
-	gl.attachShader(program, vertexShader)
-	gl.linkProgram(program)
-	gl.useProgram(program)
-}
-
-attachShaders()
-
-let pos = gl.getAttribLocation(program, "pos")
-gl.enableVertexAttribArray(pos)
-
-let a_size = gl.getAttribLocation(program, "a_size")
-let u_strength = gl.getUniformLocation(program, "u_strength")
-gl.uniform1f(u_strength, 8)
-gl.enableVertexAttribArray(a_size)
-gl.vertexAttribPointer(a_size, 2, gl.FLOAT_VEC2, false, 0, 0)
-
-let u_matrix = gl.getUniformLocation(program, "u_matrix")
-let v_tex_coord = gl.getUniformLocation(program, "v_tex_coord")
-let v_color_mix = gl.getUniformLocation(program, "v_color_mix")
-let u_texture = gl.getUniformLocation(program, "u_texture")
-
-gl.clearColor(0.0, 0.0, 0.0, 0.0)
-gl.clearDepth(1.0)
-gl.disable(gl.DEPTH_TEST)
-
-let positionsBuffer = gl.createBuffer()
-gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer)
-let positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
-
-let vertexColors = [0xff00ff88, 0xffffffff]
-
-let cBuffer = gl.createBuffer()
-
-let verticesIndexBuffer = gl.createBuffer()
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer)
-
-let vertexIndices = [0, 1, 2, 0, 2, 3]
-
-gl.bufferData(
-	gl.ELEMENT_ARRAY_BUFFER,
-	new Uint16Array(vertexIndices),
-	gl.STATIC_DRAW
+let fragmentElement = /** @type {HTMLTextAreaElement} */ (
+	document.getElementById("fragment")
+)
+let vertexElement = /** @type {HTMLTextAreaElement} */ (
+	document.getElementById("vertex")
 )
 
-let texture = gl.createTexture()
-gl.bindTexture(gl.TEXTURE_2D, texture)
-
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-gl.bindTexture(gl.TEXTURE_2D, null)
-
-let videos = []
-
-function addVideo(src = "") {
-	let video = document.createElement("video")
-	video.loop = true
-	video.volume = 0
-	video.src = src
-	videos.push(video)
+let mideo = {
+	index: 0,
+	/** @type {HTMLVideoElement[]} */
+	videos: [],
+	get fragment() {
+		return fragmentElement.value
+	},
+	get vertex() {
+		return vertexElement.value
+	},
+	get video() {
+		return this.videos[this.index]
+	},
+	add(src = "") {
+		let video = document.createElement("video")
+		video.loop = true
+		video.volume = 0
+		video.src = src
+		this.videos.push(video)
+	},
+	width: 704,
+	height: 576
 }
 
-function updateTexture() {
-	gl.bindTexture(gl.TEXTURE_2D, texture)
-	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-	if (videos[index]) {
-		gl.texImage2D(
-			gl.TEXTURE_2D,
-			0,
-			gl.RGB,
-			gl.RGB,
-			gl.UNSIGNED_BYTE,
-			videos[index]
-		)
-	}
-	gl.bindTexture(gl.TEXTURE_2D, null)
+let scene = new three.Scene()
+let camera = new three.PerspectiveCamera(
+	75,
+	mideo.width / mideo.height,
+	0.1,
+	100
+)
+
+let renderer = new three.WebGLRenderer()
+renderer.setSize(mideo.width, mideo.height)
+document.body.prepend(renderer.domElement)
+
+/** @param {HTMLVideoElement} video */
+function createTexture(video) {
+	let texture = new three.VideoTexture(video)
+	texture.minFilter = three.LinearFilter
+	texture.magFilter = three.LinearFilter
+	return texture
 }
 
-function animate() {
-	let video = videos[index]
-	if (video && video.readyState >= 3) {
-		updateTexture()
-		gl.useProgram(program)
-		gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer)
-		gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0)
-		gl.activeTexture(gl.TEXTURE0)
-		gl.bindTexture(gl.TEXTURE_2D, texture)
-		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
-	}
+let geometry = new three.PlaneGeometry(11, 9)
+// geometry.scale(0.5, 0.5, 0.5)
+
+let texture = createTexture(document.createElement("video"))
+
+let material = new three.ShaderMaterial({
+	uniforms: {
+		u_time: {type: "f", value: 1},
+		u_resolution: {
+			type: "v2",
+			value: new three.Vector2(mideo.width, mideo.height)
+		},
+		u_texture: {value: texture},
+		u_note: {value: mideo.index},
+		u_velocity: {value: 64},
+		u_channel: {value: 1}
+	},
+	depthTest: false,
+	depthWrite: false,
+	transparent: true,
+	vertexShader: mideo.vertex,
+	fragmentShader: mideo.fragment
+})
+
+let mesh = new three.Mesh(geometry, material)
+
+scene.add(mesh)
+camera.position.z = 5
+
+function animate(now) {
+	material.uniforms.u_time.value += now / 1000
+
+	renderer.render(scene, camera)
 
 	requestAnimationFrame(animate)
 }
 
 requestAnimationFrame(animate)
 
-canvas.addEventListener("click", () => {
-	canvas.requestFullscreen()
+// while (mideo.video.readyState != 3) {}
+
+renderer.domElement.addEventListener("click", () => {
+	renderer.domElement.requestFullscreen()
 })
 
-document.querySelectorAll("figure").forEach(shader => {
-	shader.addEventListener("keyup", () => {
-		attachShaders()
+document.querySelectorAll("figure").forEach(figure => {
+	figure.addEventListener("keyup", () => {
+		material.fragmentShader = mideo.fragment
+		material.vertexShader = mideo.vertex
+		material.needsUpdate = true
 	})
 })
 
 let midi = await navigator.requestMIDIAccess({
-	software: true,
-	sysex: true
+	software: true
+	// sysex: true
 })
 
 let inputs = [...midi.inputs]
 let [, delugeInput] = inputs.find(([string, device]) =>
 	device.name.startsWith("Deluge")
 )
+
 let deluge = await delugeInput.open()
 
 let MidiMessage = {
@@ -151,25 +133,31 @@ deluge.addEventListener("midimessage", event => {
 	if (type == MidiMessage.NoteOn) {
 		let note = data[1]
 		let velo = data[2]
-		if (videos[index]) {
-			videos[index].pause()
+		if (mideo.video) {
+			mideo.video.pause()
 		}
-		index = note
-		if (videos[index]) {
-			videos[index].currentTime = 0
-			attachShaders()
-			videos[index].play()
+		let last = mideo.index
+		mideo.index = note
+		if (mideo.video) {
+			if (last != note) {
+				texture.dispose()
+				texture = new three.VideoTexture(mideo.video)
+				material.uniforms.u_texture.value = texture
+			}
+			material.uniforms.u_note.value = note
+			material.uniforms.u_velocity.value = velo
+			material.uniforms.u_channel.value = Number(channel)
+			mideo.video.currentTime = 0
+			mideo.video.play()
 		}
 	}
 })
 
-navigator.permissions.query({name: "midi", sysex: true}).then(permission => {
-	console.log(permission, permission.state)
-})
+window.mideo = mideo
 
-console.log(midi)
-
-export {}
+// navigator.permissions.query({name: "midi", sysex: true}).then(permission => {
+// 	console.log(permission, permission.state)
+// })
 
 let html = document.documentElement
 
@@ -226,7 +214,7 @@ window.addEventListener(
 					let ab = await file.arrayBuffer()
 					let blob = new Blob([ab])
 					let url = URL.createObjectURL(blob)
-					addVideo(url)
+					mideo.add(url)
 				}
 			}
 		}

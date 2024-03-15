@@ -16,38 +16,39 @@
 	<meta name="twitter:card" content="summary" />
 	<link rel="apple-touch-icon" href="aux/apple-touch-icon.png" />
 	<link rel="manifest" href="aux/app.webmanifest" />
+	<aside>
+		<p>drag and drop videos on here, they will play on midi note 0 up in drop order</p>
+		<p>click the vid to go full screen</p>
 
-	<canvas id="canvas" width="704" height="576"></canvas>
+		<div id="shaders">
+			<figure>
+				<figcaption>shader fragment</figcaption>
+				<textarea id="fragment" rows="20"
+				>uniform sampler2D u_texture;
+varying vec2 vUv;
+uniform float u_channel; // midi channel [0-15]
+uniform float u_note; // midi note
+uniform float u_velocity; // midi velocity
+uniform vec2 u_resolution; // video resolution
+uniform float u_time; // frame
 
-	<figure>
-		<figcaption>shader fragment</figcaption>
-		<textarea id="fragment"
->varying mediump vec2 dir;
-uniform sampler2D smpl;
-
-void main(void) {
-	gl_FragColor = texture2D(smpl, vec2(dir.x * 0.5 + 0.5, dir.y * 0.5 + 0.5));
-
-	gl_FragColor.r = ( gl_FragColor.r * 1.0 );
-	gl_FragColor.g = ( gl_FragColor.g * 1.0 );
-	gl_FragColor.b = ( gl_FragColor.b * 1.0 );
-
+void main() {
+	 vec4 color = texture2D(u_texture, vUv);
+	 gl_FragColor = color;
 }</textarea>
-	</figure>
+			</figure>
 
-		<figure>
-			<figcaption>vertex fragment</figcaption>
-			<textarea id="vertex"
->attribute mediump vec2 pos;
-varying mediump vec2 dir;
-
-void main(void) {
-  gl_Position = vec4(pos, 1.0, 1.0) * 2.0;
-  dir = pos;
+			<figure>
+				<figcaption>vertex fragment</figcaption>
+				<textarea id="vertex" rows="5"
+				>varying vec2 vUv;
+void main() {
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }</textarea>
-	</figure>
+			</figure>
+		</div>
 
-
-	<script src="https://cdn.jsdelivr.net/npm/jzz"></script>
+	</aside>
 	<script type="module" src="mideo.js"></script>
 </html>
