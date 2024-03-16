@@ -37,6 +37,15 @@ export class PartyElement extends HTMLElement {
 		return this.shadowRoot.querySelectorAll(selector)
 	}
 
+	truthy(attr = "", prop = attr) {
+		return Boolean(
+			(this.hasAttribute(attr) && this.getAttribute(attr) != "false") ||
+				this[prop]
+		)
+	}
+
+	connectedCallback() {}
+
 	/**
 	 * @template {keyof PartyEvents} Name
 	 * @param {Name} name

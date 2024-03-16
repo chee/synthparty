@@ -5,6 +5,7 @@ import rand from "../lib/rand.js"
 import Sound from "../sound.js"
 import globalStyles from "./global-styles.js"
 import {PartyElement, partyElements} from "./party-elements.js"
+import * as MIDI from "../lib/midi.js"
 
 export default class DelugeKit extends PartyElement {
 	nameElement = /** @type {HTMLInputElement} */ (this.$("#name"))
@@ -18,6 +19,33 @@ export default class DelugeKit extends PartyElement {
 		this.addEventListener("dragover", this.#dragover)
 		this.addEventListener("dragleave", this.#dragleave)
 		this.addEventListener("drop", this.#drop)
+
+		let midiinput = document
+			.querySelector("deluge-kit")
+			.shadowRoot.querySelector("midi-input")
+
+		midiinput.addEventListener("midimessage", event => {
+			let data = event.data
+			let [msg] = data
+			let byte = msg.toString(16)
+			let [type, channel] = byte
+			if (type == MIDI.MidiMessage.NoteOn) {
+				let note = data[1]
+				let velo = data[2]
+				let sound = this.kit.sounds[note]
+				if (sound) {
+					sound.noteOn()
+				}
+			}
+			if (type == MIDI.MidiMessage.NoteOff) {
+				let note = data[1]
+				let velo = data[2]
+				let sound = this.kit.sounds[note]
+				if (sound) {
+					sound.noteOff()
+				}
+			}
+		})
 	}
 
 	/* this runs once when drag enters the target's zone */
