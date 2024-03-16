@@ -24,7 +24,7 @@ let mideo = {
 	add(src = "") {
 		let video = document.createElement("video")
 		video.loop = true
-		video.volume = 1
+		video.volume = 0
 		video.src = src
 		this.videos.push(video)
 	},
