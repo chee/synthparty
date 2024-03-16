@@ -1,7 +1,7 @@
 {
-	"name": "deluge party",
+	"name": "synth party",
 	"start_url": ".",
-	"description": "deluge utilities",
+	"description": "computer music",
 	"scope": "/",
 	"theme_color": "#cc3366",
 	"background_color": "#ffe9ed"

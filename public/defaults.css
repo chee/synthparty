@@ -1,0 +1,60 @@
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-regular.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-light.ttf") format("truetype");
+	font-display: swap;
+	font-weight: 200;
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-bold.ttf") format("truetype");
+	font-display: swap;
+	font-weight: 500;
+}
+
+:root {
+	--fill: white;
+	--line: black;
+	--page-fill: var(--fill);
+	--page-line: var(--line);
+	--font-family: qp, iosevka, monaco, monospace;
+	--offset: #f7f7f7;
+	--line: #00040f;
+	--green: #00f7ba;
+	--greem: #00ffcc;
+	--quiet-cyan: #00f0dd;
+	--cloud-pink: #ec71f8;
+	--cloud-yellow: #ffea4d;
+	--super-hot: #ff2a70;
+	--cherries-light: #ffe9ed;
+	--cherries-dark: #cc3366;
+	--holy-light: white;
+	--holy-dark: black;
+	--cherries-yellow: #ffd807;
+	--2013-body-grey: #333;
+	--orla-foster-2003-bermuda-cocktail-number-3: #3399ff;
+}
+
+* {
+	scrollbar-color: var(--scrollbar-bg) var(--scrollbar-fg);
+}
+
+html {
+	background: var(--page-fill);
+	color: var(--page-line);
+	font-family: var(--font-family);
+	font-size: 2em;
+	line-height: 1.15;
+}
+
+body {
+	/* remove margin from mosaic or whatever */
+	margin: 0;
+	background: var(--page-fill);
+}

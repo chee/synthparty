@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kit>
+	<soundSources>
+		<sound name="kick">
+			<osc1 type="sample" fileName="SAMPLES/op1kits/acoustic_toy/01-kick.wav"></osc1>
+		</sound>
+	</soundSources>
+</kit>

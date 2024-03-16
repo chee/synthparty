@@ -1,43 +1,11 @@
 :root {
-	--fill: white;
-	--line: black;
-	--font-family: monospace;
-	--fill: white;
-	--offset: #f7f7f7;
-	--line: #00040f;
-	--green: #00f7ba;
-	--greem: #00ffcc;
-	--quiet-cyan: #00f0dd;
-	--cloud-pink: #ec71f8;
-	--cloud-yellow: #ffea4d;
-	--super-hot: #ff2a70;
-	--cherries-light: #ffe9ed;
-	--cherries-dark: #cc3366;
-	--holy-light: white;
-	--holy-dark: black;
-	--cherries-yellow: #ffd807;
-	--2013-body-grey: #333;
-	--orla-foster-2003-bermuda-cocktail-number-3: #3399ff;
-	--font-family: qp, iosevka, monaco, monospace;
-	--shadow-px: 2px;
-	/* --shadow: color-mix(in srgb, var(--fill) 80%, var(--line)); */
-	--heavy-shadow-px: 4px;
-	--heavy-shadow: color-mix(in srgb, var(--fill) 60%, var(--line));
-	/* --button-border-px: 4px; */
-}
-
-* {
-	scrollbar-color: var(--line) var(--fill);
-	font-family: qp;
-	box-sizing: border-box;
+	--page-fill: var(--cherries-light);
+	--page-line: var(--cherries-dark);
 }
 
 html {
 	font-size: 1.4em;
 	line-height: 1.15;
-	background: var(--fill);
-	color: var(--cherries-dark);
-	background: var(--cherries-light);
 }
 
 figcaption {
@@ -69,6 +37,7 @@ figure {
 	margin: 0;
 }
 
+[drop-target] canvas,
 [drop-target] {
 	outline: 1em dotted var(--greem);
 }
