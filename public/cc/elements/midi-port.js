@@ -69,10 +69,10 @@ export default class MIDIPortElement extends PartyElement {
 	}
 
 	#change = async () => {
-		if (this.input) {
-			this.input.removeEventListener("midimessage", this.#onmidimessage)
-			this.input.close()
-			this.input = null
+		if (this.port) {
+			this.port.removeEventListener("midimessage", this.#onmidimessage)
+			this.port.close()
+			this.port = null
 		}
 
 		let port = (this.port = this.ports[this.#select.value])

@@ -25,8 +25,8 @@ export default class SynthPartyApp extends PartyElement {
 			if (this.midi.input) {
 				// todo does this happen automatically because the <midi-device/>
 				// closes the port?
-				this.removeEventListener(
-					this.midi.input,
+				this.midi.input.removeEventListener(
+					"midimessage",
 					this.shareIncomingMIDIMessage
 				)
 			}

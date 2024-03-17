@@ -58,7 +58,7 @@ export default class CCXY extends ControlChange {
 			this.tick()
 		})
 		this.announce("sub", this)
-		this.addEventListener("midimessage", console.debug)
+		// this.addEventListener("midimessage", console.debug)
 	}
 
 	/** @param {import("./abstract-control-change.js").MouseMessage} message */
