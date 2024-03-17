@@ -70,3 +70,10 @@ select {
 	font-size: 0.8em;
 	margin-top: 1em;
 }
+
+* {
+	/* disable bouncing */
+	overscroll-behavior: none;
+	/* disable tappy zoom */
+	touch-action: manipulation;
+}
