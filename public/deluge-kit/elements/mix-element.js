@@ -38,11 +38,11 @@ export default class DelugeMix extends DelugeEditor {
 		let width = canvas.width
 		this.clear()
 		let styles = this.styles
-		let b = Sound.DynamicRange
 		let h = height
 		let w = width
-		let quietY = ((b - this.sound.volume) / b) * h
-		let panX = (this.sound.pan / b) * w
+		let quietY =
+			((Sound.DynamicRange - this.sound.volume) / Sound.DynamicRange) * h
+		let panX = (this.sound.pan / Sound.DynamicRange) * w
 		context.strokeStyle = "white"
 		context.strokeStyle = "#fff"
 		context.lineWidth = DPI * 2
