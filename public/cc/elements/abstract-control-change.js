@@ -42,7 +42,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 			width: var(--grid-block-width);
 		}
 
-		canvas {height: 100%; width: 100%}
+		canvas {height: 100%; width: 100%; touch-action: none}
 `
 
 	label = document.createElement("figcaption")
