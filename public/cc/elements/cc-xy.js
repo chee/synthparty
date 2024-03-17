@@ -5,85 +5,181 @@ let DPI = ControlChange.DPI
 
 /** @type {AudioParam} */
 export default class CCXY extends ControlChange {
-	xNode = new GainNode(this.audioContext)
-	yNode = new GainNode(this.audioContext)
-	xGain = this.xNode.gain
-	yGain = this.yNode.gain
+	minX = 0
+	minY = 0
+	maxX = 127
+	maxY = 127
+	left = "left"
+	right = "right"
+	top = "top"
+	bottom = "bottom"
+
+	static create(
+		/** @type {{
+			x: number
+			y: number
+			left?: string
+			right?: string
+			top?: string
+			bottom?: string
+			label: string
+		}} */
+		{x, y, left, right, top, bottom, label}
+	) {
+		let element = /** @type {CCXY} */ (document.createElement("cc-xy"))
+		element.ccX = x
+		element.ccY = y
+
+		if (left) {
+			element.left = left
+		}
+		if (right) {
+			element.right = right
+		}
+		if (top) {
+			element.top = top
+		}
+		if (bottom) {
+			element.bottom = bottom
+		}
+		element.label.textContent = label
+		return element
+	}
 
 	get x() {
-		return this.xGain.value
+		return this.gainX.value
 	}
 
 	get y() {
-		return this.yGain.value
+		return this.gainY.value
 	}
 
-	get yDynamicRange() {
-		return Math.abs(this.yMax - this.yMin)
+	set x(val) {
+		this.gainX.setValueAtTime(val, this.audioContext.currentTime)
 	}
-	get xDynamicRange() {
-		return Math.abs(this.xMax - this.xMin)
+
+	set y(val) {
+		this.gainY.setValueAtTime(val, this.audioContext.currentTime)
+	}
+
+	get dynamicRangeY() {
+		return Math.abs(this.maxY - this.minY)
+	}
+	get dynamicRangeX() {
+		return Math.abs(this.maxX - this.minX)
+	}
+
+	setPropsFromAttributes() {
+		if (this.hasAttribute("cc-x")) {
+			this.ccX = +this.getAttribute("cc-x")
+		}
+		if (this.hasAttribute("cc-y")) {
+			this.ccY = +this.getAttribute("cc-y")
+		}
+		if (this.hasAttribute("min-x")) {
+			this.minX = +this.getAttribute("min-x")
+		}
+		if (this.hasAttribute("max-x")) {
+			this.maxX = +this.getAttribute("max-x")
+		}
+		if (this.hasAttribute("min-y")) {
+			this.minY = +this.getAttribute("min-y")
+		}
+		if (this.hasAttribute("max-y")) {
+			this.maxY = +this.getAttribute("max-y")
+		}
+		if (this.hasAttribute("left")) {
+			this.left = this.getAttribute("left")
+		}
+		if (this.hasAttribute("right")) {
+			this.right = this.getAttribute("right")
+		}
+		if (this.hasAttribute("top")) {
+			this.top = this.getAttribute("top")
+		}
+		if (this.hasAttribute("bottom")) {
+			this.bottom = this.getAttribute("bottom")
+		}
 	}
 
 	connectedCallback() {
 		super.connectedCallback()
-		this.xCC = this.hasAttribute("x-cc") ? +this.getAttribute("x-cc") : 0
-		this.yCC = this.hasAttribute("y-cc") ? +this.getAttribute("y-cc") : 0
-		this.xMin = this.hasAttribute("x-min") ? +this.getAttribute("x-min") : 0
-		this.xMax = this.hasAttribute("x-max") ? +this.getAttribute("x-max") : 127
-		this.yMin = this.hasAttribute("y-min") ? +this.getAttribute("y-min") : 0
-		this.yMax = this.hasAttribute("y-max") ? +this.getAttribute("y-max") : 127
-		this.xGain.setValueAtTime(
-			(this.xMax - this.xMin) / 2,
-			this.audioContext.currentTime
-		)
-		this.yGain.setValueAtTime(
-			(this.yMax - this.yMin) / 2,
-			this.audioContext.currentTime
-		)
-		this.left = this.getAttribute("left") || "left"
-		this.right = this.getAttribute("right") || "right"
-		this.top = this.getAttribute("top") || "top"
-		this.bottom = this.getAttribute("bottom") || "bottom"
+		this.setPropsFromAttributes()
+		this.nodeX = new GainNode(this.audioContext)
+		this.nodeY = new GainNode(this.audioContext)
+		this.gainX = this.nodeX.gain
+		this.gainY = this.nodeY.gain
+
+		this.x = (this.maxX - this.minX) / 2
+
+		this.y = (this.maxY - this.minY) / 2
+
 		this.xAnalyzer = new AnalyserNode(this.audioContext, {
 			fftSize: 2048
 		})
 		this.yAnalyzer = new AnalyserNode(this.audioContext, {
 			fftSize: 2048
 		})
-		this.xNode.connect(this.xAnalyzer)
-		this.yNode.connect(this.yAnalyzer)
+		this.nodeX.connect(this.xAnalyzer)
+		this.nodeY.connect(this.yAnalyzer)
 		this.draw()
 		this.party.when("tick", () => {
 			this.tick()
 		})
 		this.announce("sub", this)
-		// this.addEventListener("midimessage", console.debug)
+		this.when("midimessage", this.parseIncomingMIDI)
 	}
 
-	/** @param {import("./abstract-control-change.js").MouseMessage} message */
+	parseIncomingMIDI = data => {
+		let [msg, cc, value] = data
+		let byte = msg.toString(16)
+		let [type, channel] = byte
+		if (type != "b") {
+			//console.debug("ignoring non-cc message")
+		}
+		if (type == "b") {
+			if (cc == this.ccX) {
+				this.x = value
+				this.draw()
+			}
+			if (cc == this.ccY) {
+				this.y = value
+				this.draw()
+			}
+		}
+	}
+
+	/**
+	 * @param {import("./abstract-control-change.js").MouseMessage} message
+	 */
 	mouse(message) {
-		let {mouse} = message
+		let {mouse, event} = message
 
-		let x = Math.round((mouse.x / this.canvas.width) * this.xMax + this.xMin)
-		let y =
-			this.yMax -
-			Math.round((mouse.y / this.canvas.height) * this.yMax + this.yMin)
-		this.xGain.setValueAtTime(x, this.audioContext.currentTime)
-		this.yGain.setValueAtTime(y, this.audioContext.currentTime)
+		if (!event.altKey) {
+			let x = Math.round((mouse.x / this.canvas.width) * this.maxX + this.minX)
+			this.x = x
+			this.announce("x", this.x)
+			this.announce("send-midi", [[0xb0, this.ccX, this.x]])
+		}
+		if (!event.shiftKey) {
+			let y =
+				this.maxY -
+				Math.round((mouse.y / this.canvas.height) * this.maxY + this.minY)
+			this.y = y
+			this.announce("y", this.y)
+			this.announce("send-midi", [[0xb0, this.ccY, this.y]])
+		}
 
-		this.announce("x", this.x)
-		this.announce("y", this.y)
-		this.announce("send-midi", [[0xb0, this.xCC, this.x]])
-		this.announce("send-midi", [[0xb0, this.yCC, this.y]])
 		this.draw()
 	}
 
 	tick() {}
 
 	get styles() {
-		let fill = this.getStyle("cc-mix-fill") || "black"
-		let line = this.getStyle("cc-mix-line") || "white"
+		let fill =
+			this.getStyle("cc-mix-fill") || this.getStyle("cc-fill") || "black"
+		let line =
+			this.getStyle("cc-mix-line") || this.getStyle("cc-line") || "white"
 		return {fill, line}
 	}
 
@@ -98,8 +194,8 @@ export default class CCXY extends ControlChange {
 		this.clear()
 		let styles = this.styles
 
-		let pixelX = (this.x / this.xDynamicRange) * width
-		let pixelY = ((this.yMax - this.y) / this.yMax - this.yMin) * height
+		let pixelX = (this.x / this.dynamicRangeX) * width
+		let pixelY = ((this.maxY - this.y) / this.maxY - this.minY) * height
 		context.strokeStyle = styles.line
 		context.lineWidth = DPI * 2
 		context.beginPath()

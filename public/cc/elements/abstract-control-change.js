@@ -2,8 +2,9 @@ import SynthPartyComponent from "./synth-party-component.js"
 
 /**
  * @typedef {{
-		type: "start" | "move" | "end",
+		type: "start" | "move" | "end"
 		mouse: {x: number, y: number}
+		event: MouseEvent | TouchEvent
 	}} MouseMessage
  */
 
@@ -15,16 +16,57 @@ const IS_BASICALLY_A_PHONE =
 export default class AbstractControlChange extends SynthPartyComponent {
 	static DPI = 4
 	disabled = false
+	static css = `
+		figure {
+			display: flex;
+			flex-direction: column;
+			margin: 0;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		figcaption {
+			grid-area: label;
+			border: 2px solid;
+			background: white;
+			text-align: center;
+		}
+
+		#canvas-container {
+			border: 2px solid;
+			border-top: 0;
+			grid-area: canvas;
+			height: var(--grid-block-height);
+			width: var(--grid-block-width);
+		}
+
+		canvas {height: 100%; width: 100%}
+`
+
+	label = document.createElement("figcaption")
+	static get stylesheet () {
+		let stylesheet = new CSSStyleSheet()
+		stylesheet.replaceSync(AbstractControlChange.css)
+		return stylesheet
+	}
 
 	constructor() {
 		super()
+		let figure = document.createElement("figure")
+		this.attachShadow({mode: "open"})
+		this.shadowRoot.appendChild(figure)
+		this.label.textContent = this.getAttribute("label")
+		figure.appendChild(this.label)
+		let container = document.createElement("div")
+		container.id = "canvas-container"
 		let canvas = document.createElement("canvas")
 		this.canvas = canvas
-		this.canvas.style.height = "100%"
-		this.canvas.style.width = "100%"
 		this.canvasContext = canvas.getContext("2d")
-		this.attachShadow({mode: "open"})
-		this.shadowRoot.appendChild(this.canvas)
+		container.append(canvas)
+		figure.append(container)
+		this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet]
 		if (IS_BASICALLY_A_PHONE) {
 			this.addEventListener("touchstart", this.#touchstart)
 		} else {
@@ -37,11 +79,11 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		// assumes nothing ever changes size while you're trying to trim a sample
 		let bounds = this.canvas.getBoundingClientRect()
 		let mouse = resolveMouseFromEvent(event, bounds)
-		this.mouse({type: "start", mouse})
+		this.mouse({type: "start", mouse, event})
 		/** @param {MouseEvent} event */
 		let mousemove = event => {
 			let mouse = resolveMouseFromEvent(event, bounds)
-			this.mouse({type: "move", mouse})
+			this.mouse({type: "move", mouse, event})
 		}
 		window.addEventListener("mousemove", mousemove)
 
@@ -49,7 +91,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		let mouseend = event => {
 			let mouse = resolveMouseFromEvent(event, bounds)
 			try {
-				this.mouse({type: "end", mouse})
+				this.mouse({type: "end", mouse, event})
 			} catch (error) {
 				throw error
 			} finally {
@@ -67,7 +109,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		let bounds = this.canvas.getBoundingClientRect()
 		let finger = event.touches.item(0)
 		let mouse = resolveMouseFromEvent(finger, bounds)
-		this.mouse({type: "start", mouse})
+		this.mouse({type: "start", mouse, event})
 
 		/** @param {TouchEvent} event */
 		let move = event => {
@@ -75,7 +117,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 
 			if (moved) {
 				let mouse = resolveMouseFromEvent(moved, bounds)
-				this.mouse({type: "move", mouse})
+				this.mouse({type: "move", mouse, event})
 			}
 		}
 		window.addEventListener("touchmove", move)
@@ -87,7 +129,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 				let missing = !findFinger(finger, event.targetTouches)
 				if (lost && missing) {
 					let mouse = resolveMouseFromEvent(lost, bounds)
-					this.mouse({type: "end", mouse})
+					this.mouse({type: "end", mouse, event})
 					window.removeEventListener("touchmove", move)
 				}
 			},
@@ -101,11 +143,11 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	}
 
 	get width() {
-		return this.clientWidth
+		return this.canvas.clientWidth
 	}
 
 	get height() {
-		return this.clientHeight
+		return this.canvas.clientHeight
 	}
 
 	connectedCallback() {
@@ -119,9 +161,9 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	}
 
 	get styles() {
-		let fill = this.getStyle("editor-fill") || "#000"
-		let line = this.getStyle("editor-line") || "black"
-		let off = this.getStyle("editor-off") || "#999"
+		let fill = this.getStyle("cc-fill") || "#000"
+		let line = this.getStyle("cc-line") || "black"
+		let off = this.getStyle("cc-off") || "#999"
 		return {fill, line}
 	}
 
