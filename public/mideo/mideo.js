@@ -82,7 +82,7 @@ scene.add(mesh)
 camera.position.z = 5
 
 function animate(now) {
-	material.uniforms.u_time.value += now / 1000
+	material.uniforms.u_time.value += now / 100000
 
 	renderer.render(scene, camera)
 
@@ -156,8 +156,12 @@ function midimessage(event) {
 			}
 			material.uniforms.u_note.value = note
 			material.uniforms.u_velocity.value = velo
-			material.uniforms.u_channel.value = Number(channel)
-			mideo.video.currentTime = 0
+			channel = Number(channel)
+			material.uniforms.u_channel.value = channel
+			if (channel != 15) {
+				mideo.video.currentTime = 0
+			}
+
 			mideo.video.play()
 		}
 	}
