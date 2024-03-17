@@ -18,6 +18,12 @@
 	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png" />
 	<link rel="manifest" href="/aux/app.webmanifest" />
 
+	<template id="group">
+		<figure class="cc-group">
+			<figcaption></figcaption>
+		</figure>
+	</template>
+
 	<synth-party>
 		<template shadowrootmode="open">
 			<main id="grid">
@@ -60,6 +66,7 @@
 					--cc-height: 200px;
 					--cc-width: 40px;
 				}
+
 				#panel {
 					width: 20vw;
 					position: fixed;
@@ -91,6 +98,28 @@
 
 				button:hover {
 					box-shadow: 4px solid black;
+				}
+
+				.cc-group {
+					margin: 0;
+					border: 1px solid;
+					padding: 4px;
+					background: var(--cherries-dark);
+					color: white;
+				}
+
+				.cc-group figcaption {
+					font-size: 16px;
+				}
+
+				.cc-group .cc-group-items {
+					display: flex;
+					gap: 2px;
+					color: var(--cherries-dark);
+				}
+
+				.cc-group cc-slider {
+					--cc-width: 60px;
 				}
 			</style>
 		</template>

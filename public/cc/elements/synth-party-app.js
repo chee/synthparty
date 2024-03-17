@@ -3,6 +3,63 @@ import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
 import {PartyElement, partyElements} from "./party-elements.js"
 
+/**
+ * @param {string} label
+ * @param {HTMLElement[]} children
+ * @returns {HTMLElement}
+ */
+function group(label, children) {
+	let tmpl = /** @type {HTMLTemplateElement}*/ (
+		document.getElementById("group")
+	)
+	let group = /** @type {HTMLElement} */ (tmpl.content.cloneNode(true))
+	let figure = group.querySelector("figure")
+	let items = document.createElement("div")
+	items.className = "cc-group-items"
+	let caption = group.querySelector("figcaption")
+	if (label) {
+		caption.textContent = label
+	} else {
+		caption.remove()
+	}
+	figure.prepend(items)
+	items.append(...children)
+	return group
+}
+
+function oscillator(label, {volume, pitch, width, feedback, wavetable}) {
+	return group(
+		label,
+		[
+			volume &&
+				CCSlider.create({
+					label: "volume",
+					cc: volume
+				}),
+			pitch &&
+				CCSlider.create({
+					label: "trans",
+					cc: pitch
+				}),
+			width &&
+				CCSlider.create({
+					label: "width",
+					cc: width
+				}),
+			feedback &&
+				CCSlider.create({
+					label: "feedback",
+					cc: feedback
+				}),
+			wavetable &&
+				CCSlider.create({
+					label: "wavetable",
+					cc: wavetable
+				})
+		].filter(Boolean)
+	)
+}
+
 /** @abstract */
 export default class SynthPartyApp extends PartyElement {
 	audioContext = new AudioContext({
@@ -97,53 +154,48 @@ export default class SynthPartyApp extends PartyElement {
 		)
 		grid.append(
 			CCXY.create({
-				label: "arp",
-				x: map.arpGate,
-				y: map.arpRate,
-				left: "short",
-				right: "long",
-				top: "fast",
-				bottom: "slow"
+				label: "sidechain",
+				x: map.compressorShape,
+				y: map.volumePostReverbSend,
+				left: "shape-",
+				right: "shape+",
+				top: "level+",
+				bottom: "level-"
 			})
 		)
 		grid.append(
-			CCXY.create({
-				label: "delay",
-				x: map.delayFeedback,
-				y: map.delayRate,
-				left: "fb-",
-				right: "fb+",
-				top: "fast",
-				bottom: "slow"
-			})
+			group("", [
+				CCXY.create({
+					label: "low pass",
+					x: map.lpfResonance,
+					y: map.lpfFrequency,
+					left: "res-",
+					right: "res+",
+					top: "freq+",
+					bottom: "freq-"
+				}),
+				CCSlider.create({
+					label: "morph",
+					cc: 70
+				})
+			])
 		)
 		grid.append(
-			CCSlider.create({
-				label: "reverb",
-				cc: map.reverbAmount
-			})
-		)
-		grid.append(
-			CCXY.create({
-				label: "low pass",
-				x: map.lpfResonance,
-				y: map.lpfFrequency,
-				left: "res-",
-				right: "res+",
-				top: "freq+",
-				bottom: "freq-"
-			})
-		)
-		grid.append(
-			CCXY.create({
-				label: "high pass",
-				x: map.hpfResonance,
-				y: map.hpfFrequency,
-				left: "res-",
-				right: "res+",
-				top: "freq+",
-				bottom: "freq-"
-			})
+			group("", [
+				CCXY.create({
+					label: "high pass",
+					x: map.hpfResonance,
+					y: map.hpfFrequency,
+					left: "res-",
+					right: "res+",
+					top: "freq+",
+					bottom: "freq-"
+				}),
+				CCSlider.create({
+					label: "morph",
+					cc: 83
+				})
+			])
 		)
 		grid.append(
 			CCXY.create({
@@ -176,8 +228,25 @@ export default class SynthPartyApp extends PartyElement {
 		grid.append(
 			CCSlider.create({
 				label: "lfo2",
-				cc: map.lfo1Rate
+				cc: map.lfo2Rate
 			})
+		)
+		grid.append(
+			group("space", [
+				CCXY.create({
+					label: "delay",
+					x: map.delayFeedback,
+					y: map.delayRate,
+					left: "fb-",
+					right: "fb+",
+					top: "fast",
+					bottom: "slow"
+				}),
+				CCSlider.create({
+					label: "reverb",
+					cc: map.reverbAmount
+				})
+			])
 		)
 
 		grid.append(
@@ -186,22 +255,92 @@ export default class SynthPartyApp extends PartyElement {
 				cc: map.noiseVolume
 			})
 		)
+
 		grid.append(
-			CCSlider.create({
-				label: "wavefold",
-				cc: map.waveFold
+			group("distort", [
+				CCSlider.create({
+					label: "wavefold",
+					cc: map.waveFold
+				}),
+				CCSlider.create({
+					label: "bitcrush",
+					cc: map.bitcrushAmount
+				}),
+				CCSlider.create({
+					label: "decimate",
+					cc: map.sampleRateReduction
+				})
+			])
+		)
+
+		grid.append(
+			group("modfx", [
+				CCXY.create({
+					label: "feedback/rate",
+					x: map.modFXRate,
+					y: map.modFXFeedback,
+					left: "fb-",
+					right: "fb+",
+					top: "fast",
+					bottom: "slow"
+				}),
+				CCXY.create({
+					label: "offset/depth",
+					x: map.modFXOffset,
+					y: map.modFXDepth,
+					left: "offset-",
+					right: "offset+",
+					top: "deep",
+					bottom: "shallow"
+				})
+			])
+		)
+
+		grid.append(
+			oscillator("oscillator 1", {
+				volume: 21,
+				pitch: 12,
+				width: 23,
+				feedback: 24,
+				wavetable: 25
 			})
 		)
+
 		grid.append(
-			CCSlider.create({
-				label: "bitcrush",
-				cc: map.bitcrushAmount
+			oscillator("oscillator 2", {
+				volume: 26,
+				pitch: 13,
+				width: 28,
+				feedback: 29,
+				wavetable: 30
 			})
 		)
+
 		grid.append(
-			CCSlider.create({
-				label: "decimate",
-				cc: map.sampleRateReduction
+			oscillator("fm 1", {
+				volume: 54,
+				pitch: 14,
+				feedback: 55
+			})
+		)
+
+		grid.append(
+			oscillator("fm 1", {
+				volume: 56,
+				pitch: 15,
+				feedback: 57
+			})
+		)
+
+		grid.append(
+			CCXY.create({
+				label: "arp",
+				x: map.arpGate,
+				y: map.arpRate,
+				left: "short",
+				right: "long",
+				top: "fast",
+				bottom: "slow"
 			})
 		)
 	}

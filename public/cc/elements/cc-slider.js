@@ -1,8 +1,6 @@
 import {partyElements} from "./party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 
-let DPI = ControlChange.DPI
-
 /** @type {AudioParam} */
 export default class CCSlider extends ControlChange {
 	min = 0
