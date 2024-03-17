@@ -1,0 +1,72 @@
+:root {
+	--page-fill: var(--cherries-light);
+	--page-line: var(--cherries-dark);
+}
+
+html {
+	font-size: 1.4em;
+	line-height: 1.15;
+}
+
+figcaption {
+	color: var(--line);
+	margin-top: 1em;
+}
+
+body {
+	display: flex;
+	align-items: center;
+}
+
+canvas {
+	margin: auto;
+}
+
+textarea {
+	font-family: var(--font-family);
+	white-space: pre-wrap;
+	background: var(--holy-light);
+	font-size: 0.8rem;
+	width: 84ch;
+	border: 1px solid var(--cherries-dark);
+	margin: auto;
+}
+
+figure {
+	padding: 0;
+	margin: 0;
+}
+
+[drop-target] canvas,
+[drop-target] {
+	outline: 1em dotted var(--greem);
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-regular.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-light.ttf") format("truetype");
+	font-display: swap;
+	font-weight: 200;
+}
+
+@font-face {
+	font-family: fs;
+	src: url("/aux/fonts/fs.woff");
+	font-display: swap;
+}
+
+select {
+	border: 4px solid var(--cherries-dark);
+	padding: 1em;
+	background: white;
+	color: var(--cherries-dark);
+	font-weight: bold;
+	font-size: 0.8em;
+	margin-top: 1em;
+}

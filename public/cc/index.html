@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-ca" theme="cherries">
+	<meta charset="utf-8" />
+	<title>cc</title>
+	<meta name="description" content="gm control changes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/defaults.css" />
+	<link rel="stylesheet" href="cc.css" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="mideo" />
+	<meta name="apple-mobile-web-app-title" content="bento" />
+	<meta name="theme-color" content="#ffe9ed" />
+	<meta property="og:title" content="cc" />
+	<meta property="og:description" content="gm control changes" />
+	<meta property="og:image" content="/aux/apple-touch-icon.png" />
+	<meta name="twitter:card" content="summary" />
+	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png" />
+	<link rel="manifest" href="/aux/app.webmanifest" />
+
+	<synth-party>
+		<template shadowrootmode="open">
+			<main>
+				<!-- todo perhaps a map so i can say x-cc="pan" -->
+				<!-- todo label as part of the cc- component -->
+				<label>
+					vol/pan
+					<cc-xy
+						x-cc="10"
+						y-cc="7"
+						top="loud"
+						bottom="quiet"
+						left="left"
+						right="right">
+					</cc-xy>
+				</label>
+				<label>
+					low pass filter
+					<cc-xy
+						top="freq +"
+						bottom="freq -"
+						left="res -"
+						right="res +"
+						x-cc="71"
+						y-cc="74">
+					</cc-xy>
+				</label>
+			</main>
+			<aside id="controls">
+				<label>
+					input
+					<midi-device direction="input" software></midi-device>
+				</label>
+				<label>
+					output
+					<midi-device direction="output" software></midi-device>
+				</label>
+			</aside>
+			<style>
+				* {
+					box-sizing: border-box;
+				}
+				:host {
+					display: flex;
+				}
+				main {
+					display: flex;
+					gap: 8px;
+					padding: 16px;
+				}
+
+				main label {
+					border: 2px solid;
+					background: white;
+					text-align: center;
+				}
+				label {
+					display: flex;
+					flex-direction: column;
+				}
+				label cc-xy {
+					height: 200px;
+					width: 200px;
+				}
+				#controls {
+					width: 20vw;
+					position: fixed;
+					right: 0;
+					--fill: #333;
+					--line: white;
+					background: var(--fill);
+					color: var(--line);
+					padding: 1em;
+					height: 100%;
+					display: flex;
+					flex-direction: column;
+					gap: 1em;
+					box-shadow: 0 0 1em #00000033;
+				}
+			</style>
+		</template>
+	</synth-party>
+
+
+	<script type="module" src="cc.js"></script>
+</html>
