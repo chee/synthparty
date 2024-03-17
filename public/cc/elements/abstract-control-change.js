@@ -21,6 +21,12 @@ export default class AbstractControlChange extends SynthPartyComponent {
 			display: flex;
 			flex-direction: column;
 			margin: 0;
+			gap: 4px;
+			align-items: center;
+			background: white;
+			border: 1px solid;
+			padding: 4px;
+			box-shadow: 0 0 10px #00000011;
 		}
 
 		* {
@@ -29,20 +35,22 @@ export default class AbstractControlChange extends SynthPartyComponent {
 
 		figcaption {
 			grid-area: label;
-			border: 2px solid;
+			border: 0px solid;
 			background: white;
 			text-align: center;
+			padding: 2px;
+			font-size: 16px;
 		}
 
 		#canvas-container {
 			border: 2px solid;
 			border-top: 0;
 			grid-area: canvas;
-			height: var(--grid-block-height);
-			width: var(--grid-block-width);
+			height: var(--cc-height);
+			width: var(--cc-width);
 		}
 
-		canvas {height: 100%; width: 100%; touch-action: none}
+		canvas {height: 100%; width: 100%; touch-action: none;}
 `
 
 	label = document.createElement("figcaption")
@@ -58,7 +66,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		this.attachShadow({mode: "open"})
 		this.shadowRoot.appendChild(figure)
 		this.label.textContent = this.getAttribute("label")
-		figure.appendChild(this.label)
+
 		let container = document.createElement("div")
 		container.id = "canvas-container"
 		let canvas = document.createElement("canvas")
@@ -66,6 +74,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		this.canvasContext = canvas.getContext("2d")
 		container.append(canvas)
 		figure.append(container)
+		figure.appendChild(this.label)
 		this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet]
 		if (IS_BASICALLY_A_PHONE) {
 			this.addEventListener("touchstart", this.#touchstart)

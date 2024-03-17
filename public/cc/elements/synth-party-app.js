@@ -1,4 +1,5 @@
 import createMIDIFollowMap from "../lib/midi-follow-map.js"
+import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
 import {PartyElement, partyElements} from "./party-elements.js"
 
@@ -83,6 +84,18 @@ export default class SynthPartyApp extends PartyElement {
 			})
 		)
 		grid.append(
+			CCSlider.create({
+				label: "pitch",
+				cc: map.pitch
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "porta",
+				cc: map.portamento
+			})
+		)
+		grid.append(
 			CCXY.create({
 				label: "arp",
 				x: map.arpGate,
@@ -104,17 +117,12 @@ export default class SynthPartyApp extends PartyElement {
 				bottom: "slow"
 			})
 		)
-		// 		grid.append(
-		// 	CCSlider.create({
-		// 		label: "reverb",
-		// 		x: map.reverbAmount,
-		// 		y: map.volumePostReverbSend,
-		// 		left: "fb-",
-		// 		right: "fb+",
-		// 		top: "fast",
-		// 		bottom: "slow"
-		// 	})
-		// )
+		grid.append(
+			CCSlider.create({
+				label: "reverb",
+				cc: map.reverbAmount
+			})
+		)
 		grid.append(
 			CCXY.create({
 				label: "low pass",
@@ -157,6 +165,43 @@ export default class SynthPartyApp extends PartyElement {
 				right: "gain+",
 				top: "freq",
 				bottom: "freq"
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "lfo1",
+				cc: map.lfo1Rate
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "lfo2",
+				cc: map.lfo1Rate
+			})
+		)
+
+		grid.append(
+			CCSlider.create({
+				label: "noise",
+				cc: map.noiseVolume
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "wavefold",
+				cc: map.waveFold
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "bitcrush",
+				cc: map.bitcrushAmount
+			})
+		)
+		grid.append(
+			CCSlider.create({
+				label: "decimate",
+				cc: map.sampleRateReduction
 			})
 		)
 	}
