@@ -27,12 +27,12 @@ export class PartyEvent extends CustomEvent {
 export class PartyElement extends HTMLElement {
 	/** @param {keyof HTMLElementTagNameMap | string} selector */
 	$(selector) {
-		return this.shadowRoot.querySelector(selector)
+		return this.shadowRoot && this.shadowRoot.querySelector(selector)
 	}
 
 	/** @param {keyof HTMLElementTagNameMap | string} selector */
 	$$(selector) {
-		return this.shadowRoot.querySelectorAll(selector)
+		return this.shadowRoot && this.shadowRoot.querySelectorAll(selector)
 	}
 
 	truthy(attr = "", prop = attr) {
