@@ -54,7 +54,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 `
 
 	label = document.createElement("figcaption")
-	static get stylesheet () {
+	static get stylesheet() {
 		let stylesheet = new CSSStyleSheet()
 		stylesheet.replaceSync(AbstractControlChange.css)
 		return stylesheet
@@ -116,7 +116,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	#touchstart(event) {
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
-		let finger = event.touches.item(0)
+		let finger = event.targetTouches.item(0)
+
 		let mouse = resolveMouseFromEvent(finger, bounds)
 		this.mouse({type: "start", mouse, event})
 
