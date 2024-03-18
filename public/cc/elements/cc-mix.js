@@ -32,7 +32,7 @@ export default class ControlChangeMix extends AbstractControlChange {
 		if (this.disabled) {
 			return
 		}
-		let [canvas, context] = [this.canvas, this.context]
+		let [canvas, context] = [this.canvas, this.canvasContext]
 		let height = canvas.height
 		let width = canvas.width
 		this.clear()
