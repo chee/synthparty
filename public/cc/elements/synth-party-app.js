@@ -1,3 +1,4 @@
+import {createElement} from "../lib/html.js"
 import createMIDIFollowMap from "../lib/midi-follow-map.js"
 import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
@@ -32,27 +33,27 @@ function oscillator(label, {volume, pitch, width, feedback, wavetable}) {
 		label,
 		[
 			volume &&
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "volume",
 					cc: volume
 				}),
 			pitch &&
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "trans",
 					cc: pitch
 				}),
 			width &&
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "width",
 					cc: width
 				}),
 			feedback &&
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "feedback",
 					cc: feedback
 				}),
 			wavetable &&
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "wavetable",
 					cc: wavetable
 				})
@@ -125,6 +126,74 @@ export default class SynthPartyApp extends PartyElement {
 			let [file] = cmf.files
 			this.useMIDIFollow(createMIDIFollowMap(await file.text()))
 		})
+
+		let dialog = /** @type {HTMLDialogElement} */ (this.$("#dialog"))
+		this.$("#add-xy").addEventListener("click", () => {
+			dialog.textContent = ""
+			let formElement = this.createForm(CCXY.form)
+			dialog.append(formElement)
+			dialog.showModal()
+			dialog.addEventListener("ok", () => dialog.close())
+			dialog.addEventListener("cancel", () => dialog.close())
+			dialog.addEventListener(
+				"close",
+				() => {
+					if (dialog.returnValue == "ok") {
+						this.$("#grid").append(
+							createElement("cc-xy", this.readForm(CCXY.form, formElement))
+						)
+					} else {
+						console.info("cancel")
+					}
+				},
+				{once: true}
+			)
+		})
+	}
+
+	createForm(form) {
+		let formElement = document.createElement("form")
+		formElement.method = "dialog"
+		for (let [property, descriptor] of Object.entries(form)) {
+			let label = document.createElement("label")
+			label.textContent = descriptor.label
+			let input = document.createElement("input")
+			for (let [prop, value] of Object.entries(descriptor.props)) {
+				input[prop] = value
+			}
+			input.id = property
+			label.append(input)
+			formElement.append(label)
+		}
+
+		let cancel = document.createElement("input")
+		cancel.value = "cancel"
+		cancel.type = "reset"
+		cancel.onclick = () => this.announce("cancel")
+
+		let ok = document.createElement("input")
+		ok.value = "ok"
+		ok.type = "submit"
+		ok.onclick = () => this.announce("ok")
+
+		let menu = document.createElement("menu")
+
+		menu.append(cancel, ok)
+		formElement.append(menu)
+		return formElement
+	}
+
+	readForm(form, formElement) {
+		let result = {}
+		for (let [property, descriptor] of Object.entries(form)) {
+			let el = /** @type {HTMLInputElement}*/ (
+				formElement.querySelector("#" + property)
+			)
+			let value =
+				descriptor.props.type == "number" ? Number(el.value) : el.value
+			result[property] = value
+		}
+		return result
 	}
 
 	/** @param {import("../lib/midi-follow-map.js").MIDIFollowMap} map*/
@@ -132,31 +201,31 @@ export default class SynthPartyApp extends PartyElement {
 		let grid = this.$("#grid")
 		this.$("#grid").textContent = ""
 		grid.append(
-			CCXY.create({
+			createElement("cc-xy", {
 				label: "mix",
-				x: map.pan,
-				y: map.volumePostFX,
+				ccX: map.pan,
+				ccY: map.volumePostFX,
 				top: "loud",
 				bottom: "quiet"
 			})
 		)
 		grid.append(
-			CCSlider.create({
+			createElement("cc-slider", {
 				label: "pitch",
 				cc: map.pitch
 			})
 		)
 		grid.append(
-			CCSlider.create({
+			createElement("cc-slider", {
 				label: "porta",
 				cc: map.portamento
 			})
 		)
 		grid.append(
-			CCXY.create({
+			createElement("cc-xy", {
 				label: "sidechain",
-				x: map.compressorShape,
-				y: map.volumePostReverbSend,
+				ccX: map.compressorShape,
+				ccY: map.volumePostReverbSend,
 				left: "shape-",
 				right: "shape+",
 				top: "level+",
@@ -165,16 +234,16 @@ export default class SynthPartyApp extends PartyElement {
 		)
 		grid.append(
 			group("", [
-				CCXY.create({
+				createElement("cc-xy", {
 					label: "low pass",
-					x: map.lpfResonance,
-					y: map.lpfFrequency,
+					ccX: map.lpfResonance,
+					ccY: map.lpfFrequency,
 					left: "res-",
 					right: "res+",
 					top: "freq+",
 					bottom: "freq-"
 				}),
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "morph",
 					cc: 70
 				})
@@ -182,26 +251,26 @@ export default class SynthPartyApp extends PartyElement {
 		)
 		grid.append(
 			group("", [
-				CCXY.create({
+				createElement("cc-xy", {
 					label: "high pass",
-					x: map.hpfResonance,
-					y: map.hpfFrequency,
+					ccX: map.hpfResonance,
+					ccY: map.hpfFrequency,
 					left: "res-",
 					right: "res+",
 					top: "freq+",
 					bottom: "freq-"
 				}),
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "morph",
 					cc: 83
 				})
 			])
 		)
 		grid.append(
-			CCXY.create({
+			createElement("cc-xy", {
 				label: "bass",
-				x: map.bass,
-				y: map.bassFreq,
+				ccX: map.bass,
+				ccY: map.bassFreq,
 				left: "gain-",
 				right: "gain+",
 				top: "freq+",
@@ -209,10 +278,10 @@ export default class SynthPartyApp extends PartyElement {
 			})
 		)
 		grid.append(
-			CCXY.create({
+			createElement("cc-xy", {
 				label: "treble",
-				x: map.treble,
-				y: map.trebleFreq,
+				ccX: map.treble,
+				ccY: map.trebleFreq,
 				left: "gain-",
 				right: "gain+",
 				top: "freq",
@@ -220,29 +289,29 @@ export default class SynthPartyApp extends PartyElement {
 			})
 		)
 		grid.append(
-			CCSlider.create({
+			createElement("cc-slider", {
 				label: "lfo1",
 				cc: map.lfo1Rate
 			})
 		)
 		grid.append(
-			CCSlider.create({
+			createElement("cc-slider", {
 				label: "lfo2",
 				cc: map.lfo2Rate
 			})
 		)
 		grid.append(
 			group("space", [
-				CCXY.create({
+				createElement("cc-xy", {
 					label: "delay",
-					x: map.delayFeedback,
-					y: map.delayRate,
+					ccX: map.delayFeedback,
+					ccY: map.delayRate,
 					left: "fb-",
 					right: "fb+",
 					top: "fast",
 					bottom: "slow"
 				}),
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "reverb",
 					cc: map.reverbAmount
 				})
@@ -250,7 +319,7 @@ export default class SynthPartyApp extends PartyElement {
 		)
 
 		grid.append(
-			CCSlider.create({
+			createElement("cc-slider", {
 				label: "noise",
 				cc: map.noiseVolume
 			})
@@ -258,15 +327,15 @@ export default class SynthPartyApp extends PartyElement {
 
 		grid.append(
 			group("distort", [
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "wavefold",
 					cc: map.waveFold
 				}),
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "bitcrush",
 					cc: map.bitcrushAmount
 				}),
-				CCSlider.create({
+				createElement("cc-slider", {
 					label: "decimate",
 					cc: map.sampleRateReduction
 				})
@@ -275,19 +344,19 @@ export default class SynthPartyApp extends PartyElement {
 
 		grid.append(
 			group("modfx", [
-				CCXY.create({
+				createElement("cc-xy", {
 					label: "feedback/rate",
-					x: map.modFXRate,
-					y: map.modFXFeedback,
+					ccX: map.modFXRate,
+					ccY: map.modFXFeedback,
 					left: "fb-",
 					right: "fb+",
 					top: "fast",
 					bottom: "slow"
 				}),
-				CCXY.create({
+				createElement("cc-xy", {
 					label: "offset/depth",
-					x: map.modFXOffset,
-					y: map.modFXDepth,
+					ccX: map.modFXOffset,
+					ccY: map.modFXDepth,
 					left: "offset-",
 					right: "offset+",
 					top: "deep",
@@ -333,10 +402,10 @@ export default class SynthPartyApp extends PartyElement {
 		)
 
 		grid.append(
-			CCXY.create({
+			createElement("cc-xy", {
 				label: "arp",
-				x: map.arpGate,
-				y: map.arpRate,
+				ccX: map.arpGate,
+				ccY: map.arpRate,
 				left: "short",
 				right: "long",
 				top: "fast",

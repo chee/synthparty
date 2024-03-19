@@ -53,7 +53,15 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		canvas {height: 100%; width: 100%; touch-action: none;}
 `
 
-	label = document.createElement("figcaption")
+	labelElement = document.createElement("figcaption")
+	/** @param {string} value */
+	set label(value) {
+		this.labelElement.textContent = value
+	}
+
+	get label() {
+		return this.labelElement.textContent
+	}
 	static get stylesheet() {
 		let stylesheet = new CSSStyleSheet()
 		stylesheet.replaceSync(AbstractControlChange.css)
@@ -65,7 +73,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		let figure = document.createElement("figure")
 		this.attachShadow({mode: "open"})
 		this.shadowRoot.appendChild(figure)
-		this.label.textContent = this.getAttribute("label")
+		this.labelElement.textContent = this.getAttribute("label")
 
 		let container = document.createElement("div")
 		container.id = "canvas-container"
@@ -74,7 +82,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		this.canvasContext = canvas.getContext("2d")
 		container.append(canvas)
 		figure.append(container)
-		figure.appendChild(this.label)
+		figure.appendChild(this.labelElement)
 		this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet]
 		if (IS_BASICALLY_A_PHONE) {
 			this.addEventListener("touchstart", this.#touchstart)
@@ -186,7 +194,11 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		context.lineWidth = AbstractControlChange.DPI
 	}
 
+	/** @abstract */
 	draw() {}
+
+	/** @abstract */
+	form = {}
 }
 
 /**

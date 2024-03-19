@@ -20,3 +20,22 @@ export function closest(node, selector) {
 	}
 	return null
 }
+
+/**
+ * @template {keyof HTMLElementTagNameMap} K
+ * @template {HTMLElementTagNameMap[K]} E
+ * @param {K} name
+ * @param {Record<string, any>} props
+ * @param {HTMLElement[]} children
+ * @returns {E}
+ */
+export function createElement(name, props, children = []) {
+	let element = document.createElement(name)
+	for (let [k, v] of Object.entries(props)) {
+		if (v != null && v !== "") {
+			element[k] = v
+		}
+	}
+	element.append(...children)
+	return element
+}

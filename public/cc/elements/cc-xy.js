@@ -14,38 +14,83 @@ export default class CCXY extends ControlChange {
 	top = "top"
 	bottom = "bottom"
 
-	static create(
-		/** @type {{
-			x: number
-			y: number
-			left?: string
-			right?: string
-			top?: string
-			bottom?: string
-			label: string
-		}} */
-		{x, y, left, right, top, bottom, label}
-	) {
-		let element = /** @type {CCXY} */ (document.createElement("cc-xy"))
-		element.ccX = x
-		element.ccY = y
-
-		if (left) {
-			element.left = left
+	static form = {
+		label: {
+			label: "name",
+			props: {
+				type: "text",
+				required: true
+			}
+		},
+		ccX: {
+			label: "cc number for x axis",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number",
+				required: true
+			}
+		},
+		ccY: {
+			label: "cc number for y axis",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number",
+				required: true
+			}
+		},
+		left: {
+			label: "label for left side",
+			props: {
+				type: "text"
+			}
+		},
+		right: {
+			label: "label for right side",
+			props: {type: "text"}
+		},
+		top: {
+			label: "label for top side",
+			props: {type: "text"}
+		},
+		bottom: {
+			label: "label for bottom side",
+			props: {type: "text"}
+		},
+		minX: {
+			label: "cc value at left side",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
+		},
+		maxX: {
+			label: "cc value at right side",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
+		},
+		minY: {
+			label: "cc value at top",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
+		},
+		maxY: {
+			label: "cc value at bottom",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
 		}
-		if (right) {
-			element.right = right
-		}
-		if (top) {
-			element.top = top
-		}
-		if (bottom) {
-			element.bottom = bottom
-		}
-		element.label.textContent = label
-		return element
 	}
-
 	get x() {
 		return this.gainX.value
 	}
@@ -60,13 +105,6 @@ export default class CCXY extends ControlChange {
 
 	set y(val) {
 		this.gainY.setValueAtTime(val, this.audioContext.currentTime)
-	}
-
-	get dynamicRangeY() {
-		return Math.abs(this.maxY - this.minY)
-	}
-	get dynamicRangeX() {
-		return Math.abs(this.maxX - this.minX)
 	}
 
 	setPropsFromAttributes() {
@@ -110,9 +148,8 @@ export default class CCXY extends ControlChange {
 		this.gainX = this.nodeX.gain
 		this.gainY = this.nodeY.gain
 
-		this.x = (this.maxX - this.minX) / 2
-
-		this.y = (this.maxY - this.minY) / 2
+		this.x = (this.maxX - this.minX) / 2 + this.minX
+		this.y = (this.maxY - this.minY) / 2 + this.minY
 
 		this.xAnalyzer = new AnalyserNode(this.audioContext, {
 			fftSize: 2048
@@ -156,7 +193,9 @@ export default class CCXY extends ControlChange {
 		let {mouse, event} = message
 
 		if (!event.altKey) {
-			let x = Math.round((mouse.x / this.canvas.width) * this.maxX + this.minX)
+			let x = Math.round(
+				(mouse.x / this.canvas.width) * (this.maxX - this.minX) + this.minX
+			)
 			this.x = x
 			this.announce("x", this.x)
 			this.announce("send-midi", [[0xb0, this.ccX, this.x]])
@@ -164,7 +203,9 @@ export default class CCXY extends ControlChange {
 		if (!event.shiftKey) {
 			let y =
 				this.maxY -
-				Math.round((mouse.y / this.canvas.height) * this.maxY + this.minY)
+				Math.round((mouse.y / this.canvas.height) * (this.maxY - this.minY)) +
+				this.minY
+
 			this.y = y
 			this.announce("y", this.y)
 			this.announce("send-midi", [[0xb0, this.ccY, this.y]])
@@ -194,8 +235,9 @@ export default class CCXY extends ControlChange {
 		this.clear()
 		let styles = this.styles
 
-		let pixelX = (this.x / this.dynamicRangeX) * width
-		let pixelY = ((this.maxY - this.y) / this.maxY - this.minY) * height
+		let pixelX = ((this.x - this.minY) / (this.maxX - this.minX)) * width
+		let pixelY =
+			height - ((this.y - this.minY) / (this.maxY - this.minY)) * height
 		context.strokeStyle = styles.line
 		context.lineWidth = DPI * 2
 		context.beginPath()

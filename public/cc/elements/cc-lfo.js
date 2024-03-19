@@ -2,7 +2,7 @@ import {partyElements} from "./party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 
 /** @type {AudioParam} */
-export default class CCSlider extends ControlChange {
+export default class CCLFO extends ControlChange {
 	min = 0
 	max = 127
 
@@ -63,9 +63,7 @@ export default class CCSlider extends ControlChange {
 
 		let val =
 			this.max -
-			Math.round(
-				(mouse.y / this.canvas.height) * (this.max - this.min) + this.min
-			)
+			Math.round((mouse.y / this.canvas.height) * this.max + this.min)
 		this.value = val
 		this.announce("value", val)
 		this.announce("send-midi", [[0xb0, this.cc, this.value]])
@@ -93,12 +91,10 @@ export default class CCSlider extends ControlChange {
 		let width = canvas.width
 		this.clear()
 		let styles = this.styles
-		let pixel =
-			height - ((this.value - this.min) / (this.max - this.min)) * height
-
+		let pixel = ((this.max - this.value) / this.max - this.min) * height
 		context.fillStyle = styles.line
 		context.fillRect(0, pixel, width, height - pixel)
 	}
 }
 
-partyElements.define("cc-slider", CCSlider)
+partyElements.define("cc-slider", CCLFO)
