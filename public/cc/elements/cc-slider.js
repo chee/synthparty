@@ -13,6 +13,41 @@ export default class CCSlider extends ControlChange {
 		this.gain.setValueAtTime(val, this.audioContext.currentTime)
 	}
 
+	static form = {
+		label: {
+			label: "name",
+			props: {
+				type: "text",
+				required: true
+			}
+		},
+		cc: {
+			label: "cc number",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number",
+				required: true
+			}
+		},
+		min: {
+			label: "cc value at base",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
+		},
+		max: {
+			label: "cc value at tip",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number"
+			}
+		}
+	}
+
 	setPropsFromAttributes() {
 		if (this.hasAttribute("cc")) {
 			this.cc = +this.getAttribute("cc")
@@ -30,7 +65,7 @@ export default class CCSlider extends ControlChange {
 		this.setPropsFromAttributes()
 		this.node = new GainNode(this.audioContext)
 		this.gain = this.node.gain
-		this.value = (this.max - this.min) / 2
+		this.value = (this.max - this.min) / 2 + this.min
 		this.analyzer = new AnalyserNode(this.audioContext, {
 			fftSize: 2048
 		})
@@ -63,9 +98,7 @@ export default class CCSlider extends ControlChange {
 
 		let val =
 			this.max -
-			Math.round(
-				(mouse.y / this.canvas.height) * (this.max - this.min) + this.min
-			)
+			Math.round((mouse.y / this.canvas.height) * (this.max - this.min))
 		this.value = val
 		this.announce("value", val)
 		this.announce("send-midi", [[0xb0, this.cc, this.value]])

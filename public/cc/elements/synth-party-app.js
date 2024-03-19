@@ -127,28 +127,38 @@ export default class SynthPartyApp extends PartyElement {
 			this.useMIDIFollow(createMIDIFollowMap(await file.text()))
 		})
 
-		let dialog = /** @type {HTMLDialogElement} */ (this.$("#dialog"))
 		this.$("#add-xy").addEventListener("click", () => {
-			dialog.textContent = ""
-			let formElement = this.createForm(CCXY.form)
-			dialog.append(formElement)
-			dialog.showModal()
-			dialog.addEventListener("ok", () => dialog.close())
-			dialog.addEventListener("cancel", () => dialog.close())
-			dialog.addEventListener(
-				"close",
-				() => {
-					if (dialog.returnValue == "ok") {
-						this.$("#grid").append(
-							createElement("cc-xy", this.readForm(CCXY.form, formElement))
-						)
-					} else {
-						console.info("cancel")
-					}
-				},
-				{once: true}
-			)
+			// todo this should be a static prop on PartyElements
+			this.dialogFor(CCXY, "cc-xy")
 		})
+
+		this.$("#add-slider").addEventListener("click", () => {
+			// todo the default htmlname should be a static prop on PartyElements
+			this.dialogFor(CCSlider, "cc-slider")
+		})
+	}
+
+	dialogFor(ElType, elName) {
+		let dialog = /** @type {HTMLDialogElement} */ (this.$("#dialog"))
+		dialog.textContent = ""
+		let formElement = this.createForm(ElType.form)
+		dialog.append(formElement)
+		dialog.showModal()
+		dialog.addEventListener("ok", () => dialog.close())
+		dialog.addEventListener("cancel", () => dialog.close())
+		dialog.addEventListener(
+			"close",
+			() => {
+				if (dialog.returnValue == "ok") {
+					this.$("#grid").append(
+						createElement(elName, this.readForm(ElType.form, formElement))
+					)
+				} else {
+					console.info("cancel")
+				}
+			},
+			{once: true}
+		)
 	}
 
 	createForm(form) {
@@ -420,6 +430,7 @@ export default class SynthPartyApp extends PartyElement {
 
 	shareIncomingMIDIMessage = event => {
 		let slurry = new MIDIMessageEvent(event.type, event)
+		// todo send specific clock events
 		this.subs.forEach(sub => {
 			sub.announce(event.type, event.data)
 		})

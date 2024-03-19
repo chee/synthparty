@@ -91,6 +91,7 @@ export default class CCXY extends ControlChange {
 			}
 		}
 	}
+
 	get x() {
 		return this.gainX.value
 	}
@@ -203,8 +204,7 @@ export default class CCXY extends ControlChange {
 		if (!event.shiftKey) {
 			let y =
 				this.maxY -
-				Math.round((mouse.y / this.canvas.height) * (this.maxY - this.minY)) +
-				this.minY
+				Math.round((mouse.y / this.canvas.height) * (this.maxY - this.minY))
 
 			this.y = y
 			this.announce("y", this.y)
@@ -235,9 +235,11 @@ export default class CCXY extends ControlChange {
 		this.clear()
 		let styles = this.styles
 
-		let pixelX = ((this.x - this.minY) / (this.maxX - this.minX)) * width
+		let pixelX = ((this.x - this.minX) / (this.maxX - this.minX)) * width
+
 		let pixelY =
 			height - ((this.y - this.minY) / (this.maxY - this.minY)) * height
+
 		context.strokeStyle = styles.line
 		context.lineWidth = DPI * 2
 		context.beginPath()
