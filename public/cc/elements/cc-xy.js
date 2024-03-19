@@ -9,10 +9,12 @@ export default class CCXY extends ControlChange {
 	minY = 0
 	maxX = 127
 	maxY = 127
-	left = "left"
-	right = "right"
-	top = "top"
-	bottom = "bottom"
+	left = ""
+	right = ""
+	top = ""
+	bottom = ""
+	x = 0
+	y = 0
 
 	static form = {
 		label: {
@@ -63,7 +65,8 @@ export default class CCXY extends ControlChange {
 			props: {
 				min: 0,
 				max: 127,
-				type: "number"
+				type: "number",
+				value: 0
 			}
 		},
 		maxX: {
@@ -71,7 +74,8 @@ export default class CCXY extends ControlChange {
 			props: {
 				min: 0,
 				max: 127,
-				type: "number"
+				type: "number",
+				value: 127
 			}
 		},
 		minY: {
@@ -79,7 +83,8 @@ export default class CCXY extends ControlChange {
 			props: {
 				min: 0,
 				max: 127,
-				type: "number"
+				type: "number",
+				value: 0
 			}
 		},
 		maxY: {
@@ -87,25 +92,10 @@ export default class CCXY extends ControlChange {
 			props: {
 				min: 0,
 				max: 127,
-				type: "number"
+				type: "number",
+				value: 127
 			}
 		}
-	}
-
-	get x() {
-		return this.gainX.value
-	}
-
-	get y() {
-		return this.gainY.value
-	}
-
-	set x(val) {
-		this.gainX.setValueAtTime(val, this.audioContext.currentTime)
-	}
-
-	set y(val) {
-		this.gainY.setValueAtTime(val, this.audioContext.currentTime)
 	}
 
 	setPropsFromAttributes() {
@@ -144,22 +134,8 @@ export default class CCXY extends ControlChange {
 	connectedCallback() {
 		super.connectedCallback()
 		this.setPropsFromAttributes()
-		this.nodeX = new GainNode(this.audioContext)
-		this.nodeY = new GainNode(this.audioContext)
-		this.gainX = this.nodeX.gain
-		this.gainY = this.nodeY.gain
-
 		this.x = (this.maxX - this.minX) / 2 + this.minX
 		this.y = (this.maxY - this.minY) / 2 + this.minY
-
-		this.xAnalyzer = new AnalyserNode(this.audioContext, {
-			fftSize: 2048
-		})
-		this.yAnalyzer = new AnalyserNode(this.audioContext, {
-			fftSize: 2048
-		})
-		this.nodeX.connect(this.xAnalyzer)
-		this.nodeY.connect(this.yAnalyzer)
 		this.draw()
 		this.party.when("tick", () => {
 			this.tick()
@@ -225,7 +201,7 @@ export default class CCXY extends ControlChange {
 	}
 
 	draw() {
-		super.connectedCallback()
+		super.scaleCanvasForDPI()
 		if (this.disabled) {
 			return
 		}

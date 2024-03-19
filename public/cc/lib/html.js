@@ -1,6 +1,9 @@
 /**
+ * @template {keyof HTMLElementTagNameMap} K
+ * @template {HTMLElementTagNameMap[K]} E
  * @param {HTMLElement} node
- * @param {string} selector
+ * @param {K} selector
+ * @returns {E|null}
  */
 export function closest(node, selector) {
 	if (Object.is(document.documentElement, node)) {

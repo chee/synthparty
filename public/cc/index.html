@@ -37,13 +37,16 @@
 					output
 					<midi-device direction="output" software></midi-device>
 				</label>
-				<button id="default-midi-follow">use default Deluge MIDIFollow.XML</button>
+				<button id="default-midi-follow">
+					use default Deluge MIDIFollow.XML
+				</button>
 				<label>
 					use custom deluge midifollow.xml
 					<input id="custom-midi-follow" type="file" accept=".XML">
 				</label>
 				<button id="add-xy">add xy</button>
 				<button id="add-slider">add slider</button>
+				<button hidden id="add-lfo">add lfo</button>
 			</aside>
 			<style>
 				* {
@@ -67,6 +70,11 @@
 				cc-slider {
 					--cc-height: 200px;
 					--cc-width: 40px;
+				}
+
+				cc-lfo {
+					--cc-height: 200px;
+					--cc-width: 200px;
 				}
 
 				#panel {

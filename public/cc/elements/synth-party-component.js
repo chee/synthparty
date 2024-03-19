@@ -6,25 +6,10 @@ import SynthPartyApp from "./synth-party-app.js"
 export default class SynthPartyComponent extends PartyElement {
 	static DPI = 4
 	disabled = false
-	/** @type {number} */
-	#clock
-
-	connectedCallback() {
-		this.#clock = window.setInterval(() => this.tick(), 4)
-	}
-
-	disconnectCallback() {
-		clearInterval(this.#clock)
-	}
-
-	tick() {}
-
+	connectedCallback() {}
+	disconnectCallback() {}
 	/** @type {SynthPartyApp} */
 	#party
-
-	get audioContext() {
-		return this.party.audioContext
-	}
 
 	/** @return {SynthPartyApp} */
 	get party() {

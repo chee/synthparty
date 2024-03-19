@@ -1,5 +1,6 @@
 import {createElement} from "../lib/html.js"
 import createMIDIFollowMap from "../lib/midi-follow-map.js"
+import CCLFO from "./cc-lfo.js"
 import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
 import {PartyElement, partyElements} from "./party-elements.js"
@@ -63,11 +64,6 @@ function oscillator(label, {volume, pitch, width, feedback, wavetable}) {
 
 /** @abstract */
 export default class SynthPartyApp extends PartyElement {
-	audioContext = new AudioContext({
-		sampleRate: 44100,
-		latencyHint: "interactive"
-	})
-
 	/** @type {number} */
 	#clock
 
@@ -114,7 +110,7 @@ export default class SynthPartyApp extends PartyElement {
 		this.when("send-midi", ([data, timestamp]) => {
 			this.send(data, timestamp)
 		})
-		window.addEventListener("click", () => this.audioContext.resume())
+
 		this.#clock = window.setInterval(() => {
 			this.announce("tick")
 		}, 4)
@@ -136,6 +132,11 @@ export default class SynthPartyApp extends PartyElement {
 			// todo the default htmlname should be a static prop on PartyElements
 			this.dialogFor(CCSlider, "cc-slider")
 		})
+
+		this.$("#add-lfo").addEventListener("click", () => {
+			// todo the default htmlname should be a static prop on PartyElements
+			this.dialogFor(CCLFO, "cc-lfo")
+		})
 	}
 
 	dialogFor(ElType, elName) {
@@ -156,6 +157,7 @@ export default class SynthPartyApp extends PartyElement {
 				} else {
 					console.info("cancel")
 				}
+				dialog.returnValue = ""
 			},
 			{once: true}
 		)

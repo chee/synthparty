@@ -169,6 +169,10 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	}
 
 	connectedCallback() {
+		this.scaleCanvasForDPI()
+	}
+
+	scaleCanvasForDPI() {
 		this.canvas.width = this.width * AbstractControlChange.DPI
 		this.canvas.height = this.height * AbstractControlChange.DPI
 	}

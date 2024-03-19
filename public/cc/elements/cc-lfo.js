@@ -1,43 +1,65 @@
 import {partyElements} from "./party-elements.js"
 import ControlChange from "./abstract-control-change.js"
+import AbstractControlChange from "./abstract-control-change.js"
 
 /** @type {AudioParam} */
 export default class CCLFO extends ControlChange {
 	min = 0
 	max = 127
 
-	get value() {
-		return this.gain.value
-	}
-	set value(val) {
-		this.gain.setValueAtTime(val, this.audioContext.currentTime)
+	static form = {
+		label: {
+			label: "name",
+			props: {
+				type: "text",
+				required: true
+			}
+		},
+		cc: {
+			label: "cc number",
+			props: {
+				min: 0,
+				max: 127,
+				type: "number",
+				required: true
+			}
+		},
+		shape: {
+			label: "shape",
+			props: {
+				value: "sine",
+				required: true
+			}
+		},
+		frequency: {
+			label: "speed",
+			props: {
+				type: "number"
+			}
+		}
+		// min: {
+		// 	label: "cc value at base",
+		// 	props: {
+		// 		min: 0,
+		// 		max: 127,
+		// 		type: "number"
+		// 	}
+		// },
+		// max: {
+		// 	label: "cc value at tip",
+		// 	props: {
+		// 		min: 0,
+		// 		max: 127,
+		// 		type: "number"
+		// 	}
+		// }
 	}
 
-	setPropsFromAttributes() {
-		if (this.hasAttribute("cc")) {
-			this.cc = +this.getAttribute("cc")
-		}
-		if (this.hasAttribute("min")) {
-			this.min = +this.getAttribute("min")
-		}
-		if (this.hasAttribute("max")) {
-			this.max = +this.getAttribute("max")
-		}
-	}
-
-	connectedCallback() {
-		super.connectedCallback()
-		this.setPropsFromAttributes()
-		this.node = new GainNode(this.audioContext)
-		this.gain = this.node.gain
+	constructor() {
+		super()
 		this.value = (this.max - this.min) / 2
-		this.analyzer = new AnalyserNode(this.audioContext, {
-			fftSize: 2048
-		})
-		this.node.connect(this.analyzer)
 		this.draw()
-		this.announce("sub", this)
-		this.when("midimessage", this.parseIncomingMIDI)
+		this.party.addEventListener("tick", this.tick)
 	}
 
 	parseIncomingMIDI = data => {
@@ -65,13 +87,15 @@ export default class CCLFO extends ControlChange {
 			this.max -
 			Math.round((mouse.y / this.canvas.height) * this.max + this.min)
 		this.value = val
-		this.announce("value", val)
-		this.announce("send-midi", [[0xb0, this.cc, this.value]])
+		// this.announce("value", val)
+		// this.announce("send-midi", [[0xb0, this.cc, this.value]])
 
 		this.draw()
 	}
 
-	tick() {}
+	tick = () => {
+		this.draw()
+	}
 
 	get styles() {
 		let fill =
@@ -82,19 +106,30 @@ export default class CCLFO extends ControlChange {
 	}
 
 	draw() {
-		super.connectedCallback()
-		if (this.disabled) {
-			return
-		}
-		let [canvas, context] = [this.canvas, this.canvasContext]
-		let height = canvas.height
-		let width = canvas.width
-		this.clear()
-		let styles = this.styles
-		let pixel = ((this.max - this.value) / this.max - this.min) * height
-		context.fillStyle = styles.line
-		context.fillRect(0, pixel, width, height - pixel)
+		// super.scaleCanvasForDPI()
+		// if (this.disabled) {
+		// 	return
+		// }
+		// let [canvas, context] = [this.canvas, this.canvasContext]
+		// let height = canvas.height
+		// let width = canvas.width
+		// this.clear()
+		// let styles = this.styles
+		// context.lineWidth = AbstractControlChange.DPI * 4
+		// context.strokeStyle = styles.line
+		// let sliceWidth = width / this.analyzer.frequencyBinCount
+		// this.analyzer.getByteTimeDomainData(this.analyzerBuffer)
+		// {
+		// 	for (let i = 1; i < this.analyzer.frequencyBinCount; i++) {
+		// 		const v = this.analyzerBuffer[i] / 128.0
+		// 		const y = (v * canvas.height) / 2
+		// 		let x = i * sliceWidth
+		// 		context.lineTo(x, y)
+		// 	}
+		// }
+		// context.lineTo(width, height / 2)
+		// context.stroke()
 	}
 }
 
-partyElements.define("cc-slider", CCLFO)
+partyElements.define("cc-lfo", CCLFO)

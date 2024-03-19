@@ -5,13 +5,7 @@ import ControlChange from "./abstract-control-change.js"
 export default class CCSlider extends ControlChange {
 	min = 0
 	max = 127
-
-	get value() {
-		return this.gain.value
-	}
-	set value(val) {
-		this.gain.setValueAtTime(val, this.audioContext.currentTime)
-	}
+	value = 0
 
 	static form = {
 		label: {
@@ -63,13 +57,7 @@ export default class CCSlider extends ControlChange {
 	connectedCallback() {
 		super.connectedCallback()
 		this.setPropsFromAttributes()
-		this.node = new GainNode(this.audioContext)
-		this.gain = this.node.gain
 		this.value = (this.max - this.min) / 2 + this.min
-		this.analyzer = new AnalyserNode(this.audioContext, {
-			fftSize: 2048
-		})
-		this.node.connect(this.analyzer)
 		this.draw()
 		this.announce("sub", this)
 		this.when("midimessage", this.parseIncomingMIDI)
