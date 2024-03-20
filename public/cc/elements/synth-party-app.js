@@ -1,5 +1,7 @@
 import {createElement} from "../lib/html.js"
 import createMIDIFollowMap from "../lib/midi-follow-map.js"
+import AbstractControlChange from "./abstract-control-change.js"
+import CCADSR from "./cc-adsr.js"
 import CCLFO from "./cc-lfo.js"
 import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
@@ -136,6 +138,11 @@ export default class SynthPartyApp extends PartyElement {
 		this.$("#add-lfo").addEventListener("click", () => {
 			// todo the default htmlname should be a static prop on PartyElements
 			this.dialogFor(CCLFO, "cc-lfo")
+		})
+
+		this.$("#add-adsr").addEventListener("click", () => {
+			// todo the default htmlname should be a static prop on PartyElements
+			this.dialogFor(CCADSR, "cc-adsr")
 		})
 	}
 
@@ -424,6 +431,26 @@ export default class SynthPartyApp extends PartyElement {
 				bottom: "slow"
 			})
 		)
+
+		grid.append(
+			createElement("cc-adsr", {
+				label: "envelope 1",
+				ccAttack: map.env1Attack,
+				ccDecay: map.env1Decay,
+				ccSustain: map.env1Sustain,
+				ccRelease: map.env1Release
+			})
+		)
+
+		grid.append(
+			createElement("cc-adsr", {
+				label: "envelope 2",
+				ccAttack: map.env2Attack,
+				ccDecay: map.env2Decay,
+				ccSustain: map.env2Sustain,
+				ccRelease: map.env2Release
+			})
+		)
 	}
 
 	disconnectedCallback() {
@@ -441,6 +468,7 @@ export default class SynthPartyApp extends PartyElement {
 	/**
 	 * @param {number[]} data
 	 * @param {number?} timestamp
+
 	 */
 	send(data, timestamp) {
 		try {
@@ -448,6 +476,9 @@ export default class SynthPartyApp extends PartyElement {
 		} catch (error) {
 			console.error(data, error)
 		}
+		this.subs.forEach(sub => {
+			sub.announce("midimessage", data)
+		})
 	}
 }
 

@@ -27,8 +27,9 @@ export function closest(node, selector) {
 /**
  * @template {keyof HTMLElementTagNameMap} K
  * @template {HTMLElementTagNameMap[K]} E
+ * @template {keyof E} EK
  * @param {K} name
- * @param {Record<string, any>} props
+ * @param {Record<EK, E[EK]>} props
  * @param {HTMLElement[]} children
  * @returns {E}
  */

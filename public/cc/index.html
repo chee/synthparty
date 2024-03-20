@@ -47,6 +47,7 @@
 				<button id="add-xy">add xy</button>
 				<button id="add-slider">add slider</button>
 				<button hidden id="add-lfo">add lfo</button>
+				<button id="add-adsr">add adsr</button>
 			</aside>
 			<style>
 				* {
@@ -63,10 +64,12 @@
 					width: 80vw;
 					--cc-fill: var(--cherries-dark);
 				}
+
 				cc-xy {
 					--cc-height: 200px;
 					--cc-width: 200px;
 				}
+
 				cc-slider {
 					--cc-height: 200px;
 					--cc-width: 40px;
@@ -75,6 +78,11 @@
 				cc-lfo {
 					--cc-height: 200px;
 					--cc-width: 200px;
+				}
+
+				cc-adsr {
+					--cc-height: 200px;
+					--cc-width: 400px;
 				}
 
 				#panel {
@@ -92,6 +100,7 @@
 					gap: 1em;
 					box-shadow: 0 0 1em #00000033;
 				}
+
 				label {
 					display: flex;
 					flex-direction: column;
