@@ -118,7 +118,8 @@ export default class DelugeKit extends PartyElement {
 		customElements.whenDefined("deluge-button").then(() => {
 			this.$("#download").when("click", (_, event) => {
 				kit.download({
-					sortable: !event.shiftKey
+					sortable: !event.shiftKey,
+					addSmplBlock: !event.altKey
 				})
 			})
 

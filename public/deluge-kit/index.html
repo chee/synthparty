@@ -28,7 +28,6 @@
 				<deluge-button id="add" label="+ add sounds"></deluge-button>
 				<deluge-button id="download" label="download zip"></deluge-button>
 				<label style="font-size: 0.8em">
-
 					<midi-input software=""></midi-input>
 				</label>
 			</header>
@@ -62,6 +61,11 @@
 				deluge-sound {
 					margin-top: 1rem;
 					box-shadow: 0 0 0 1px var(--line);
+				}
+
+				label {
+					display: flex;
+					flex-direction: column;
 				}
 			</style>
 		</template>

@@ -109,7 +109,7 @@ export default class Kit {
 		return element.innerHTML
 	}
 
-	blob({sortable = false} = {}) {
+	blob({sortable = false, addSmplBlock = false} = {}) {
 		let files = [
 			{
 				name: `KITS/${this.name}.XML`,
@@ -121,16 +121,16 @@ export default class Kit {
 		for (let sound of this.sounds) {
 			files.push({
 				name: sound.filename(this.name, {sortable}),
-				input: sound.blob()
+				input: sound.blob({addSmplBlock})
 			})
 		}
 
 		return downloadZip(files).blob()
 	}
 
-	async download({sortable = false} = {}) {
+	async download({sortable = false, addSmplBlock = false} = {}) {
 		let link = document.createElement("a")
-		link.href = URL.createObjectURL(await this.blob({sortable}))
+		link.href = URL.createObjectURL(await this.blob({sortable, addSmplBlock}))
 		link.download = this.name + ".zip"
 		link.click()
 		link.remove()

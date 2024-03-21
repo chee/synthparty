@@ -22,9 +22,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * @param {AudioBuffer} audiobuffer
- * @param {number} index
+ * @param {number} [index]
  */
-export default function audioBufferToWav(audiobuffer, index = 0) {
+export default function audioBufferToWav(audiobuffer, index) {
 	let numChannels = audiobuffer.numberOfChannels
 	let sampleRate = audiobuffer.sampleRate
 
@@ -88,15 +88,18 @@ class Encoder {
  * @param {Float32Array} samples
  * @param {number} sampleRate
  * @param {number} numChannels
+ * @param {number} [note]
  */
 export function encodeWAV(samples, sampleRate, numChannels, note) {
+	let addSmplBlock = typeof note == "number"
 	let bytesPerSample = 2
 	let blockAlign = numChannels * bytesPerSample
 	let samplelength = samples.length * bytesPerSample
 	let headerlength = 44
 	let smplchunklength = 48
 	// let instchunklength = 15
-	let bufferlength = headerlength + samplelength + smplchunklength // + instchunklength
+	let bufferlength =
+		headerlength + samplelength + (addSmplBlock ? smplchunklength : 0) // + instchunklength
 	let encoder = new Encoder(bufferlength, {littleEndian: true})
 
 	// RIFF identifier
@@ -122,36 +125,38 @@ export function encodeWAV(samples, sampleRate, numChannels, note) {
 	// bits per sample
 	encoder.uint16(8 * bytesPerSample)
 
-	/* write the smpl chunk for smart samplers like the synthstrom deluge */
-	encoder.string("smpl")
-	// chunk size less header
-	encoder.uint32(smplchunklength - 8)
-	// manufacturer. should i make it 0x01000041 for Roland? selling knock-off
-	// Roland wave files down the market. i wonder if there are any devices that
-	// do anything with that information. error: not an official microsoft® wave
-	// file
-	encoder.uint32(0)
-	// product.
-	encoder.uint32(0)
-	// sample period: sample-rate 44.1k
-	encoder.uint32(0x5893)
-	// midi note 0-127, if anyone ever adds more than 127 rows i don't know what
-	// will happen to them
-	encoder.uint32(note)
-	// midi pitch fraction (this is a tiny tiny tiny pitch bump that should be
-	// imperceptible, but forces the deluge to recognize a midi note of 0 and not
-	// consider it disabled)
-	encoder.uint32(1)
-	// smpte format
-	encoder.uint32(0)
-	// smpte offset
-	encoder.uint32(0)
-	// number loops (none)
-	encoder.uint32(0)
-	// sampler data length
-	encoder.uint32(4)
-	// sampler data
-	encoder.string("chee")
+	if (addSmplBlock) {
+		/* write the smpl chunk for smart samplers like the synthstrom deluge */
+		encoder.string("smpl")
+		// chunk size less header
+		encoder.uint32(smplchunklength - 8)
+		// manufacturer. should i make it 0x01000041 for Roland? selling knock-off
+		// Roland wave files down the market. i wonder if there are any devices that
+		// do anything with that information. error: not an official microsoft® wave
+		// file
+		encoder.uint32(0)
+		// product.
+		encoder.uint32(0)
+		// sample period: sample-rate 44.1k
+		encoder.uint32(0x5893)
+		// midi note 0-127, if anyone ever adds more than 127 rows i don't know what
+		// will happen to them
+		encoder.uint32(note)
+		// midi pitch fraction (this is a tiny tiny tiny pitch bump that should be
+		// imperceptible, but forces the deluge to recognize a midi note of 0 and not
+		// consider it disabled)
+		encoder.uint32(1)
+		// smpte format
+		encoder.uint32(0)
+		// smpte offset
+		encoder.uint32(0)
+		// number loops (none)
+		encoder.uint32(0)
+		// sampler data length
+		encoder.uint32(4)
+		// sampler data
+		encoder.string("chee")
+	}
 
 	// data chunk identifier
 	encoder.string("data")

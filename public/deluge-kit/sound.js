@@ -25,6 +25,10 @@ function removeExtension(filename = "") {
 	return filename.replace(/(.*)\.[^.]+$/, (_, c) => c)
 }
 
+function removeNumericPrefix(filename = "") {
+	return filename.replace(/^\d\d\d (.*)/, (_, c) => c)
+}
+
 export default class Sound {
 	index = -1
 	name = "new sound"
@@ -223,7 +227,7 @@ export default class Sound {
 	/** @param {File} file */
 	static async fromFile(file) {
 		let arraybuffer = await file.arrayBuffer()
-		let name = removeExtension(file.name)
+		let name = removeNumericPrefix(removeExtension(file.name))
 
 		if (isAIF(file)) {
 			// activate scoundrel mode
@@ -285,8 +289,8 @@ export default class Sound {
 		}
 	}
 
-	blob() {
-		return new Blob([wav(this.audiobuffer, this.index)])
+	blob({addSmplBlock = false}) {
+		return new Blob([wav(this.audiobuffer, addSmplBlock ? this.index : null)])
 	}
 
 	noteOn() {
