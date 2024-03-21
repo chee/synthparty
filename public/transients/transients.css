@@ -1,0 +1,38 @@
+:root {
+	--page-fill: var(--cherries-light);
+	--shadow-px: 2px;
+	/* --shadow: color-mix(in srgb, var(--fill) 80%, var(--line)); */
+	--heavy-shadow-px: 4px;
+	--heavy-shadow: color-mix(in srgb, var(--fill) 60%, var(--line));
+	/* --button-border-px: 4px; */
+	--fill: var(--cherries-line);
+	--line: var(--cherries-dark);
+}
+
+* {
+	scrollbar-color: var(--line) var(--fill);
+	font-family: qp;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 1.4em;
+	line-height: 1.15;
+	background: var(--fill);
+	color: var(--line);
+	background: var(--cherries-light);
+}
+
+[drop-target] {
+	outline: 1em dotted var(--greem);
+}
+
+main {
+	display: flex;
+	flex-direction: column;
+}
+
+transient-sample {
+	--fill: var(--cherries-dark);
+	--line: var(--cherries-light);
+}
