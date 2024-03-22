@@ -43,15 +43,19 @@ export default class MIDIPortElement extends PartyElement {
 			this.getAttribute("direction") == "input" ? "input" : "output"
 		this.#select.addEventListener("change", this.#change)
 
-		navigator
-			.requestMIDIAccess({
-				software: this.truthy("software"),
-				sysex: this.truthy("sysex")
-			})
-			.then(access => {
-				this.#midi = access
-				this.refreshDevices()
-			})
+		try {
+			navigator
+				.requestMIDIAccess({
+					software: this.truthy("software"),
+					sysex: this.truthy("sysex")
+				})
+				.then(access => {
+					this.#midi = access
+					this.refreshDevices()
+				})
+		} catch (error) {
+			console.error(error, "couldnt open midi")
+		}
 	}
 
 	disconnectedCallback() {

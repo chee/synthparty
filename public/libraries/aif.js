@@ -42,8 +42,8 @@ export function toAudiobuffer(arraybuffer) {
 	let view = new DataView(arraybuffer)
 	let sampleRate = -1
 	let numberOfChannels = -1
-	/** @type {ArrayBuffer} */
-	let ssnd
+	/** @type {ArrayBuffer?} */
+	let ssnd = null
 	let textDecoder = new TextDecoder()
 
 	for (let offset = 0; offset + 4 < arraybuffer.byteLength; offset += 1) {
@@ -74,11 +74,11 @@ export function toAudiobuffer(arraybuffer) {
 		}
 	}
 
-	let audiobuffer = decode16BitPCM(ssnd, {
-		numberOfChannels,
-		sampleRate,
-		littleEndian: true
-	})
-
-	return new Sample(audiobuffer, name)
+	if (ssnd) {
+		return decode16BitPCM(ssnd, {
+			numberOfChannels,
+			sampleRate,
+			littleEndian: true
+		})
+	}
 }

@@ -1,4 +1,4 @@
-import wav from "./lib/audiobuffer-to-wav.js"
+import wav from "/libraries/audio-buffer-to-wav.js"
 let iphoneSilenceElement = document.querySelector("audio")
 
 export default class Sample {

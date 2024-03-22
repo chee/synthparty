@@ -22,9 +22,9 @@ export default class DelugeKit extends PartyElement {
 
 		let midiinput = document
 			.querySelector("deluge-kit")
-			.shadowRoot.querySelector("midi-input")
+			.shadowRoot.querySelector("midi-port")
 
-		midiinput.addEventListener("midimessage", event => {
+		midiinput?.addEventListener("midimessage", event => {
 			let data = event.data
 			let [msg] = data
 			let byte = msg.toString(16)
