@@ -19,11 +19,27 @@
 	<link rel="manifest" href="/aux/app.webmanifest" />
 
 	<h1>split audio file by transients</h1>
+	this page is completely cursed, ignore it
 	<main>
 		<input id="file" value="choose file" type="file" />
 		<label>
-			initial threshold <span>[1.22]</span>
-			<input type="range" id="threshold" min="0" max="2" step="0.01" />
+			technique
+			<select id="technique">
+				<option value="spectral-std">spectral (std)</option>
+				<option value="spectral-special">spectral avg</option>
+				<option value="energy">energy</option>
+				<option value="misc">misc</option>
+			</select>
+		</label>
+		<label>
+			initial threshold <span>[0.2]</span>
+			<input
+				type="range"
+				id="threshold"
+				min="0"
+				max="2"
+				step="0.01"
+				value="0.2" />
 		</label>
 		<label>
 			midi input (from midi note 0)

@@ -13,7 +13,7 @@
 		"start": "deno run --allow-read --allow-net ./start.ts public -p 54321 --cors"
 	},
 	"dependencies": {
-		"@chee/dsp": "^1.0.0",
+		"@chee/dsp": "^1.0.2",
 		"@interactjs/interactjs": "^1.10.26",
 		"@types/audioworklet": "^0.0.50",
 		"client-zip": "^2.4.4",

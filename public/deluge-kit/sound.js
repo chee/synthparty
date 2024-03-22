@@ -1,6 +1,6 @@
 import {createElement, renderNumber as int32} from "./lib/xml.js"
 import wav from "/libraries/audio-buffer-to-wav.js"
-import showOpenFilePicker from "./lib/open-file-picker.js"
+import showOpenFilePicker from "/libraries/open-file-picker.js"
 import rand from "./lib/rand.js"
 import colours from "./lib/colours.js"
 import {decode16BitPCM, isAIF} from "/libraries/aif.js"
