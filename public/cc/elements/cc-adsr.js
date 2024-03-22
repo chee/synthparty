@@ -133,10 +133,9 @@ export default class CCADSR extends ControlChange {
 	 */
 	mouseWithinSpot(mouse, x, y) {
 		return (
-			mouse.x > x - this.handleSize * 2 &&
-			mouse.x < x + this.handleSize * 2 &&
-			mouse.y > y - this.handleSize * 2 &&
-			mouse.y < y + this.handleSize * 2
+			mouse.x > x - this.handleSize * 2 && mouse.x < x + this.handleSize * 2 //&&
+			// mouse.y > y - this.handleSize * 2 &&
+			// mouse.y < y + this.handleSize * 2
 		)
 	}
 
@@ -145,16 +144,13 @@ export default class CCADSR extends ControlChange {
 	 * @returns {"a" | "ds" | "r" | null}
 	 */
 	mouseState(mouse) {
-		if (this.mouseWithinSpot(mouse, this.attackX, 0)) {
+		if (mouse.x <= this.attackX + this.handleSize) {
 			return "a"
-		} else if (this.mouseWithinSpot(mouse, this.decayX, this.sustainY)) {
+		} else if (mouse.x < this.releaseStartX + this.handleSize) {
 			return "ds"
-		} else if (
-			this.mouseWithinSpot(mouse, this.releaseEndX, this.canvas.height)
-		) {
+		} else {
 			return "r"
 		}
-		return null
 	}
 
 	/**
@@ -170,25 +166,28 @@ export default class CCADSR extends ControlChange {
 		if (type == "move" && this.state) {
 			let {width, height} = this.canvas
 			let {x, y} = mouse
+
 			let {high, low} = this
 
+			let xd = (mouse.xd / (width / 4 / DPI)) * this.diff + low
+			let yd = (mouse.yd / (height / 4)) * this.diff + low
 			if (this.state == "a") {
-				let attack = (x / (width / 4)) * this.diff + low
+				// console.log((mouse.xd / width) * this.diff + low + this.attack)
+				let attack = xd + this.attack
 				// todo why not a setter that auto sends midi
 				this.attack = Math.round(clamp(low, attack, high))
 				this.announce("send-midi", [[0xb0, this.ccAttack, this.attack]])
 			}
 			if (this.state == "ds") {
-				let decay = ((x - this.attackX) / (width / 4)) * this.diff + low
+				let decay = xd + this.decay
 				this.decay = clamp(low, decay, high)
-				let sus = high - (y / height) * this.diff + low
+				let sus = yd + this.sustain
 				this.sustain = Math.round(clamp(low, sus, high))
 				this.announce("send-midi", [[0xb0, this.ccDecay, this.decay]])
 				this.announce("send-midi", [[0xb0, this.ccSustain, this.sustain]])
 			}
 			if (this.state == "r") {
-				let release =
-					((x - this.releaseStartX) / (width / 4)) * this.diff + low
+				let release = xd + this.release
 				this.release = Math.round(clamp(low, release, high))
 				this.announce("send-midi", [[0xb0, this.ccRelease, this.release]])
 			}

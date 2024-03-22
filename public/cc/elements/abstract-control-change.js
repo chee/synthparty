@@ -3,7 +3,7 @@ import SynthPartyComponent from "./synth-party-component.js"
 /**
  * @typedef {{
 		type: "start" | "move" | "end"
-		mouse: {x: number, y: number}
+		mouse: {x: number, y: number, xd?: number, yd?: number}
 		event: MouseEvent | TouchEvent
 	}} MouseMessage
  */
@@ -118,16 +118,31 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		}
 	}
 
+	#mouseLastX = 0
+	#mouseLastY = 0
+
 	/** @param {MouseEvent} event */
 	#mousedown(event) {
 		// assumes nothing ever changes size while you're trying to trim a sample
 		let bounds = this.canvas.getBoundingClientRect()
 		let mouse = resolveMouseFromEvent(event, bounds)
+		this.#mouseLastX = event.clientX
+		this.#mouseLastY = event.clientY
 		this.mouse({type: "start", mouse, event})
 		/** @param {MouseEvent} event */
 		let mousemove = event => {
 			let mouse = resolveMouseFromEvent(event, bounds)
-			this.mouse({type: "move", mouse, event})
+			this.mouse({
+				type: "move",
+				mouse: {
+					...mouse,
+					xd: event.clientX - this.#mouseLastX,
+					yd: this.#mouseLastY - event.clientY
+				},
+				event
+			})
+			this.#mouseLastX = event.clientX
+			this.#mouseLastY = event.clientY
 		}
 		window.addEventListener("mousemove", mousemove)
 
