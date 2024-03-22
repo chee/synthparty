@@ -1,4 +1,4 @@
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 import DelugeEditor from "./editor-element.js"
 import Sound from "../sound.js"
 

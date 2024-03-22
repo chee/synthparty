@@ -1,1 +1,0 @@
-import '@interactjs/actions/plugin';

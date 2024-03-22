@@ -1,4 +1,4 @@
-import {partyElements, PartyElement} from "./party-elements.js"
+import {partyElements, PartyElement} from "/elements/party-elements.js"
 
 export default class MidiInput extends PartyElement {
 	#select = document.createElement("select")

@@ -55,8 +55,70 @@ document.querySelector("#download").addEventListener("click", async () => {
 let fileInput = document.querySelector("#file")
 fileInput.addEventListener("change", async () => {
 	;[file] = fileInput.files
-	split(file, initialThreshold)
+	let context = new AudioContext()
+	let arraybuffer = await file.arrayBuffer()
+	let audiobuffer = await context.decodeAudioData(arraybuffer)
+	console.log(fft(audiobuffer))
+	// split(file, initialThreshold)
 })
+
+/** @param {AudioBuffer} audiobuffer */
+async function fft(audiobuffer) {
+	let offlineContext = new OfflineAudioContext({
+		numberOfChannels: audiobuffer.numberOfChannels,
+		sampleRate: audiobuffer.sampleRate,
+		length: audiobuffer.length
+	})
+
+	let analyser = new AnalyserNode(offlineContext, {
+		fftSize: 2048
+	})
+
+	let source = new AudioBufferSourceNode(offlineContext, {
+		buffer: audiobuffer
+	})
+	source.connect(analyser)
+	analyser.connect(offlineContext.destination)
+	console.log(
+		audiobuffer.length * audiobuffer.sampleRate * audiobuffer.numberOfChannels
+	)
+
+	let freqs = new Float32Array({
+		length:
+			audiobuffer.length *
+			audiobuffer.sampleRate *
+			audiobuffer.numberOfChannels
+	})
+
+	let times = new Float32Array({
+		length:
+			audiobuffer.length *
+			audiobuffer.sampleRate *
+			audiobuffer.numberOfChannels
+	})
+
+	{
+		let offset = 0
+		let fftBuff = new Float32Array({length: analyser.fftSize})
+		offlineContext.addEventListener("statechange", event => {
+			if (offlineContext.state == "suspended") {
+				analyser.getFloatFrequencyData(fftBuff)
+				freqs.set(fftBuff, offset)
+				analyser.getFloatTimeDomainData(fftBuff)
+				times.set(fftBuff, offset)
+				offset += analyser.fftSize
+			}
+			offlineContext.resume()
+			offlineContext.suspend(event.playbackTime + 0.1)
+		})
+	}
+
+	offlineContext.suspend(0.1)
+	source.start()
+	return new Promise(yay =>
+		offlineContext.startRendering().then(() => yay([freqs, times]))
+	)
+}
 
 // todo drag and drop
 // document.querySelector("#browse").addEventListener("click", async () => {

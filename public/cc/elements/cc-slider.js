@@ -1,11 +1,14 @@
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 
-/** @type {AudioParam} */
+/**
+ * @extends {ControlChange<{value: number}>}
+ */
 export default class CCSlider extends ControlChange {
 	min = 0
 	max = 127
 	value = 0
+	cc = -1
 
 	static form = {
 		label: {
@@ -44,13 +47,13 @@ export default class CCSlider extends ControlChange {
 
 	setPropsFromAttributes() {
 		if (this.hasAttribute("cc")) {
-			this.cc = +this.getAttribute("cc")
+			this.cc = +(this.getAttribute("cc") || -1)
 		}
 		if (this.hasAttribute("min")) {
-			this.min = +this.getAttribute("min")
+			this.min = +(this.getAttribute("min") || -1)
 		}
 		if (this.hasAttribute("max")) {
-			this.max = +this.getAttribute("max")
+			this.max = +(this.getAttribute("max") || -1)
 		}
 	}
 
@@ -63,16 +66,17 @@ export default class CCSlider extends ControlChange {
 		this.when("midimessage", this.parseIncomingMIDI)
 	}
 
+	/** @param {import("./abstract-control-change.js").MIDIData} data */
 	parseIncomingMIDI = data => {
 		let [msg, cc, value] = data
 		let byte = msg.toString(16)
-		let [type, channel] = byte
+		let [type, _channel] = byte
 		if (type != "b") {
 			//console.debug("ignoring non-cc message")
 		}
 		if (type == "b") {
-			if (cc == this.cc) {
-				this.value = value
+			if (cc == this.cc && typeof this.value == "number") {
+				this.value = /** @type {number} */ (value)
 				this.draw()
 			}
 		}

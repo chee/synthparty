@@ -1,7 +1,7 @@
 import "./sample-element.js"
-import "./midi-port.js"
+import "/elements/midi-port.js"
 
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 
 export function init() {
 	partyElements.register()

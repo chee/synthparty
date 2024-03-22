@@ -1,0 +1,10 @@
+4 stereo tape tracks
+playhead is cursor (window center on active track is selected)
+
+one finger scroll to scroll by beat
+two finger scroll left and right to run the tape over the playhead
+one finger tap to select a tape track
+one finger hold to lift
+one finger double tap to paste
+two finger double tap to cut
+two finger hold to join

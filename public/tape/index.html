@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-ca" theme="cherries">
+	<meta charset="utf-8" />
+	<title>tape party</title>
+	<meta name="description" content="for rabbits by rabbits" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/defaults.css" />
+	<link rel="stylesheet" href="tape.css" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="tape party" />
+	<meta name="apple-mobile-web-app-title" content="tape party" />
+	<meta name="theme-color" content="#ffe9ed" />
+	<meta property="og:title" content="tape party" />
+	<meta property="og:description" content="for fun" />
+	<meta property="og:image" content="/aux/apple-touch-icon.png" />
+	<meta name="twitter:card" content="summary" />
+	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png" />
+	<link rel="manifest" href="/aux/app.webmanifest" />
+
+	<h1>tape</h1>
+	<main>
+		<tape-machine>
+			<tape-cassette>
+				<template shadowrootmode="open">
+					<tape-track index="0"></tape-track>
+					<tape-track index="1"></tape-track>
+					<tape-track index="2"></tape-track>
+					<tape-track index="3"></tape-track>
+				</template>
+			</tape-cassette>
+			<tape-controls>
+			</tape-controls>
+		</tape-machine>
+	</main>
+
+	<audio
+		class="iphone-silence"
+		src="/aux/iphone-silence.flac"
+		loop
+		autoplay
+		preload="auto"></audio>
+	<script type="module" src="tape.js"></script>
+</html>

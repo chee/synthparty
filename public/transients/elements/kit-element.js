@@ -4,7 +4,7 @@ import nouns from "../lib/nouns.js"
 import rand from "../lib/rand.js"
 import Sound from "../sound.js"
 import globalStyles from "./global-styles.js"
-import {PartyElement, partyElements} from "/elements/party-elements.js"
+import {PartyElement, partyElements} from "./party-elements.js"
 import * as MIDI from "../lib/midi.js"
 
 export default class DelugeKit extends PartyElement {
@@ -118,8 +118,7 @@ export default class DelugeKit extends PartyElement {
 		customElements.whenDefined("deluge-button").then(() => {
 			this.$("#download").when("click", (_, event) => {
 				kit.download({
-					sortable: !event.shiftKey,
-					addSmplBlock: !event.altKey
+					sortable: !event.shiftKey
 				})
 			})
 
@@ -179,7 +178,7 @@ export default class DelugeKit extends PartyElement {
 		}
 
 		for (let [index, sound] of kit.sounds.entries()) {
-			let el = /** @type {import("./sound-element.js").default} */ (
+			let el = /** @type {import("./sound-element.js").TransientSound} */ (
 				this.sourcesElement.children[
 					this.sourcesElement.children.length - 1 - index
 				]

@@ -1,11 +1,13 @@
-import {partyElements, PartyElement} from "./party-elements.js"
+import {partyElements, PartyElement} from "/elements/party-elements.js"
 
+/**
+ * @template {import("/elements/party-elements.js").PartyEventMap} E
+ * @extends {PartyElement<E>}
+ */
 export default class CCEditor extends PartyElement {
 	#formElement = document.createElement("form")
-	#form
 	constructor() {
 		super()
-		// this.attachShadow({mode: "open"})
 		this.append(this.#formElement)
 		this.#formElement.method = "dialog"
 	}

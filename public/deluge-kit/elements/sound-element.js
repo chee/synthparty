@@ -1,4 +1,4 @@
-import {partyElements, PartyElement} from "./party-elements.js"
+import {partyElements, PartyElement} from "/elements/party-elements.js"
 import Sound from "../sound.js"
 
 export default class DelugeSound extends PartyElement {

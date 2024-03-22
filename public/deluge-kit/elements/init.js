@@ -5,7 +5,7 @@ import "./kit-element.js"
 import "./sound-element.js"
 import "./midi-input.js"
 
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 
 export function init() {
 	partyElements.register()

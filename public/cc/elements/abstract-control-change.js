@@ -12,7 +12,28 @@ const IS_BASICALLY_A_PHONE =
 	typeof window != "undefined" &&
 	window.matchMedia("(pointer: coarse)").matches
 
-/** @abstract */
+/**
+ * @typedef {[number, number] | [number, number, number]} MIDIData
+ */
+
+/**
+ * @typedef {[MIDIData, number] | [MIDIData]} SendMidiMessage
+ */
+
+/**
+ * @typedef {{
+	"send-midi": SendMidiMessage
+	"midimessage": MIDIData
+	"sub": HTMLElement
+	"unsub": HTMLElement
+ }} AbstractControlChangeEventMap
+ */
+
+/**
+ * @abstract
+ * @template {import("/elements/party-elements.js").PartyEventMap} E
+ * @extends {SynthPartyComponent<E & AbstractControlChangeEventMap>}
+ */
 export default class AbstractControlChange extends SynthPartyComponent {
 	static DPI = 4
 	disabled = false
@@ -54,14 +75,16 @@ export default class AbstractControlChange extends SynthPartyComponent {
 `
 
 	labelElement = document.createElement("figcaption")
+
 	/** @param {string} value */
 	set label(value) {
 		this.labelElement.textContent = value
 	}
 
 	get label() {
-		return this.labelElement.textContent
+		return this.labelElement.textContent || ""
 	}
+
 	static get stylesheet() {
 		let stylesheet = new CSSStyleSheet()
 		stylesheet.replaceSync(AbstractControlChange.css)
@@ -72,18 +95,22 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		super()
 		let figure = document.createElement("figure")
 		this.attachShadow({mode: "open"})
-		this.shadowRoot.appendChild(figure)
+		this.shadowRoot?.appendChild(figure)
 		this.labelElement.textContent = this.getAttribute("label")
 
 		let container = document.createElement("div")
 		container.id = "canvas-container"
 		let canvas = document.createElement("canvas")
 		this.canvas = canvas
-		this.canvasContext = canvas.getContext("2d")
+		this.canvasContext = /** @type {CanvasRenderingContext2D} */ (
+			canvas.getContext("2d")
+		)
+
 		container.append(canvas)
 		figure.append(container)
 		figure.appendChild(this.labelElement)
-		this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet]
+		this.shadowRoot &&
+			(this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet])
 		if (IS_BASICALLY_A_PHONE) {
 			this.addEventListener("touchstart", this.#touchstart)
 		} else {
@@ -125,7 +152,9 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
 		let finger = event.targetTouches.item(0)
-
+		if (!finger) {
+			throw new Error("no finger?")
+		}
 		let mouse = resolveMouseFromEvent(finger, bounds)
 		this.mouse({type: "start", mouse, event})
 
@@ -185,7 +214,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	get styles() {
 		let fill = this.getStyle("cc-fill") || "#000"
 		let line = this.getStyle("cc-line") || "black"
-		let off = this.getStyle("cc-off") || "#999"
+		// let off = this.getStyle("cc-off") || "#999"
 		return {fill, line}
 	}
 
@@ -193,7 +222,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		let [canvas, context] = [this.canvas, this.canvasContext]
 		let {width, height} = canvas
 		context.restore()
-		context.fillStyle = context.strokeStyle = this.styles.fill
+		context.fillStyle = this.styles.fill
+		context && (context.strokeStyle = this.styles.fill)
 		context.fillRect(0, 0, width, height)
 		context.lineWidth = AbstractControlChange.DPI
 	}
@@ -249,9 +279,11 @@ function resolveMouseFromEvent(event, bounds) {
  * @returns {Touch?}
  */
 function findFinger(finger, touches) {
-	return [].find.call(
-		touches,
-		/** @param {Touch} touch */
-		touch => touch.identifier == finger.identifier
+	return (
+		[].find.call(
+			touches,
+			/** @param {Touch} touch */
+			touch => touch.identifier == finger.identifier
+		) || null
 	)
 }

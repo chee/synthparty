@@ -1,8 +1,9 @@
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 import ControlChange from "./abstract-control-change.js"
-import AbstractControlChange from "./abstract-control-change.js"
 
-/** @type {AudioParam} */
+/**
+ * @extends {ControlChange<{}>}
+ */
 export default class CCLFO extends ControlChange {
 	min = 0
 	max = 127
@@ -59,7 +60,7 @@ export default class CCLFO extends ControlChange {
 		super()
 		this.value = (this.max - this.min) / 2
 		this.draw()
-		this.party.addEventListener("tick", this.tick)
+		this.party?.addEventListener("tick", this.tick)
 	}
 
 	parseIncomingMIDI = data => {

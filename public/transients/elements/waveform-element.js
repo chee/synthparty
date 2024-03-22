@@ -1,4 +1,4 @@
-import {partyElements} from "/elements/party-elements.js"
+import {partyElements} from "./party-elements.js"
 import DelugeEditor from "./editor-element.js"
 
 const DPI = DelugeEditor.DPI
@@ -10,7 +10,7 @@ export default class DelugeWaveform extends DelugeEditor {
 		this.drawingRegionContext = canvas.getContext("2d")
 		canvas.style.height = this.canvas.style.height
 		canvas.style.width = this.canvas.style.width
-		this.shadowRoot?.appendChild(canvas)
+		this.shadowRoot.appendChild(canvas)
 		this.style.position = "relative"
 		canvas.style.position = "absolute"
 		canvas.style.top =

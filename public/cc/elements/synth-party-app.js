@@ -1,11 +1,10 @@
 import {createElement} from "../lib/html.js"
 import createMIDIFollowMap from "../lib/midi-follow-map.js"
-import AbstractControlChange from "./abstract-control-change.js"
 import CCADSR from "./cc-adsr.js"
 import CCLFO from "./cc-lfo.js"
 import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
-import {PartyElement, partyElements} from "./party-elements.js"
+import {PartyElement, partyElements} from "/elements/party-elements.js"
 
 /**
  * @param {string} label
@@ -64,18 +63,24 @@ function oscillator(label, {volume, pitch, width, feedback, wavetable}) {
 	)
 }
 
-/** @abstract */
+/**
+ * @extends {PartyElement<{
+	"midiinputdevice": MIDIInput
+	"midioutputdevice": MIDIOutput
+	"tick": void
+ } & import("./abstract-control-change.js").AbstractControlChangeEventMap>}
+ */
 export default class SynthPartyApp extends PartyElement {
 	/** @type {number} */
-	#clock
+	#clock = 0
 
 	/** @type {Set<HTMLElement>} */
 	subs = new Set()
 
 	midi = {
-		/** @type {MIDIInput} */
+		/** @type {MIDIInput?} */
 		input: null,
-		/** @type {MIDIOutput} */
+		/** @type {MIDIOutput?} */
 		output: null
 	}
 
@@ -467,12 +472,11 @@ export default class SynthPartyApp extends PartyElement {
 
 	/**
 	 * @param {number[]} data
-	 * @param {number?} timestamp
-
+	 * @param {number} [timestamp]
 	 */
 	send(data, timestamp) {
 		try {
-			this.midi.output.send(data, timestamp)
+			this.midi.output?.send(data, timestamp)
 		} catch (error) {
 			console.error(data, error)
 		}

@@ -1,9 +1,11 @@
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 
 let DPI = ControlChange.DPI
 
-/** @type {AudioParam} */
+/**
+ * @extends {ControlChange<{"x": number, "y": number}>}
+ */
 export default class CCXY extends ControlChange {
 	minX = 0
 	minY = 0
@@ -100,34 +102,34 @@ export default class CCXY extends ControlChange {
 
 	setPropsFromAttributes() {
 		if (this.hasAttribute("cc-x")) {
-			this.ccX = +this.getAttribute("cc-x")
+			this.ccX = +(this.getAttribute("cc-x") || -1)
 		}
 		if (this.hasAttribute("cc-y")) {
-			this.ccY = +this.getAttribute("cc-y")
+			this.ccY = +(this.getAttribute("cc-y") || -1)
 		}
 		if (this.hasAttribute("min-x")) {
-			this.minX = +this.getAttribute("min-x")
+			this.minX = +(this.getAttribute("min-x") || -1)
 		}
 		if (this.hasAttribute("max-x")) {
-			this.maxX = +this.getAttribute("max-x")
+			this.maxX = +(this.getAttribute("max-x") || -1)
 		}
 		if (this.hasAttribute("min-y")) {
-			this.minY = +this.getAttribute("min-y")
+			this.minY = +(this.getAttribute("min-y") || -1)
 		}
 		if (this.hasAttribute("max-y")) {
-			this.maxY = +this.getAttribute("max-y")
+			this.maxY = +(this.getAttribute("max-y") || -1)
 		}
 		if (this.hasAttribute("left")) {
-			this.left = this.getAttribute("left")
+			this.left = this.getAttribute("left") || ""
 		}
 		if (this.hasAttribute("right")) {
-			this.right = this.getAttribute("right")
+			this.right = this.getAttribute("right") || ""
 		}
 		if (this.hasAttribute("top")) {
-			this.top = this.getAttribute("top")
+			this.top = this.getAttribute("top") || ""
 		}
 		if (this.hasAttribute("bottom")) {
-			this.bottom = this.getAttribute("bottom")
+			this.bottom = this.getAttribute("bottom") || ""
 		}
 	}
 
@@ -137,7 +139,7 @@ export default class CCXY extends ControlChange {
 		this.x = (this.maxX - this.minX) / 2 + this.minX
 		this.y = (this.maxY - this.minY) / 2 + this.minY
 		this.draw()
-		this.party.when("tick", () => {
+		this.party?.when("tick", () => {
 			this.tick()
 		})
 		this.announce("sub", this)

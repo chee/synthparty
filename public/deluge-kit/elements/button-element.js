@@ -1,4 +1,4 @@
-import {partyElements, PartyElement} from "./party-elements.js"
+import {partyElements, PartyElement} from "/elements/party-elements.js"
 import globalStyles from "./global-styles.js"
 
 export default class DelugeButton extends PartyElement {

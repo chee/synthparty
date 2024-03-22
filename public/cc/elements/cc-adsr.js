@@ -1,10 +1,12 @@
-import {partyElements} from "./party-elements.js"
+import {partyElements} from "/elements/party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 import {clamp} from "../lib/number.js"
 
 let DPI = ControlChange.DPI
 
-/** @type {AudioParam} */
+/**
+ * @extends {ControlChange<{}>}
+ */
 export default class CCADSR extends ControlChange {
 	attack = 0
 	decay = 0
@@ -12,6 +14,10 @@ export default class CCADSR extends ControlChange {
 	release = 0
 	low = 0
 	high = 127
+	ccAttack = -1
+	ccDecay = -1
+	ccSustain = -1
+	ccRelease = -1
 
 	static form = {
 		label: {
@@ -61,16 +67,16 @@ export default class CCADSR extends ControlChange {
 
 	setPropsFromAttributes() {
 		if (this.hasAttribute("cc-a")) {
-			this.ccAttack = +this.getAttribute("cc-a")
+			this.ccAttack = +(this.getAttribute("cc-a") || -1)
 		}
 		if (this.hasAttribute("cc-d")) {
-			this.ccDecay = +this.getAttribute("cc-d")
+			this.ccDecay = +(this.getAttribute("cc-d") || -1)
 		}
 		if (this.hasAttribute("cc-s")) {
-			this.ccSustain = +this.getAttribute("cc-s")
+			this.ccSustain = +(this.getAttribute("cc-s") || -1)
 		}
 		if (this.hasAttribute("cc-r")) {
-			this.ccRelease = +this.getAttribute("cc-r")
+			this.ccRelease = +(this.getAttribute("cc-r") || -1)
 		}
 	}
 
@@ -82,7 +88,7 @@ export default class CCADSR extends ControlChange {
 		this.sustain = 20
 		this.release = 20
 		this.draw()
-		this.party.when("tick", () => {
+		this.party?.when("tick", () => {
 			this.tick()
 		})
 		this.announce("sub", this)
@@ -116,7 +122,7 @@ export default class CCADSR extends ControlChange {
 		}
 	}
 
-	/** @type {"a" | "ds" | "r"} */
+	/** @type {"a" | "ds" | "r" | null} */
 	state = null
 
 	/**
@@ -136,7 +142,7 @@ export default class CCADSR extends ControlChange {
 
 	/**
 	 * @param {import("./abstract-control-change.js").MouseMessage["mouse"]} mouse
-	 * @returns {"a" | "ds" | "r"}
+	 * @returns {"a" | "ds" | "r" | null}
 	 */
 	mouseState(mouse) {
 		if (this.mouseWithinSpot(mouse, this.attackX, 0)) {
@@ -148,6 +154,7 @@ export default class CCADSR extends ControlChange {
 		) {
 			return "r"
 		}
+		return null
 	}
 
 	/**

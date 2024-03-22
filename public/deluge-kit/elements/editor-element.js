@@ -1,4 +1,4 @@
-import {PartyElement} from "./party-elements.js"
+import {PartyElement} from "/elements/party-elements.js"
 import Sound from "../sound.js"
 
 /**
