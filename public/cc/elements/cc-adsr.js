@@ -169,8 +169,8 @@ export default class CCADSR extends ControlChange {
 
 			let {high, low} = this
 
-			let xd = (mouse.xd / (width / 4 / DPI)) * this.diff + low
-			let yd = (mouse.yd / (height / 4)) * this.diff + low
+			let xd = (mouse.xd / (width / 3 / DPI)) * this.diff + low
+			let yd = (mouse.yd / (height / 3)) * this.diff + low
 			if (this.state == "a") {
 				// console.log((mouse.xd / width) * this.diff + low + this.attack)
 				let attack = xd + this.attack
@@ -294,11 +294,11 @@ export default class CCADSR extends ControlChange {
 	}
 
 	get attackX() {
-		return this.calculateX(this.attack) / 4
+		return this.calculateX(this.attack) / 3
 	}
 
 	get decayX() {
-		return this.attackX + this.calculateX(this.decay) / 4
+		return this.attackX + this.calculateX(this.decay) / 3
 	}
 
 	get sustainY() {
@@ -308,11 +308,11 @@ export default class CCADSR extends ControlChange {
 	}
 
 	get releaseStartX() {
-		return this.canvas.width / 2
+		return (this.canvas.width / 3) * 2
 	}
 
 	get releaseEndX() {
-		return this.releaseStartX + this.calculateX(this.release) / 4
+		return this.releaseStartX + this.calculateX(this.release) / 3
 	}
 
 	get diff() {

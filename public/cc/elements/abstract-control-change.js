@@ -172,6 +172,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		}
 		let mouse = resolveMouseFromEvent(finger, bounds)
 		this.mouse({type: "start", mouse, event})
+		this.#mouseLastX = finger.clientX
+		this.#mouseLastY = finger.clientY
 
 		/** @param {TouchEvent} event */
 		let move = event => {
@@ -179,7 +181,17 @@ export default class AbstractControlChange extends SynthPartyComponent {
 
 			if (moved) {
 				let mouse = resolveMouseFromEvent(moved, bounds)
-				this.mouse({type: "move", mouse, event})
+				this.mouse({
+					type: "move",
+					mouse: {
+						...mouse,
+						xd: moved.clientX - this.#mouseLastX,
+						yd: this.#mouseLastY - moved.clientY
+					},
+					event
+				})
+				this.#mouseLastX = moved.clientX
+				this.#mouseLastY = moved.clientY
 			}
 		}
 		window.addEventListener("touchmove", move)
