@@ -158,6 +158,7 @@ export default class MPEKeyboard extends PartyElement {
 		let note = this.getNote(finger)
 		this.output?.send(note.off())
 	}
+
 	/**
 	 * @param {Touch} [finger]
 	 */

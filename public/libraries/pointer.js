@@ -122,14 +122,14 @@ export default class Mouser {
 	#touchstart = event => {
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
-		let finger = event.targetTouches.item(0)
+		let finger = event.changedTouches.item(0)
 		if (!finger) {
 			throw new Error("no finger?")
 		}
 		let mouse = normalizePointerEvent(finger, bounds, this.dpi)
 		this.onstart({type: "start", mouse, event, finger})
-		this.#lastX = finger.clientX
-		this.#lastY = finger.clientY
+		let initialX = finger.clientX
+		let initialY = finger.clientY
 
 		/** @param {TouchEvent} event */
 		let move = event => {
@@ -141,14 +141,12 @@ export default class Mouser {
 					type: "move",
 					mouse: {
 						...mouse,
-						xd: moved.clientX - this.#lastX,
-						yd: this.#lastY - moved.clientY
+						xd: moved.clientX - initialX,
+						yd: initialY - moved.clientY
 					},
 					event,
 					finger
 				})
-				// this.#lastX = moved.clientX
-				// this.#lastY = moved.clientY
 			}
 		}
 		window.addEventListener("touchmove", move)
