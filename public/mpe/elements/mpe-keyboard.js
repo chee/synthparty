@@ -153,7 +153,7 @@ export default class MPEKeyboard extends PartyElement {
 	pointermove = detail => {
 		let {mouse, finger} = detail
 		let note = this.getNote(finger)
-		let yd = Math.round(clamp(0, mouse.yd * 256 + note.y, 127))
+		let yd = Math.round(clamp(0, mouse.yd * 512 + note.y, 127))
 		this.output?.send(note.bend(mouse.xd))
 		this.output?.send(note.timbre(yd))
 	}
