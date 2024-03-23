@@ -38,6 +38,7 @@ export default class MPEKeyboard extends PartyElement {
 
 		* {
 			box-sizing: border-box;
+			user-select: none;
 		}
 
 		figcaption {

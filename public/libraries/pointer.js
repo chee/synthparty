@@ -141,8 +141,8 @@ export default class Mouser {
 					type: "move",
 					mouse: {
 						...mouse,
-						xd: moved.clientX - initialX,
-						yd: initialY - moved.clientY
+						xd: (moved.clientX - initialX) / this.width,
+						yd: (initialY - moved.clientY) / this.height
 					},
 					event,
 					finger
