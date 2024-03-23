@@ -84,10 +84,10 @@ export default class Mouser {
 			mouse,
 			event
 		})
+
 		/** @param {MouseEvent} event */
 		let mousemove = event => {
 			let mouse = normalizePointerEvent(event, bounds, this.dpi)
-
 			this.onmove({
 				type: "move",
 				mouse: {
@@ -97,8 +97,6 @@ export default class Mouser {
 				},
 				event
 			})
-			// this.#lastX = event.clientX
-			// this.#lastY = event.clientY
 		}
 		window.addEventListener("mousemove", mousemove)
 
@@ -122,48 +120,46 @@ export default class Mouser {
 	#touchstart = event => {
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
-		let finger = event.changedTouches.item(0)
-		if (!finger) {
-			throw new Error("no finger?")
-		}
-		let mouse = normalizePointerEvent(finger, bounds, this.dpi)
-		this.onstart({type: "start", mouse, event, finger})
-		let initialX = finger.clientX
-		let initialY = finger.clientY
+		for (let finger of event.changedTouches) {
+			let mouse = normalizePointerEvent(finger, bounds, this.dpi)
+			this.onstart({type: "start", mouse, event, finger})
+			let initialX = finger.clientX
+			let initialY = finger.clientY
 
-		/** @param {TouchEvent} event */
-		let move = event => {
-			let moved = findFinger(finger, event.changedTouches)
-
-			if (moved) {
-				let mouse = normalizePointerEvent(moved, bounds, this.dpi)
-				this.onmove({
-					type: "move",
-					mouse: {
-						...mouse,
-						xd: (moved.clientX - initialX) / this.width,
-						yd: (initialY - moved.clientY) / this.height
-					},
-					event,
-					finger
-				})
-			}
-		}
-		window.addEventListener("touchmove", move)
-		window.addEventListener(
-			"touchend",
 			/** @param {TouchEvent} event */
-			event => {
+			let move = event => {
+				let moved = findFinger(finger, event.changedTouches)
+
+				if (moved) {
+					let mouse = normalizePointerEvent(moved, bounds, this.dpi)
+					this.onmove({
+						type: "move",
+						mouse: {
+							...mouse,
+							xd: (moved.clientX - initialX) / this.width,
+							yd: (initialY - moved.clientY) / this.height
+						},
+						event,
+						finger
+					})
+				}
+			}
+			window.addEventListener("touchmove", move)
+
+			/** @param {TouchEvent} event */
+			let end = event => {
 				let lost = findFinger(finger, event.changedTouches)
 				let missing = !findFinger(finger, event.targetTouches)
+
 				if (lost && missing) {
 					let mouse = normalizePointerEvent(lost, bounds, this.dpi)
 					this.onend({type: "end", mouse, event, finger})
 					window.removeEventListener("touchmove", move)
+					window.removeEventListener("touchend", end)
 				}
-			},
-			{once: true}
-		)
+			}
+			window.addEventListener("touchend", end)
+		}
 	}
 }
 /**

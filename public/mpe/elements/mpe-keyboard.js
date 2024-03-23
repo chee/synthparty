@@ -24,6 +24,19 @@ const DPI = 4
 export default class MPEKeyboard extends PartyElement {
 	disabled = false
 	static css = `
+		* {
+			box-sizing: border-box;
+			--webkit-user-select: none;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+			touch-action: manipulation;
+		}
+
 		figure {
 			display: flex;
 			flex-direction: column;
@@ -34,11 +47,6 @@ export default class MPEKeyboard extends PartyElement {
 			border: 1px solid;
 			padding: 4px;
 			box-shadow: 0 0 10px #00000011;
-		}
-
-		* {
-			box-sizing: border-box;
-			user-select: none;
 		}
 
 		figcaption {
@@ -130,7 +138,7 @@ export default class MPEKeyboard extends PartyElement {
 		let {width, height} = this.canvas
 		let {mouse, finger} = detail
 		let id = finger ? finger.identifier : 0
-		this.notes.set(id, new PointerNote(Math.round(mouse.x / (width / 12)) + 1))
+		this.notes.set(id, new PointerNote(Math.floor(mouse.x / (width / 12)) + 1))
 		let note = this.getNote(finger)
 		note.y = Math.round(127 - mouse.y / (height / 127))
 		this.output?.send(note.timbre())
@@ -156,6 +164,7 @@ export default class MPEKeyboard extends PartyElement {
 	pointerend = detail => {
 		let {finger} = detail
 		let note = this.getNote(finger)
+
 		this.output?.send(note.off())
 		this.deleteNote(finger)
 	}
@@ -198,16 +207,12 @@ export default class MPEKeyboard extends PartyElement {
 		let numberOfGradients = 12
 		let letters = "0123456789ABCDEF"
 
-		// Create 12 equally spaced gradients across the width
 		for (let i = 0; i < numberOfGradients; i++) {
-			// Calculate the starting and ending x positions for each gradient
-			const xStart = (i / numberOfGradients) * width
-			const xEnd = ((i + 1) / numberOfGradients) * width
+			let xStart = (i / numberOfGradients) * width
+			let xEnd = ((i + 1) / numberOfGradients) * width
 
-			// Create a gradient for each segment
-			const gradient = context.createLinearGradient(0, 0, 0, height)
+			let gradient = context.createLinearGradient(0, 0, xEnd - xStart, height)
 
-			// Generate random colors for each end of the gradient
 			let colorStart = "#"
 			let colorEnd = "#"
 			for (let i = 0; i < 6; i++) {
@@ -218,14 +223,15 @@ export default class MPEKeyboard extends PartyElement {
 			gradient.addColorStop(0, colorStart)
 			gradient.addColorStop(1, colorEnd)
 
-			// Apply the gradient to a rectangle that fills the entire canvas height
 			context.fillStyle = gradient
 			context.fillRect(xStart, 0, xEnd - xStart, height)
 		}
 	}
 }
 
-let scale = [48, 50, 51, 53, 55, 56, 58, 60, 62, 63, 65, 67]
+let scale = [
+	61, 63, 64, 66, 68, 69, 71, 73, 75, 76, 78, 80, 81, 83, 85, 87, 88, 90, 92
+]
 class PointerNote {
 	channel = -1
 	note = -1
