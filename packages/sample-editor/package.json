@@ -1,0 +1,11 @@
+{
+	"name": "sample-editor",
+	"version": "1.0.0",
+	"description": "sample-editor web component",
+	"main": "sample-editor.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "chee",
+	"license": "GPL-3.0+"
+}

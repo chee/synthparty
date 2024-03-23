@@ -1,0 +1,8 @@
+mpe-keyboard {
+	--width: 80vw;
+	--height: 100vh;
+}
+
+* {
+	user-select: none;
+}

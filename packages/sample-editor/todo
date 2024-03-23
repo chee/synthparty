@@ -1,0 +1,6 @@
+- bring in code from bento + deluge-kit
+- add cursor
+- add cut and paste
+- create a graphics.js that can use [a canvas] or [offscreen canvas with sab]
+- create a sound.js that can use an [online audiocontext] or [offline audiocontext with sab]
+- figure out how to distribute the code for a worker

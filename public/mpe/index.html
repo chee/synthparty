@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-ca" theme="cherries">
+	<meta charset="utf-8" />
+	<title>mpe keyboard</title>
+	<meta name="description" content="for rabbits by rabbits" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/defaults.css" />
+	<link rel="stylesheet" href="mpe.css" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="transient party" />
+	<meta name="apple-mobile-web-app-title" content="transient party" />
+	<meta name="theme-color" content="#ffe9ed" />
+	<meta property="og:title" content="transient party" />
+	<meta property="og:description" content="for fun" />
+	<meta property="og:image" content="/aux/apple-touch-icon.png" />
+	<meta name="twitter:card" content="summary" />
+	<link rel="apple-touch-icon" href="/aux/apple-touch-icon.png" />
+	<link rel="manifest" href="/aux/app.webmanifest" />
+
+	<h1>mpe</h1>
+
+	<mpe-app>
+		<label>
+			midi output
+			<midi-port direction="output" software></midi-port>
+		</label>
+		<button id="train">train</button>
+		<mpe-keyboard></mpe-keyboard>
+	</mpe-app>
+	<script type="module" src="mpe.js"></script>
+</html>

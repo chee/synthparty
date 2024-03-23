@@ -1,0 +1,1 @@
+- make canvas support something that can be mixed in (or has-a rather than is-a)

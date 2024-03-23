@@ -19,6 +19,9 @@
 		"client-zip": "^2.4.4",
 		"interactjs": "^1.10.26"
 	},
+	"workspaces": [
+		"packages/*"
+	],
 	"prettier": {
 		"printWidth": 79,
 		"trailingComma": "none",
@@ -42,5 +45,6 @@
 				}
 			}
 		]
-	}
+	},
+	"license": "GPL-3.0+"
 }
