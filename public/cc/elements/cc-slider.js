@@ -2,7 +2,8 @@ import {partyElements} from "/elements/party-elements.js"
 import ControlChange from "./abstract-control-change.js"
 
 /**
- * @extends {ControlChange<{value: number}>}
+ * @template {import("/elements/party-elements.js").PartyEventMap} E
+ * @extends {ControlChange<E & {value: number}>}
  */
 export default class CCSlider extends ControlChange {
 	min = 0
@@ -10,6 +11,7 @@ export default class CCSlider extends ControlChange {
 	value = 0
 	cc = -1
 
+	/** @type {import("./abstract-control-change.js").ControlChangeFormDescriptor} */
 	static form = {
 		label: {
 			label: "name",

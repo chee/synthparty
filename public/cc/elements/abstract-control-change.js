@@ -30,6 +30,10 @@ const IS_BASICALLY_A_PHONE =
  */
 
 /**
+ * @typedef {{[key: string]: {label: string, props: any}}} ControlChangeFormDescriptor
+ */
+
+/**
  * @abstract
  * @template {import("/elements/party-elements.js").PartyEventMap} E
  * @extends {SynthPartyComponent<E & AbstractControlChangeEventMap>}

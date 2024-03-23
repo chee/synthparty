@@ -6,6 +6,8 @@ import CCSlider from "./cc-slider.js"
 import CCXY from "./cc-xy.js"
 import {PartyElement, partyElements} from "/elements/party-elements.js"
 
+let featureFlags = location.search.slice(1).split("&")
+
 /**
  * @param {string} label
  * @param {HTMLElement[]} children
@@ -224,6 +226,10 @@ export default class SynthPartyApp extends PartyElement {
 	useMIDIFollow(map) {
 		let grid = this.$("#grid")
 		this.$("#grid").textContent = ""
+		if (featureFlags.includes("tape")) {
+			grid.append(createElement("cc-tape", {label: "tape"}))
+		}
+
 		grid.append(
 			createElement("cc-xy", {
 				label: "mix",
