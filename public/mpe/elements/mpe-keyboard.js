@@ -119,8 +119,8 @@ export default class MPEKeyboard extends PartyElement {
 		this.draw()
 	}
 
-	/** @type {PointerNote[]} */
-	notes = []
+	/** @type {Map<number, PointerNote>} */
+	notes = new Map()
 
 	/**
 	 * @param {import("/libraries/pointer.js").MouserStartEndDetail} detail
@@ -129,10 +129,9 @@ export default class MPEKeyboard extends PartyElement {
 		let {width, height} = this.canvas
 		let {mouse, finger} = detail
 		let id = finger ? finger.identifier : 0
-		this.notes[id] = new PointerNote(Math.round(mouse.x / (width / 12)) + 1)
-		let note = this.notes[id]
+		this.notes.set(id, new PointerNote(Math.round(mouse.x / (width / 12)) + 1))
+		let note = this.getNote(finger)
 		note.y = Math.round(127 - mouse.y / (height / 127))
-
 		this.output?.send(note.timbre())
 		this.output?.send([(0xd << 4) | note.channel, 0])
 		this.output?.send([MIDIMessage.PitchBend | note.channel, 0, 64])
@@ -157,13 +156,23 @@ export default class MPEKeyboard extends PartyElement {
 		let {finger} = detail
 		let note = this.getNote(finger)
 		this.output?.send(note.off())
+		this.deleteNote(finger)
 	}
 
 	/**
 	 * @param {Touch} [finger]
 	 */
 	getNote(finger) {
-		return this.notes[finger ? finger.identifier : 0]
+		return /** @type {PointerNote} */ (
+			this.notes.get(finger ? finger.identifier : 0)
+		)
+	}
+
+	/**
+	 * @param {Touch} [finger]
+	 */
+	deleteNote(finger) {
+		this.notes.delete(finger ? finger.identifier : 0)
 	}
 
 	get styles() {
