@@ -1,0 +1,33 @@
+:root {
+	--fill: black;
+	--line: white;
+	--screen-fill: var(--fill);
+	--screen-line: #00ffff;
+}
+
+input {
+	background: var(--fill);
+	color: var(--line);
+	border: 0;
+	outline: none;
+	width: 100%;
+	padding: 1em;
+	font-family: var(--font-family);
+	font-size: 16px;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	width: 400px;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	margin: auto;
+	height: 100vh;
+}
+
+canvas {
+	width: 400px;
+	height: 400px;
+}
