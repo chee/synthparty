@@ -3,6 +3,7 @@
 	--line: white;
 	--screen-fill: var(--fill);
 	--screen-line: #00ffff;
+	font-size: 16px;
 }
 
 input {
@@ -11,9 +12,10 @@ input {
 	border: 0;
 	outline: none;
 	width: 100%;
-	padding: 1em;
+
 	font-family: var(--font-family);
 	font-size: 16px;
+	margin-left: 2ch;
 }
 
 body {
@@ -30,4 +32,9 @@ body {
 canvas {
 	width: 400px;
 	height: 400px;
+}
+
+label {
+	margin-top: 1em;
+	text-align: left;
 }
