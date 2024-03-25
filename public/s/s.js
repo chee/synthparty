@@ -23,6 +23,9 @@ if (location.search.length > 1) {
 
 export async function start() {
 	await play()
+	if (started) {
+		return
+	}
 	started = true
 	let codenode = new AudioWorkletNode(audioContext, "user-code", {
 		processorOptions: {
