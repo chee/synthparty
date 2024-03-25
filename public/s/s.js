@@ -23,10 +23,7 @@ if (location.search.length > 1) {
 
 export async function start() {
 	await play()
-	if (started) {
-		return
-	}
-
+	started = true
 	let codenode = new AudioWorkletNode(audioContext, "user-code", {
 		processorOptions: {
 			sab: sharedarraybuffer
@@ -54,21 +51,19 @@ document.addEventListener("visibilitychange", () => {
 })
 
 export async function play() {
-	audioContext.onstatechange = function () {
-		if (
-			// @ts-ignore-line listen, this is a thing on ios, typescript. reality
-			// matters
-			audioContext.state == "interrupted"
-		) {
-			started = false
-			audioContext.resume().then(() => {
-				started = true
-			})
-		}
-	}
 	await audioContext.resume()
 	document.body.append(iphoneSilenceElement)
 	iphoneSilenceElement.play()
+}
+
+audioContext.onstatechange = function () {
+	if (
+		// @ts-ignore-line listen, this is a thing on ios, typescript. reality
+		// matters
+		audioContext.state == "interrupted"
+	) {
+		audioContext.resume()
+	}
 }
 
 await audioContext.audioWorklet.addModule("/s/audioworklet.js")
