@@ -26,7 +26,7 @@ class UserWorklet extends AudioWorkletProcessor {
 		try {
 			this.func = new Function(
 				"t",
-				"s",
+				"sr",
 				`with (Math) {return ${this.memory.code}}`
 			)
 		} catch (error) {
@@ -38,10 +38,17 @@ class UserWorklet extends AudioWorkletProcessor {
 			try {
 				let result = this.func(this.tick + i, this.memory.sampleRate)
 				if (typeof result == "number") {
-					left[i] = right[i] = result
+					if (Math.abs(result) < 2) {
+						left[i] = right[i] = result * 0.25
+					}
 				} else if (Array.isArray(result)) {
-					left[i] = result[0]
-					right[i] = result[1]
+					let [l, r] = result
+					if (Math.abs(l) < 2) {
+						left[i] = l * 0.25
+					}
+					if (Math.abs(r) < 2) {
+						right[i] = r * 0.25
+					}
 				}
 			} catch (error) {
 				continue
