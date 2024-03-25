@@ -10,11 +10,16 @@ let analysis = new Uint8Array(analyzer.frequencyBinCount)
 /** @type Memory */
 let memory = new Memory(sharedarraybuffer)
 memory.sampleRate = audioContext.sampleRate
+let input = /** @type HTMLInputElement */ (document.querySelector("input"))
 let started = false
 
 let iphoneSilenceElement = /** @type {HTMLAudioElement} */ (
 	document.querySelector("audio")
 )
+
+if (location.search.length > 1) {
+	input.value = decodeURIComponent(location.search.slice(1))
+}
 
 export async function start() {
 	await play()
@@ -32,6 +37,7 @@ export async function start() {
 		outputChannelCount: [2],
 		channelInterpretation: "speakers"
 	})
+	memory.code = input.value
 	codenode.connect(analyzer)
 	analyzer.connect(audioContext.destination)
 }
@@ -70,9 +76,14 @@ document.addEventListener("click", start, {once: true})
 document.addEventListener("keydown", start, {once: true})
 document.addEventListener("keypress", start, {once: true})
 
-let input = document.querySelector("input")
 input?.addEventListener("input", () => {
 	memory.code = input.value
+
+	history.pushState(
+		null,
+		"",
+		`?${encodeURIComponent(input.value.replace(/\s+/g, ""))}`
+	)
 })
 
 let canvas = /** @type {HTMLCanvasElement} */ (
