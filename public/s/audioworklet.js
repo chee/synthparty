@@ -33,27 +33,34 @@ class UserWorklet extends AudioWorkletProcessor {
 			// console.debug("error making func", this.memory.code, error)
 			return true
 		}
-
+		let maxSampleVolume = 0
 		for (let i = 0; i < 128; i++) {
 			try {
 				let result = this.func(this.tick + i, this.memory.sampleRate)
 				if (typeof result == "number") {
-					if (Math.abs(result) < 2) {
-						left[i] = right[i] = result * 0.25
-					}
+					left[i] = right[i] = result * 0.25
+					maxSampleVolume = Math.max(Math.abs(result), maxSampleVolume)
 				} else if (Array.isArray(result)) {
 					let [l, r] = result
-					if (Math.abs(l) < 2) {
-						left[i] = l * 0.25
-					}
-					if (Math.abs(r) < 2) {
-						right[i] = r * 0.25
-					}
+					left[i] = l * 0.25
+					right[i] = r * 0.25
+					maxSampleVolume = Math.max(
+						Math.abs(l) + Math.abs(r) / 2,
+						maxSampleVolume
+					)
 				}
 			} catch (error) {
 				continue
 			}
 		}
+		if (maxSampleVolume) {
+			let mult = (1 / maxSampleVolume) * 0.99
+			for (let i = 0; i < 128; i++) {
+				left[i] *= mult
+				right[i] *= mult
+			}
+		}
+
 		this.tick += 128
 		return true
 	}
