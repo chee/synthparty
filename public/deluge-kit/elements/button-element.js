@@ -12,6 +12,7 @@ export default class DelugeButton extends PartyElement {
 		this.shadowRoot.adoptedStyleSheets = [globalStyles]
 		this.#button.id = this.id
 		this.#button.style.background = this.color
+		this.#button.title = this.getAttribute("title")
 	}
 
 	set label(val) {
