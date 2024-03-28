@@ -41,12 +41,10 @@ export default class Sound {
 	timeStretch = false
 	linearInterpolation = false
 	sidechainSend = false
-	custom1 = "pitch"
-	custom2 = "decimation"
-	custom3 = "bitcrush"
-	/** @type number? */
+
+	/** @type number */
 	start
-	/** @type number? */
+	/** @type number */
 	end
 	#volume = 50
 	#pan = 25
@@ -86,28 +84,16 @@ export default class Sound {
 		loop: "2"
 	}
 
-	static PatchSource = {
-		lfo1: "lfo1",
-		lfo2: "lfo2",
-		env1: "env1",
-		env2: "env2",
-		velo: "velo",
-		note: "note",
-		comp: "comp",
-		rand: "rand",
-		pres: "pres",
-		mpeX: "mpeX",
-		mpeY: "mpeY"
-	}
-
 	/** @param {ArrayBuffer} arraybuffer */
 	static fromAIF(arraybuffer, name = "") {
 		let view = new DataView(arraybuffer)
 		let sampleRate = -1
 		let numberOfChannels = -1
-		/** @type {ArrayBuffer} */
-		let ssnd
-		let op1Config
+		/** @type {ArrayBuffer?} */
+		let ssnd = null
+		/** @type {{start: number[], end: number[], stereo: boolean, drum_version:
+	number}?} */
+		let op1Config = null
 
 		for (let offset = 0; offset + 4 < arraybuffer.byteLength; offset += 1) {
 			let id = readString(view, offset, 4)
@@ -152,7 +138,7 @@ export default class Sound {
 			}
 		}
 
-		function op1tosample(num = 0) {
+		function op1tosample(num = 0, stereo = false) {
 			// i have NO IDEA why it's 2032, i don't understand how that relates to
 			// anything. not to 65536, not to 44100, not to 2147483646, not to 12
 			// seconds, not to 16 bits. kara points out that it is 127*16, which
@@ -160,38 +146,44 @@ export default class Sound {
 			// but i've tried all the other numbers and this is the best number,
 			// hands down, no question
 			// the 1219.2 i got by 2032*12/20
-			let divisor = op1Config.stereo == true ? 1219.2 : 2032
+			let divisor = stereo == true ? 1219.2 : 2032
 			return Math.floor(num / divisor / 2) * 2
 		}
 
+		if (!ssnd) {
+			throw new Error(`did not find pcm block? ${name}`)
+		}
+
 		if (op1Config && op1Config.drum_version) {
-			return op1Config.start
-				.map(
-					/**
-					 * @param {number} s
-					 * @param {number} index
-					 */
-					(s, index) => {
-						let e = op1Config.end[index]
-						let start = op1tosample(s)
-						let end = op1tosample(e)
+			return /** @type {Sound[]} */ (
+				op1Config.start
+					.map(
+						/**
+						 * @param {number} s
+						 * @param {number} index
+						 */
+						(s, index) => {
+							let e = op1Config.end[index]
+							let start = op1tosample(s, op1Config.stereo)
+							let end = op1tosample(e, op1Config.stereo)
 
-						if (start < end) {
-							let pcm = ssnd.slice(
-								start * numberOfChannels,
-								end * numberOfChannels
-							)
+							if (start < end) {
+								let pcm = ssnd.slice(
+									start * numberOfChannels,
+									end * numberOfChannels
+								)
 
-							let audiobuffer = decode16BitPCM(pcm, {
-								numberOfChannels,
-								sampleRate,
-								littleEndian: op1Config.drum_version == 2
-							})
-							return new Sound(audiobuffer, stdLayout[index])
+								let audiobuffer = decode16BitPCM(pcm, {
+									numberOfChannels,
+									sampleRate,
+									littleEndian: op1Config.drum_version == 2
+								})
+								return new Sound(audiobuffer, stdLayout[index])
+							}
 						}
-					}
-				)
-				.filter(Boolean)
+					)
+					.filter(Boolean)
+			)
 		} else {
 			let audiobuffer = decode16BitPCM(ssnd, {
 				numberOfChannels,
@@ -216,7 +208,10 @@ export default class Sound {
 		for (let fh of handles) {
 			let file = await fh.getFile()
 			try {
-				sounds = sounds.concat(await Sound.fromFile(file))
+				let newSounds = await Sound.fromFile(file)
+				if (newSounds) {
+					sounds = sounds.concat(newSounds)
+				}
 			} catch (error) {
 				console.error(error)
 			}
@@ -224,14 +219,18 @@ export default class Sound {
 		return sounds
 	}
 
-	/** @param {File} file */
+	/**
+	 * @param {File} file
+	 * @returns {Promise<Sound | Sound[]>}
+	 */
 	static async fromFile(file) {
 		let arraybuffer = await file.arrayBuffer()
 		let name = removeNumericPrefix(removeExtension(file.name))
 
 		if (isAIF(file)) {
 			// activate scoundrel mode
-			return Sound.fromAIF(arraybuffer, name)
+			let aif = Sound.fromAIF(arraybuffer, name)
+			if (aif) return aif
 		}
 		let audiobuffer = await context.decodeAudioData(arraybuffer)
 		return new Sound(audiobuffer, name)
@@ -369,82 +368,122 @@ export default class Sound {
 		return `SAMPLES/${kitName}/${sortable ? index : ""}${this.name}.wav`
 	}
 
-	toXML({
-		/** @type {string} */ kitName,
-		/** @type {XMLDocument} */ doc,
-		sortable = false
-	}) {
-		let sound = createElement(doc, "sound", {
-			name: this.name,
-			sideChainSend: this.sidechainSend ? 2147483647 : 0,
-			polyphonic: this.polyphonic
-		})
-
-		let osc = createElement(doc, "osc1", {
-			type: "sample",
-			fileName: this.filename(kitName, {sortable}),
-			loopMode: Sound.SampleMode[this.loopMode],
-			reversed: +this.reversed + "",
-			linearInterpolation: +this.linearInterpolation + "",
-			timeStretchEnable: +this.timeStretch + ""
-		})
-
-		sound.append(osc)
-
-		if (this.start || this.end) {
-			osc.append(
-				createElement(doc, "zone", {
-					startSamplePos: this.start || 0,
-					endSamplePos: this.end || this.audiobuffer.length
-				})
-			)
-		}
-
-		sound.append(
-			createElement(doc, "defaultParams", {
-				oscAVolume: int32(50),
-				oscBVolume: int32(0),
-				lpfFrequency: int32(50),
-				volume: int32(this.volume),
-				pan: int32(this.pan)
-			})
+	/**
+	 * @typedef {{
+			kitName: string
+			doc: XMLDocument
+			sortable: boolean
+		}} toXMLArgs
+	 * @param {toXMLArgs} args
+	 */
+	toXML({kitName, doc, sortable = false}) {
+		return createElement(
+			doc,
+			"sound",
+			{
+				name: this.name,
+				sideChainSend: this.sidechainSend ? 2147483647 : 0,
+				polyphonic: this.polyphonic
+			},
+			[
+				createElement(
+					doc,
+					"osc1",
+					{
+						type: "sample",
+						fileName: this.filename(kitName, {sortable}),
+						loopMode: Sound.SampleMode[this.loopMode],
+						reversed: +this.reversed + "",
+						linearInterpolation: +this.linearInterpolation + "",
+						timeStretchEnable: +this.timeStretch + ""
+					},
+					this.start || this.end
+						? [
+								createElement(doc, "zone", {
+									startSamplePos: this.start || 0,
+									endSamplePos: this.end || this.audiobuffer.length
+								})
+							]
+						: []
+				),
+				createElement(
+					doc,
+					"defaultParams",
+					{
+						oscAVolume: int32(50),
+						oscBVolume: int32(0),
+						lpfFrequency: int32(50),
+						volume: int32(this.volume),
+						pan: int32(this.pan)
+					},
+					[
+						createElement(doc, "envelope1", {
+							attack: "0x80000000",
+							decay: "0xE6666654",
+							sustain: "0x7FFFFFD2",
+							release: "0x80000000"
+						}),
+						createElement(doc, "patchCables", [
+							createElement(doc, "patchCable", {
+								source: "velocity",
+								destination: "volume",
+								amount: "0x3FFFFFE8"
+							}),
+							createElement(doc, "patchCable", {
+								source: "aftertouch",
+								destination: "volume",
+								amount: "0x2A3D7094"
+							}),
+							createElement(doc, "patchCable", {
+								source: "y",
+								destination: "lpfFrequency",
+								amount: "0x19999990"
+							})
+						]),
+						createElement(doc, "equalizer", {
+							bass: "0x00000000",
+							treble: "0x00000000",
+							bassFrequency: "0x00000000",
+							trebleFrequency: "0x00000000"
+						})
+					]
+				),
+				createElement(doc, "arpeggiator", {
+					arpMode: "off",
+					noteMode: "up",
+					octaveMode: "up",
+					mpeVelocity: "off",
+					numOctaves: "2",
+					rhythm: "0",
+					syncType: "0",
+					syncLevel: "7"
+				}),
+				createElement(doc, "modKnobs", [
+					knob("pan"),
+					knob("volumePostFX"),
+					knob("lpfResonance"),
+					knob("lpfFrequency"),
+					knob("env1Release"),
+					knob("env1Attack"),
+					knob("delayFeedback"),
+					knob("delayRate"),
+					knob("reverbAmount"),
+					knob("volumePostReverbSend", "compressor"),
+					knob("pitch", "lfo1"),
+					knob("lfo1Rate"),
+					knob("pitch"),
+					knob("stutterRate"),
+					knob("bitcrush"),
+					knob("destination")
+				])
+			]
 		)
-
-		sound.append(
-			createElement(doc, "envelope1", {
-				attack: "0x80000000",
-				decay: "0xE6666654",
-				sustain: "0x7FFFFFD2",
-				release: "0x80000000"
-			})
-		)
-
-		let modKnobs = createElement(doc, "modKnobs")
-		sound.append(modKnobs)
 		function knob(controlsParam = "", patchAmountFromSource = "") {
 			let opts = patchAmountFromSource
 				? {controlsParam, patchAmountFromSource}
 				: {controlsParam}
 			return createElement(doc, "modKnob", opts)
 		}
-		modKnobs.append(knob("pan"))
-		modKnobs.append(knob("volumePostFX"))
-		modKnobs.append(knob("lpfResonance"))
-		modKnobs.append(knob("lpfFrequency"))
-		modKnobs.append(knob("env1Release"))
-		modKnobs.append(knob("env1Attack"))
-		modKnobs.append(knob("delayFeedback"))
-		modKnobs.append(knob("delayRate"))
-		modKnobs.append(knob("reverbAmount"))
-		modKnobs.append(knob("volumePostReverbSend", "compressor"))
-		modKnobs.append(knob("pitch", "lfo1"))
-		modKnobs.append(knob("lfo1Rate"))
-		modKnobs.append(knob(Sound.CustomOption[this.custom1]))
-		modKnobs.append(knob("stutterRate"))
-		modKnobs.append(knob(Sound.CustomOption[this.custom3]))
-		modKnobs.append(knob(Sound.CustomOption[this.custom2]))
-
-		return sound
 	}
 }
 
