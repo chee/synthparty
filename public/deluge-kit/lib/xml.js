@@ -9,13 +9,42 @@ export function setAttributes(element, attributes) {
 }
 
 /**
+ * @overload
+ * @param {XMLDocument} doc
+ * @param {string} name
+ * @return {HTMLElement}
+ *
+ * @overload
+ * @param {XMLDocument} doc
+ * @param {string} name
+ * @param {HTMLElement[]} children
+ * @return {HTMLElement}
+ *
+ * @overload
  * @param {XMLDocument} doc
  * @param {string} name
  * @param {Record<string, any>} attributes
+ * @return {HTMLElement}
+ *
+ * @param {XMLDocument} doc
+ * @param {string} name
+ * @param {Record<string, any>} attributes
+ * @param {HTMLElement[]} children
  */
-export function createElement(doc, name, attributes = {}) {
+export function createElement(doc, name, attributes, children) {
 	let element = doc.createElement(name)
+	if (Array.isArray(attributes) && !children) {
+		children = attributes
+		attributes = {}
+	}
+	if (!attributes) {
+		attributes = {}
+	}
+	if (!children) {
+		children = []
+	}
 	setAttributes(element, attributes)
+	element.append(...children)
 	return element
 }
 
