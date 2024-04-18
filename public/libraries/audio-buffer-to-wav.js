@@ -41,7 +41,7 @@ export default function audioBufferToWav(audiobuffer, index) {
 	return encodeWAV(result, sampleRate, numChannels, index)
 }
 
-class Encoder {
+export class Encoder {
 	/** @type ArrayBuffer */
 	#buffer
 	/** @type DataView */
