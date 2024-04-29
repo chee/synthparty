@@ -26,8 +26,7 @@
 
 	<synth-party>
 		<template shadowrootmode="open">
-			<main id="grid">
-			</main>
+			<main id="grid"></main>
 			<aside id="panel">
 				<label>
 					input
@@ -42,7 +41,7 @@
 				</button>
 				<label>
 					use custom deluge midifollow.xml
-					<input id="custom-midi-follow" type="file" accept=".XML">
+					<input id="custom-midi-follow" type="file" accept=".XML" />
 				</label>
 				<button id="add-xy">add xy</button>
 				<button id="add-slider">add slider</button>
@@ -62,7 +61,6 @@
 					padding: 16px;
 					flex-wrap: wrap;
 					width: 80vw;
-					--cc-fill: var(--cherries-dark);
 				}
 
 				cc-xy {
@@ -70,7 +68,8 @@
 					--cc-width: 200px;
 				}
 
-				cc-tape, cc-slider {
+				cc-tape,
+				cc-slider {
 					--cc-height: 200px;
 					--cc-width: 40px;
 				}
@@ -89,8 +88,8 @@
 					width: 20vw;
 					position: fixed;
 					right: 0;
-					--fill: var(--cherries-dark);
-					--line: white;
+					--fill: var(--page-line);
+					--line: var(--page-fill);
 					background: var(--fill);
 					color: var(--line);
 					padding: 1em;
@@ -123,7 +122,7 @@
 					margin: 0;
 					border: 1px solid;
 					padding: 4px;
-					background: var(--cherries-dark);
+					background: var(--page-line);
 					color: white;
 				}
 
@@ -134,7 +133,7 @@
 				.cc-group .cc-group-items {
 					display: flex;
 					gap: 2px;
-					color: var(--cherries-dark);
+					color: var(--page-line);
 				}
 
 				.cc-group cc-slider {
@@ -144,7 +143,6 @@
 			<dialog id="dialog"></dialog>
 		</template>
 	</synth-party>
-
 
 	<script type="module" src="cc.js"></script>
 </html>

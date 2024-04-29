@@ -57,7 +57,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		figcaption {
 			grid-area: label;
 			border: 0px solid;
-			background: white;
+			background: var(--cc-line);
+			color: var(--cc-fill);
 			text-align: center;
 			padding: 2px;
 			font-size: 16px;
@@ -69,6 +70,7 @@ export default class AbstractControlChange extends SynthPartyComponent {
 			grid-area: canvas;
 			height: var(--cc-height);
 			width: var(--cc-width);
+         border-color: var(--cc-fill);
 		}
 
 		canvas {height: 100%; width: 100%; touch-action: none;}

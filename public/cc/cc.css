@@ -1,6 +1,16 @@
 :root {
 	--page-fill: var(--cherries-light);
 	--page-line: var(--cherries-dark);
+	--cc-fill: var(--cherries-dark);
+	--cc-line: var(--holy-light);
+}
+
+[theme="arnoud"] {
+	--page-fill: var(--holy-dark);
+	--page-line: var(--holy-light);
+	--line: var(--holy-light);
+	--cc-fill: var(--holy-dark);
+	--cc-line: var(--holy-light);
 }
 
 html {
@@ -9,7 +19,7 @@ html {
 }
 
 figcaption {
-	color: var(--line);
+	color: var(--cc-fill);
 	margin-top: 1em;
 }
 
@@ -28,7 +38,7 @@ textarea {
 	background: var(--holy-light);
 	font-size: 0.8rem;
 	width: 84ch;
-	border: 1px solid var(--cherries-dark);
+	border: 1px solid var(--page-line);
 	margin: auto;
 }
 
@@ -62,10 +72,10 @@ figure {
 }
 
 select {
-	border: 4px solid var(--cherries-dark);
+	border: 4px solid var(--page-line);
 	padding: 1em;
 	background: white;
-	color: var(--cherries-dark);
+	color: var(--page-line);
 	font-weight: bold;
 	font-size: 0.8em;
 	margin-top: 1em;
