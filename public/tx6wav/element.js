@@ -4,39 +4,6 @@ export default class DelugeKit extends PartyElement {
 	nameElement = /** @type {HTMLInputElement} */ (this.$("#name"))
 	kit = new Kit(rand(adjectives) + " " + rand(nouns))
 
-	constructor() {
-		super()
-		this.shadowRoot.adoptedStyleSheets = [globalStyles]
-		this.nameElement.value = this.kit.name
-
-		let midiinput = document
-			.querySelector("deluge-kit")
-			.shadowRoot.querySelector("midi-port")
-
-		midiinput?.addEventListener("midimessage", event => {
-			let data = event.data
-			let [msg] = data
-			let byte = msg.toString(16)
-			let [type, channel] = byte
-			if (type == MIDI.MidiMessage.NoteOn) {
-				let note = data[1]
-				let velo = data[2]
-				let sound = this.kit.sounds[note]
-				if (sound) {
-					sound.noteOn()
-				}
-			}
-			if (type == MIDI.MidiMessage.NoteOff) {
-				let note = data[1]
-				let velo = data[2]
-				let sound = this.kit.sounds[note]
-				if (sound) {
-					sound.noteOff()
-				}
-			}
-		})
-	}
-
 	/* this runs once when drag enters the target's zone */
 	/** @param {DragEvent} event */
 	#dragenter = async event => {

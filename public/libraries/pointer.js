@@ -1,7 +1,3 @@
-const IS_BASICALLY_A_PHONE =
-	typeof window != "undefined" &&
-	window.matchMedia("(pointer: coarse)").matches
-
 /**
  * @typedef {Object} MouserPoint
  * @prop {number} x
@@ -54,11 +50,8 @@ export default class Mouser {
 			canvas.getContext("2d")
 		)
 		this.dpi = dpi
-		if (IS_BASICALLY_A_PHONE) {
-			canvas.addEventListener("touchstart", this.#touchstart)
-		} else {
-			canvas.addEventListener("mousedown", this.#mousedown)
-		}
+		canvas.addEventListener("touchstart", this.#touchstart)
+		canvas.addEventListener("mousedown", this.#mousedown)
 		this.onstart = onstart
 		this.onmove = onmove
 		this.onend = onend
@@ -118,6 +111,8 @@ export default class Mouser {
 	// this is super naïve
 	/** @param {TouchEvent} event */
 	#touchstart = event => {
+		// prevent mousedown from firing
+		event.preventDefault()
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
 		for (let finger of event.changedTouches) {

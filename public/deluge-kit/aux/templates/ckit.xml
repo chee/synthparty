@@ -1,0 +1,799 @@
+<?xml version="1.0"?>
+<kit>
+  <defaultParams/>
+  <soundSources>
+    <sound name="kick" sideChainSend="2147483647" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/000 kick.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="72258"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x2943FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="kick (alt)" sideChainSend="2147483647" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/001 kick (alt).wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="39129"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x7FFDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="snare" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/002 snare.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="75144"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x7FFDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="snare (alt)" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/003 snare (alt).wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="29402"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x71FFFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="rimshot" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/004 rimshot.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="20959"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6157FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="clap-snap" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/005 clap-snap.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17637"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CB1FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="perc" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/006 perc.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="15337"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x7FFDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="eight" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/007 eight.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="15591"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x7CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="closed hat" sideChainSend="0" polyphonic="choke">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/008 closed hat.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="9141"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x4577FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="pedal" sideChainSend="0" polyphonic="choke">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/009 pedal.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17761"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6C51FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="open hat" sideChainSend="0" polyphonic="choke">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/010 open hat.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="24047"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x34D9FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="ten" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/011 ten.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="12424"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x3D4BFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="eleven" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/012 eleven.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="22633"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x0B45FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="ride" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/013 ride.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="46239"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x1915FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="twelve" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/014 twelve.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="9333"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x7FFDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="crash" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/015 crash.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="15089"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6791FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="noot" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/016 noot.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="23133"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x571FFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="thirteen" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/017 thirteen.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="22095"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x4D59FFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fourteen" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/018 fourteen.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fx 1" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/019 fx 1.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fx 2" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/020 fx 2.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fx 3" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/021 fx 3.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fx 4" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/022 fx 4.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+    <sound name="fx 5" sideChainSend="0" polyphonic="auto">
+      <osc1 type="sample" fileName="SAMPLES/cherry dog/023 fx 5.wav" loopMode="1" reversed="0" linearInterpolation="0" timeStretchEnable="0">
+        <zone startSamplePos="0" endSamplePos="17371"/>
+      </osc1>
+      <defaultParams oscAVolume="0x7FFFFFFF" oscBVolume="0x80000000" lpfFrequency="0x7FFFFFFF" volume="0x6CEDFFFF" pan="0x00000000">
+        <envelope1 attack="0x80000000" decay="0xE6666654" sustain="0x7FFFFFD2" release="0x80000000"/>
+        <patchCables>
+          <patchCable source="velocity" destination="volume" amount="0x3FFFFFE8"/>
+          <patchCable source="aftertouch" destination="volume" amount="0x2A3D7094"/>
+          <patchCable source="y" destination="lpfFrequency" amount="0x19999990"/>
+        </patchCables>
+        <equalizer bass="0x00000000" treble="0x00000000" bassFrequency="0x00000000" trebleFrequency="0x00000000"/>
+      </defaultParams>
+      <arpeggiator arpMode="off" noteMode="up" octaveMode="up" mpeVelocity="off" numOctaves="2" rhythm="0" syncType="0" syncLevel="7"/>
+      <modKnobs>
+        <modKnob controlsParam="pan"/>
+        <modKnob controlsParam="volumePostFX"/>
+        <modKnob controlsParam="lpfResonance"/>
+        <modKnob controlsParam="lpfFrequency"/>
+        <modKnob controlsParam="env1Release"/>
+        <modKnob controlsParam="env1Attack"/>
+        <modKnob controlsParam="delayFeedback"/>
+        <modKnob controlsParam="delayRate"/>
+        <modKnob controlsParam="reverbAmount"/>
+        <modKnob controlsParam="volumePostReverbSend" patchAmountFromSource="compressor"/>
+        <modKnob controlsParam="pitch" patchAmountFromSource="lfo1"/>
+        <modKnob controlsParam="lfo1Rate"/>
+        <modKnob controlsParam="pitch"/>
+        <modKnob controlsParam="stutterRate"/>
+        <modKnob controlsParam="bitcrush"/>
+        <modKnob controlsParam="destination"/>
+      </modKnobs>
+    </sound>
+  </soundSources>
+  <selectedDrumIndex>0</selectedDrumIndex>
+</kit>

@@ -8,10 +8,6 @@ import SynthPartyComponent from "./synth-party-component.js"
 	}} MouseMessage
  */
 
-const IS_BASICALLY_A_PHONE =
-	typeof window != "undefined" &&
-	window.matchMedia("(pointer: coarse)").matches
-
 /**
  * @typedef {[number, number] | [number, number, number]} MIDIData
  */
@@ -115,11 +111,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 		figure.appendChild(this.labelElement)
 		this.shadowRoot &&
 			(this.shadowRoot.adoptedStyleSheets = [AbstractControlChange.stylesheet])
-		if (IS_BASICALLY_A_PHONE) {
-			this.addEventListener("touchstart", this.#touchstart)
-		} else {
-			this.addEventListener("mousedown", this.#mousedown)
-		}
+		this.addEventListener("touchstart", this.#touchstart)
+		this.addEventListener("mousedown", this.#mousedown)
 	}
 
 	#mouseLastX = 0
@@ -168,6 +161,8 @@ export default class AbstractControlChange extends SynthPartyComponent {
 	// this is super naïve
 	/** @param {TouchEvent} event */
 	#touchstart(event) {
+		// prevent the mousedown from firing
+		event.preventDefault()
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
 		let finger = event.targetTouches.item(0)

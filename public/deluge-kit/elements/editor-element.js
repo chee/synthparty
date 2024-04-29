@@ -8,10 +8,6 @@ import Sound from "../sound.js"
 	}} MouseMessage
  */
 
-const IS_BASICALLY_A_PHONE =
-	typeof window != "undefined" &&
-	window.matchMedia("(pointer: coarse)").matches
-
 /** @abstract */
 export default class DelugeEditor extends PartyElement {
 	static DPI = 4
@@ -27,11 +23,8 @@ export default class DelugeEditor extends PartyElement {
 		this.shadowRoot.appendChild(this.canvas)
 		canvas.style.height = "200px"
 		canvas.style.width = "400px"
-		if (IS_BASICALLY_A_PHONE) {
-			this.addEventListener("touchstart", this.#touchstart)
-		} else {
-			this.addEventListener("mousedown", this.#mousedown)
-		}
+		this.addEventListener("touchstart", this.#touchstart)
+		this.addEventListener("mousedown", this.#mousedown)
 	}
 
 	get editorMode() {
@@ -64,6 +57,8 @@ export default class DelugeEditor extends PartyElement {
 	// this is super naïve
 	/** @param {TouchEvent} event */
 	#touchstart(event) {
+		// prevent mousedown from firing
+		event.preventDefault()
 		// assumes nothing ever changes size while you're fingering
 		let bounds = this.canvas.getBoundingClientRect()
 		let finger = event.touches.item(0)
@@ -99,16 +94,6 @@ export default class DelugeEditor extends PartyElement {
 	/** @param {MouseMessage} _message */
 	mouse(_message) {
 		throw new Error("editor.mouse must be defined")
-	}
-
-	get empx() {
-		let box = document.createElement("div")
-		box.style.width = "1em"
-		box.style.visibility = "hidden"
-		this.shadowRoot.appendChild(box)
-		let empx = box.clientWidth
-		this.shadowRoot.removeChild(box)
-		return empx
 	}
 
 	get width() {

@@ -15,10 +15,10 @@ export default class DelugeKit extends PartyElement {
 		super()
 		this.shadowRoot.adoptedStyleSheets = [globalStyles]
 		this.nameElement.value = this.kit.name
-		this.addEventListener("dragenter", this.#dragenter)
-		this.addEventListener("dragover", this.#dragover)
-		this.addEventListener("dragleave", this.#dragleave)
-		this.addEventListener("drop", this.#drop)
+		window.addEventListener("dragenter", this.#dragenter)
+		window.addEventListener("dragover", this.#dragover)
+		window.addEventListener("dragleave", this.#dragleave)
+		window.addEventListener("drop", this.#drop)
 
 		let midiinput = document
 			.querySelector("deluge-kit")
@@ -50,7 +50,7 @@ export default class DelugeKit extends PartyElement {
 
 	/* this runs once when drag enters the target's zone */
 	/** @param {DragEvent} event */
-	async #dragenter(event) {
+	#dragenter = async event => {
 		event.preventDefault()
 		let {items} = event.dataTransfer
 		for (let item of Array.from(items)) {
@@ -69,7 +69,7 @@ export default class DelugeKit extends PartyElement {
 
 	/* runs a billion times per sec while you're holding an item over screen*/
 	/** @param {DragEvent} event */
-	async #dragover(event) {
+	#dragover = async event => {
 		event.preventDefault()
 
 		let {items} = event.dataTransfer
@@ -87,13 +87,13 @@ export default class DelugeKit extends PartyElement {
 	}
 
 	/** @param {DragEvent} event */
-	async #dragleave(event) {
+	#dragleave = async event => {
 		event.preventDefault()
 		this.removeAttribute("drop-target")
 	}
 
 	/** @param {DragEvent} event */
-	async #drop(event) {
+	#drop = async event => {
 		this.removeAttribute("drop-target")
 		if (event.dataTransfer.items) {
 			let sounds = []
