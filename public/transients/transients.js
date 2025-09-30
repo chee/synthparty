@@ -1,4 +1,4 @@
-import {downloadZip} from "../deluge-kit/vendor/client-zip.js"
+import {downloadZip} from "/vendor/client-zip.js"
 import TransientSample from "./elements/sample-element.js"
 import Sample from "./sample.js"
 let context = new AudioContext()

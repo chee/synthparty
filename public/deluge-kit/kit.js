@@ -1,4 +1,4 @@
-import {downloadZip} from "./vendor/client-zip.js"
+import {downloadZip} from "/vendor/client-zip.js"
 import {createElement} from "./lib/xml.js"
 
 /**
