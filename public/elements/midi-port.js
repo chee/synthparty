@@ -1,4 +1,4 @@
-import {partyElements, PartyElement} from "/elements/party-elements.js"
+import {PartyElement, partyElements} from "/elements/party-elements.js"
 
 /**
  * @typedef {{

@@ -1,0 +1,59 @@
+:root {
+	--fill: black;
+	--line: white;
+	--offset: #333;
+	--shadow-px: 2px;
+	/* --shadow: color-mix(in srgb, var(--fill) 80%, var(--line)); */
+	--heavy-shadow-px: 4px;
+	--heavy-shadow: color-mix(in srgb, var(--fill) 60%, var(--line));
+	/* --button-border-px: 4px; */
+	--greem: #ccc;
+}
+
+* {
+	scrollbar-color: var(--line) var(--fill);
+	font-family: qp;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 1.4em;
+	line-height: 1.15;
+	background: var(--fill);
+	color: var(--line);
+	background: black;
+}
+
+deluge-kit {
+	max-width: 1024px;
+	margin: auto;
+	display: flex;
+	align-items: start;
+	justify-content: start;
+	flex-direction: column;
+	height: 100vh;
+	padding-top: 1em;
+}
+
+[drop-target] {
+	outline: 1em dotted var(--greem);
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-regular.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: qp;
+	src: url("/aux/fonts/iosevka-qp-light.ttf") format("truetype");
+	font-display: swap;
+	font-weight: 200;
+}
+
+@font-face {
+	font-family: fs;
+	src: url("/aux/fonts/fs.woff");
+	font-display: swap;
+}

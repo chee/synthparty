@@ -31,101 +31,94 @@
  * @module
  */
 
-import {posixJoin} from "https://deno.land/std/path/_join.ts"
-import {posixNormalize} from "https://deno.land/std/path/_normalize.ts"
-import {extname} from "https://deno.land/std/path/extname.ts"
-import {join} from "https://deno.land/std/path/join.ts"
-import {relative} from "https://deno.land/std/path/relative.ts"
-import {resolve} from "https://deno.land/std/path/resolve.ts"
-import {SEP_PATTERN} from "https://deno.land/std/path/separator.ts"
-import {contentType} from "https://deno.land/std/media_types/content_type.ts"
-import {calculate, ifNoneMatch} from "https://deno.land/std/http/etag.ts"
-import {
-	isRedirectStatus,
-	Status
-} from "https://deno.land/std/http/http_status.ts"
-import {ByteSliceStream} from "https://deno.land/std/streams/byte_slice_stream.ts"
-import {parse} from "https://deno.land/std/flags/mod.ts"
-import {red} from "https://deno.land/std/fmt/colors.ts"
-import {createCommonResponse} from "https://deno.land/std/http/util.ts"
-import {VERSION} from "https://deno.land/std/version.ts"
-import {format as formatBytes} from "https://deno.land/std/fmt/bytes.ts"
+import { join } from "https://deno.land/std/path/join.ts";
+import { normalize } from "https://deno.land/std/path/normalize.ts";
+import { extname } from "https://deno.land/std/path/extname.ts";
+
+import { relative } from "https://deno.land/std/path/relative.ts";
+import { resolve } from "https://deno.land/std/path/resolve.ts";
+import { contentType } from "https://deno.land/std/media_types/content_type.ts";
+import { calculate, ifNoneMatch } from "https://deno.land/std/http/etag.ts";
+import { ByteSliceStream } from "https://deno.land/std/streams/byte_slice_stream.ts";
+import { parse } from "https://deno.land/std/flags/mod.ts";
+import { red } from "https://deno.land/std/fmt/colors.ts";
+import { VERSION } from "https://deno.land/std/version.ts";
+import { format as formatBytes } from "https://deno.land/std/fmt/bytes.ts";
 
 interface EntryInfo {
-	mode: string
-	size: string
-	url: string
-	name: string
+	mode: string;
+	size: string;
+	url: string;
+	name: string;
 }
 
 const ENV_PERM_STATUS =
-	Deno.permissions.querySync?.({name: "env", variable: "DENO_DEPLOYMENT_ID"})
-		.state ?? "granted" // for deno deploy
-const DENO_DEPLOYMENT_ID =
-	ENV_PERM_STATUS === "granted"
-		? Deno.env.get("DENO_DEPLOYMENT_ID")
-		: undefined
+	Deno.permissions.querySync?.({ name: "env", variable: "DENO_DEPLOYMENT_ID" })
+		.state ?? "granted"; // for deno deploy
+const DENO_DEPLOYMENT_ID = ENV_PERM_STATUS === "granted"
+	? Deno.env.get("DENO_DEPLOYMENT_ID")
+	: undefined;
 const HASHED_DENO_DEPLOYMENT_ID = DENO_DEPLOYMENT_ID
-	? calculate(DENO_DEPLOYMENT_ID, {weak: true})
-	: undefined
+	? calculate(DENO_DEPLOYMENT_ID, { weak: true })
+	: undefined;
 
 function modeToString(isDir: boolean, maybeMode: number | null): string {
-	const modeMap = ["---", "--x", "-w-", "-wx", "r--", "r-x", "rw-", "rwx"]
+	const modeMap = ["---", "--x", "-w-", "-wx", "r--", "r-x", "rw-", "rwx"];
 
 	if (maybeMode === null) {
-		return "(unknown mode)"
+		return "(unknown mode)";
 	}
-	const mode = maybeMode.toString(8)
+	const mode = maybeMode.toString(8);
 	if (mode.length < 3) {
-		return "(unknown mode)"
+		return "(unknown mode)";
 	}
-	let output = ""
+	let output = "";
 	mode
 		.split("")
 		.reverse()
 		.slice(0, 3)
-		.forEach(v => {
-			output = `${modeMap[+v]} ${output}`
-		})
-	output = `${isDir ? "d" : "-"} ${output}`
-	return output
+		.forEach((v) => {
+			output = `${modeMap[+v]} ${output}`;
+		});
+	output = `${isDir ? "d" : "-"} ${output}`;
+	return output;
 }
 
 /**
  * parse range header.
  *
  * ```ts ignore
- * parseRangeHeader("bytes=0-100",   500); // => { start: 0, end: 100 }
- * parseRangeHeader("bytes=0-",      500); // => { start: 0, end: 499 }
- * parseRangeHeader("bytes=-100",    500); // => { start: 400, end: 499 }
- * parseRangeHeader("bytes=invalid", 500); // => null
+ * parseRangeHeader("bytes=0-100",   500) // => { start: 0, end: 100 }
+ * parseRangeHeader("bytes=0-",      500) // => { start: 0, end: 499 }
+ * parseRangeHeader("bytes=-100",    500) // => { start: 400, end: 499 }
+ * parseRangeHeader("bytes=invalid", 500) // => null
  * ```
  *
  * Note: Currently, no support for multiple Ranges (e.g. `bytes=0-10, 20-30`)
  */
 function parseRangeHeader(rangeValue: string, fileSize: number) {
-	const rangeRegex = /bytes=(?<start>\d+)?-(?<end>\d+)?$/u
-	const parsed = rangeValue.match(rangeRegex)
+	const rangeRegex = /bytes=(?<start>\d+)?-(?<end>\d+)?$/u;
+	const parsed = rangeValue.match(rangeRegex);
 
 	if (!parsed || !parsed.groups) {
 		// failed to parse range header
-		return null
+		return null;
 	}
 
-	const {start, end} = parsed.groups
+	const { start, end } = parsed.groups;
 	if (start !== undefined) {
 		if (end !== undefined) {
-			return {start: +start, end: +end}
+			return { start: +start, end: +end };
 		} else {
-			return {start: +start, end: fileSize - 1}
+			return { start: +start, end: fileSize - 1 };
 		}
 	} else {
 		if (end !== undefined) {
 			// example: `bytes=-100` means the last 100 bytes.
-			return {start: fileSize - +end, end: fileSize - 1}
+			return { start: fileSize - +end, end: fileSize - 1 };
 		} else {
 			// failed to parse range header
-			return null
+			return null;
 		}
 	}
 }
@@ -136,9 +129,9 @@ export interface ServeFileOptions {
 	 *
 	 * @default {"SHA-256"}
 	 */
-	etagAlgorithm?: AlgorithmIdentifier
+	etagAlgorithm?: AlgorithmIdentifier;
 	/** An optional FileInfo object returned by Deno.stat. It is used for optimization purposes. */
-	fileInfo?: Deno.FileInfo
+	fileInfo?: Deno.FileInfo;
 }
 
 /**
@@ -149,49 +142,49 @@ export interface ServeFileOptions {
 export async function serveFile(
 	req: Request,
 	filePath: string,
-	{etagAlgorithm: algorithm, fileInfo}: ServeFileOptions = {}
+	{ etagAlgorithm: algorithm, fileInfo }: ServeFileOptions = {},
 ): Promise<Response> {
 	try {
-		fileInfo ??= await Deno.stat(filePath)
+		fileInfo ??= await Deno.stat(filePath);
 	} catch (error) {
 		if (error instanceof Deno.errors.NotFound) {
-			await req.body?.cancel()
-			return createCommonResponse(Status.NotFound)
+			await req.body?.cancel();
+			return 404;
 		} else {
-			throw error
+			throw error;
 		}
 	}
 
 	if (fileInfo.isDirectory) {
-		await req.body?.cancel()
-		return createCommonResponse(Status.NotFound)
+		await req.body?.cancel();
+		return 404;
 	}
 
-	const headers = createBaseHeaders()
+	const headers = createBaseHeaders();
 
 	// Set date header if access timestamp is available
 	if (fileInfo.atime) {
-		headers.set("date", fileInfo.atime.toUTCString())
+		headers.set("date", fileInfo.atime.toUTCString());
 	}
 
 	const etag = fileInfo.mtime
-		? await calculate(fileInfo, {algorithm})
-		: await HASHED_DENO_DEPLOYMENT_ID
+		? await calculate(fileInfo, { algorithm })
+		: await HASHED_DENO_DEPLOYMENT_ID;
 
 	// Set last modified header if last modification timestamp is available
 	if (fileInfo.mtime) {
-		headers.set("last-modified", fileInfo.mtime.toUTCString())
+		headers.set("last-modified", fileInfo.mtime.toUTCString());
 	}
 	if (etag) {
-		headers.set("etag", etag)
+		headers.set("etag", etag);
 	}
 
 	if (etag || fileInfo.mtime) {
 		// If a `if-none-match` header is present and the value matches the tag or
 		// if a `if-modified-since` header is present and the value is bigger than
 		// the access timestamp value, then return 304
-		const ifNoneMatchValue = req.headers.get("if-none-match")
-		const ifModifiedSinceValue = req.headers.get("if-modified-since")
+		const ifNoneMatchValue = req.headers.get("if-none-match");
+		const ifModifiedSinceValue = req.headers.get("if-modified-since");
 		if (
 			!ifNoneMatch(ifNoneMatchValue, etag) ||
 			(ifNoneMatchValue === null &&
@@ -200,34 +193,34 @@ export async function serveFile(
 				fileInfo.mtime.getTime() <
 					new Date(ifModifiedSinceValue).getTime() + 1000)
 		) {
-			return createCommonResponse(Status.NotModified, null, {headers})
+			return new Response(null, { headers, status: 302 });
 		}
 	}
 
 	// Set mime-type using the file extension in filePath
-	const contentTypeValue = contentType(extname(filePath))
+	const contentTypeValue = contentType(extname(filePath));
 	if (contentTypeValue) {
-		headers.set("content-type", contentTypeValue)
+		headers.set("content-type", contentTypeValue);
 	}
 
-	const fileSize = fileInfo.size
+	const fileSize = fileInfo.size;
 
-	const rangeValue = req.headers.get("range")
+	const rangeValue = req.headers.get("range");
 
 	// handle range request
 	// Note: Some clients add a Range header to all requests to limit the size of the response.
 	// If the file is empty, ignore the range header and respond with a 200 rather than a 416.
 	// https://github.com/golang/go/blob/0d347544cbca0f42b160424f6bc2458ebcc7b3fc/src/net/http/fs.go#L273-L276
 	if (rangeValue && 0 < fileSize) {
-		const parsed = parseRangeHeader(rangeValue, fileSize)
+		const parsed = parseRangeHeader(rangeValue, fileSize);
 
 		// Returns 200 OK if parsing the range header fails
 		if (!parsed) {
 			// Set content length
-			headers.set("content-length", `${fileSize}`)
+			headers.set("content-length", `${fileSize}`);
 
-			const file = await Deno.open(filePath)
-			return createCommonResponse(Status.OK, file.readable, {headers})
+			const file = await Deno.open(filePath);
+			return new Response(file.readable, { headers, status: 200 });
 		}
 
 		// Return 416 Range Not Satisfiable if invalid range header value
@@ -237,149 +230,151 @@ export async function serveFile(
 			fileSize <= parsed.start
 		) {
 			// Set the "Content-range" header
-			headers.set("content-range", `bytes */${fileSize}`)
+			headers.set("content-range", `bytes */${fileSize}`);
 
-			return createCommonResponse(
-				Status.RequestedRangeNotSatisfiable,
+			return new Response(
 				undefined,
-				{headers}
-			)
+				{ headers, status: 416 },
+			);
 		}
 
 		// clamps the range header value
-		const start = Math.max(0, parsed.start)
-		const end = Math.min(parsed.end, fileSize - 1)
+		const start = Math.max(0, parsed.start);
+		const end = Math.min(parsed.end, fileSize - 1);
 
 		// Set the "Content-range" header
-		headers.set("content-range", `bytes ${start}-${end}/${fileSize}`)
+		headers.set("content-range", `bytes ${start}-${end}/${fileSize}`);
 
 		// Set content length
-		const contentLength = end - start + 1
-		headers.set("content-length", `${contentLength}`)
+		const contentLength = end - start + 1;
+		headers.set("content-length", `${contentLength}`);
 
 		// Return 206 Partial Content
-		const file = await Deno.open(filePath)
-		await file.seek(start, Deno.SeekMode.Start)
+		const file = await Deno.open(filePath);
+		await file.seek(start, Deno.SeekMode.Start);
 		const sliced = file.readable.pipeThrough(
-			new ByteSliceStream(0, contentLength - 1)
-		)
-		return createCommonResponse(Status.PartialContent, sliced, {headers})
+			new ByteSliceStream(0, contentLength - 1),
+		);
+		return new Response(sliced, { headers, status: 206 });
 	}
 
 	// Set content length
-	headers.set("content-length", `${fileSize}`)
+	headers.set("content-length", `${fileSize}`);
 
-	const file = await Deno.open(filePath)
-	return createCommonResponse(Status.OK, file.readable, {headers})
+	const file = await Deno.open(filePath);
+	return new Response(file.readable, { headers, status: 200 });
 }
 
 async function serveDirIndex(
 	dirPath: string,
 	options: {
-		showDotfiles: boolean
-		target: string
-		quiet: boolean | undefined
-	}
+		showDotfiles: boolean;
+		target: string;
+		quiet: boolean | undefined;
+	},
 ): Promise<Response> {
-	const {showDotfiles} = options
-	const dirUrl = `/${relative(options.target, dirPath).replaceAll(
-		new RegExp(SEP_PATTERN, "g"),
-		"/"
-	)}`
-	const listEntryPromise: Promise<EntryInfo>[] = []
+	const { showDotfiles } = options;
+	const dirUrl = `/${
+		relative(options.target, dirPath).replaceAll(
+			new RegExp("/", "g"),
+			"/",
+		)
+	}`;
+	const listEntryPromise: Promise<EntryInfo>[] = [];
 
 	// if ".." makes sense
 	if (dirUrl !== "/") {
-		const prevPath = join(dirPath, "..")
+		const prevPath = join(dirPath, "..");
 		const entryInfo = Deno.stat(prevPath).then(
 			(fileInfo): EntryInfo => ({
 				mode: modeToString(true, fileInfo.mode),
 				size: "",
 				name: "../",
-				url: posixJoin(dirUrl, "..")
-			})
-		)
-		listEntryPromise.push(entryInfo)
+				url: join(dirUrl, ".."),
+			}),
+		);
+		listEntryPromise.push(entryInfo);
 	}
 
 	// Read fileInfo in parallel
 	for await (const entry of Deno.readDir(dirPath)) {
 		if (!showDotfiles && entry.name[0] === ".") {
-			continue
+			continue;
 		}
-		const filePath = join(dirPath, entry.name)
+		const filePath = join(dirPath, entry.name);
 		const fileUrl = encodeURIComponent(
-			posixJoin(dirUrl, entry.name)
-		).replaceAll("%2F", "/")
+			join(dirUrl, entry.name),
+		).replaceAll("%2F", "/");
 
 		listEntryPromise.push(
 			(async () => {
 				try {
-					const fileInfo = await Deno.stat(filePath)
+					const fileInfo = await Deno.stat(filePath);
 					return {
 						mode: modeToString(entry.isDirectory, fileInfo.mode),
 						size: entry.isFile ? formatBytes(fileInfo.size ?? 0) : "",
 						name: `${entry.name}${entry.isDirectory ? "/" : ""}`,
-						url: `${fileUrl}${entry.isDirectory ? "/" : ""}`
-					}
+						url: `${fileUrl}${entry.isDirectory ? "/" : ""}`,
+					};
 				} catch (error) {
 					// Note: Deno.stat for windows system files may be rejected with os error 32.
-					if (!options.quiet) logError(error)
+					if (!options.quiet) logError(error);
 					return {
 						mode: "(unknown mode)",
 						size: "",
 						name: `${entry.name}${entry.isDirectory ? "/" : ""}`,
-						url: `${fileUrl}${entry.isDirectory ? "/" : ""}`
-					}
+						url: `${fileUrl}${entry.isDirectory ? "/" : ""}`,
+					};
 				}
-			})()
-		)
+			})(),
+		);
 	}
 
-	const listEntry = await Promise.all(listEntryPromise)
+	const listEntry = await Promise.all(listEntryPromise);
 	listEntry.sort((a, b) =>
 		a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
-	)
-	const formattedDirUrl = `${dirUrl.replace(/\/$/, "")}/`
-	const page = dirViewerTemplate(formattedDirUrl, listEntry)
+	);
+	const formattedDirUrl = `${dirUrl.replace(/\/$/, "")}/`;
+	const page = dirViewerTemplate(formattedDirUrl, listEntry);
 
-	const headers = createBaseHeaders()
-	headers.set("content-type", "text/html; charset=UTF-8")
+	const headers = createBaseHeaders();
+	headers.set("content-type", "text/html charset=UTF-8");
 
-	return createCommonResponse(Status.OK, page, {headers})
+	return new Response(page, { headers, status: 200 });
 }
 
 function serveFallback(maybeError: unknown): Response {
 	if (maybeError instanceof URIError) {
-		return createCommonResponse(Status.BadRequest)
+		return new Response("bad");
 	}
 
 	if (maybeError instanceof Deno.errors.NotFound) {
-		return createCommonResponse(Status.NotFound)
+		return new Response("no");
 	}
 
-	return createCommonResponse(Status.InternalServerError)
+	return new Response("fuck");
 }
 
 function serverLog(req: Request, status: number) {
-	const d = new Date().toISOString()
-	const dateFmt = `[${d.slice(0, 10)} ${d.slice(11, 19)}]`
-	const url = new URL(req.url)
-	const s = `${dateFmt} [${req.method}] ${url.pathname}${url.search} ${status}`
+	const d = new Date().toISOString();
+	const dateFmt = `[${d.slice(0, 10)} ${d.slice(11, 19)}]`;
+	const url = new URL(req.url);
+	const s =
+		`${dateFmt} [${req.method}] ${url.pathname}${url.search} ${status}`;
 	// using console.debug instead of console.log so chrome inspect users can hide request logs
-	console.debug(s)
+	console.debug(s);
 }
 
 function createBaseHeaders(): Headers {
 	return new Headers({
 		server: "deno",
 		// Set "accept-ranges" so that the client knows it can make range requests on future requests
-		"accept-ranges": "bytes"
-	})
+		"accept-ranges": "bytes",
+	});
 }
 
 function dirViewerTemplate(dirname: string, entries: EntryInfo[]): string {
-	const paths = dirname.split("/")
+	const paths = dirname.split("/");
 
 	return `
     <!DOCTYPE html>
@@ -391,76 +386,78 @@ function dirViewerTemplate(dirname: string, entries: EntryInfo[]): string {
         <title>Deno File Server</title>
         <style>
           :root {
-            --background-color: #fafafa;
-            --color: rgba(0, 0, 0, 0.87);
+            --background-color: #fafafa
+            --color: rgba(0, 0, 0, 0.87)
           }
           @media (prefers-color-scheme: dark) {
             :root {
-              --background-color: #292929;
-              --color: #fff;
+              --background-color: #292929
+              --color: #fff
             }
             thead {
-              color: #7f7f7f;
+              color: #7f7f7f
             }
           }
           @media (min-width: 960px) {
             main {
-              max-width: 960px;
+              max-width: 960px
             }
             body {
-              padding-left: 32px;
-              padding-right: 32px;
+              padding-left: 32px
+              padding-right: 32px
             }
           }
           @media (min-width: 600px) {
             main {
-              padding-left: 24px;
-              padding-right: 24px;
+              padding-left: 24px
+              padding-right: 24px
             }
           }
           body {
-            background: var(--background-color);
-            color: var(--color);
-            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-            font-weight: 400;
-            line-height: 1.43;
-            font-size: 0.875rem;
+            background: var(--background-color)
+            color: var(--color)
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif
+            font-weight: 400
+            line-height: 1.43
+            font-size: 0.875rem
           }
           a {
-            color: #2196f3;
-            text-decoration: none;
+            color: #2196f3
+            text-decoration: none
           }
           a:hover {
-            text-decoration: underline;
+            text-decoration: underline
           }
           thead {
-            text-align: left;
+            text-align: left
           }
           thead th {
-            padding-bottom: 12px;
+            padding-bottom: 12px
           }
           table td {
-            padding: 6px 36px 6px 0px;
+            padding: 6px 36px 6px 0px
           }
           .size {
-            text-align: right;
-            padding: 6px 12px 6px 24px;
+            text-align: right
+            padding: 6px 12px 6px 24px
           }
           .mode {
-            font-family: monospace, monospace;
+            font-family: monospace, monospace
           }
         </style>
       </head>
       <body>
         <main>
           <h1>Index of
-          <a href="/">home</a>${paths
-						.map((path, index, array) => {
-							if (path === "") return ""
-							const link = array.slice(0, index + 1).join("/")
-							return `<a href="${link}">${path}</a>`
-						})
-						.join("/")}
+          <a href="/">home</a>${
+		paths
+			.map((path, index, array) => {
+				if (path === "") return "";
+				const link = array.slice(0, index + 1).join("/");
+				return `<a href="${link}">${path}</a>`;
+			})
+			.join("/")
+	}
           </h1>
           <table>
             <thead>
@@ -470,9 +467,10 @@ function dirViewerTemplate(dirname: string, entries: EntryInfo[]): string {
                 <th>Name</th>
               </tr>
             </thead>
-            ${entries
-							.map(
-								entry => `
+            ${
+		entries
+			.map(
+				(entry) => `
                   <tr>
                     <td class="mode">
                       ${entry.mode}
@@ -484,14 +482,15 @@ function dirViewerTemplate(dirname: string, entries: EntryInfo[]): string {
                       <a href="${entry.url}">${entry.name}</a>
                     </td>
                   </tr>
-                `
-							)
-							.join("")}
+                `,
+			)
+			.join("")
+	}
           </table>
         </main>
       </body>
     </html>
-  `
+  `;
 }
 
 /** Interface for serveDir options. */
@@ -500,77 +499,77 @@ export interface ServeDirOptions {
 	 *
 	 * @default {"."}
 	 */
-	fsRoot?: string
+	fsRoot?: string;
 	/** Specified that part is stripped from the beginning of the requested pathname.
 	 *
 	 * @default {undefined}
 	 */
-	urlRoot?: string
+	urlRoot?: string;
 	/** Enable directory listing.
 	 *
 	 * @default {false}
 	 */
-	showDirListing?: boolean
+	showDirListing?: boolean;
 	/** Serves dotfiles.
 	 *
 	 * @default {false}
 	 */
-	showDotfiles?: boolean
+	showDotfiles?: boolean;
 	/** Serves index.html as the index file of the directory.
 	 *
 	 * @default {true}
 	 */
-	showIndex?: boolean
+	showIndex?: boolean;
 	/** Enable CORS via the "Access-Control-Allow-Origin" header.
 	 *
 	 * @default {false}
 	 */
-	enableCors?: boolean
+	enableCors?: boolean;
 	/** Do not print request level logs. Defaults to false.
 	 *
 	 * @default {false}
 	 */
-	quiet?: boolean
+	quiet?: boolean;
 	/** The algorithm to use for generating the ETag.
 	 *
 	 * @default {"SHA-256"}
 	 */
-	etagAlgorithm?: AlgorithmIdentifier
+	etagAlgorithm?: AlgorithmIdentifier;
 	/** Headers to add to each response
 	 *
 	 * @default {[]}
 	 */
-	headers?: string[]
+	headers?: string[];
 }
 
 /**
  * Serves the files under the given directory root (opts.fsRoot).
  *
  * ```ts
- * import { serveDir } from "https://deno.land/std@$STD_VERSION/http/file_server.ts";
+ * import { serveDir } from "https://deno.land/std@$STD_VERSION/http/file_server.ts"
  *
  * Deno.serve((req) => {
- *   const pathname = new URL(req.url).pathname;
+ *   const pathname = new URL(req.url).pathname
  *   if (pathname.startsWith("/static")) {
  *     return serveDir(req, {
  *       fsRoot: "path/to/static/files/dir",
- *     });
+ *     })
  *   }
  *   // Do dynamic responses
- *   return new Response();
- * });
+ *   return new Response()
+ * })
  * ```
  *
  * Optionally you can pass `urlRoot` option. If it's specified that part is stripped from the beginning of the requested pathname.
  *
  * ```ts
- * import { serveDir } from "https://deno.land/std@$STD_VERSION/http/file_server.ts";
+ * import { serveDir } from "https://deno.land/std@$STD_VERSION/http/file_server.ts"
  *
  * // ...
  * serveDir(new Request("http://localhost/static/path/to/file"), {
  *   fsRoot: "public",
  *   urlRoot: "static",
- * });
+ * })
  * ```
  *
  * The above example serves `./public/path/to/file` for the request to `/static/path/to/file`.
@@ -578,79 +577,79 @@ export interface ServeDirOptions {
  * @param req The request to handle
  */
 export async function serveDir(req: Request, opts: ServeDirOptions = {}) {
-	let response: Response
+	let response: Response;
 	try {
-		response = await createServeDirResponse(req, opts)
+		response = await createServeDirResponse(req, opts);
 	} catch (error) {
-		if (!opts.quiet) logError(error)
-		response = serveFallback(error)
+		if (!opts.quiet) logError(error);
+		response = serveFallback(error);
 	}
 
 	// Do not update the header if the response is a 301 redirect.
-	const isRedirectResponse = isRedirectStatus(response.status)
+	const isRedirectResponse = response.status == 301;
 
 	if (opts.enableCors && !isRedirectResponse) {
-		response.headers.append("access-control-allow-origin", "*")
+		response.headers.append("access-control-allow-origin", "*");
 		response.headers.append(
 			"access-control-allow-headers",
-			"Origin, X-Requested-With, Content-Type, Accept, Range"
-		)
-		response.headers.append("Cross-Origin-Opener-Policy", "same-origin")
-		response.headers.append("Cross-Origin-Embedder-Policy", "require-corp")
+			"Origin, X-Requested-With, Content-Type, Accept, Range",
+		);
+		response.headers.append("Cross-Origin-Opener-Policy", "same-origin");
+		response.headers.append("Cross-Origin-Embedder-Policy", "require-corp");
 	}
 
-	if (!opts.quiet) serverLog(req, response.status)
+	if (!opts.quiet) serverLog(req, response.status);
 
 	if (opts.headers && !isRedirectResponse) {
 		for (const header of opts.headers) {
-			const headerSplit = header.split(":")
-			const name = headerSplit[0]
-			const value = headerSplit.slice(1).join(":")
-			response.headers.append(name, value)
+			const headerSplit = header.split(":");
+			const name = headerSplit[0];
+			const value = headerSplit.slice(1).join(":");
+			response.headers.append(name, value);
 		}
 	}
 
-	return response
+	return response;
 }
 
 async function createServeDirResponse(req: Request, opts: ServeDirOptions) {
-	const target = opts.fsRoot || "."
-	const urlRoot = opts.urlRoot
-	const showIndex = opts.showIndex ?? true
-	const showDotfiles = opts.showDotfiles || false
-	const {etagAlgorithm, showDirListing, quiet} = opts
+	const target = opts.fsRoot || ".";
+	const urlRoot = opts.urlRoot;
+	const showIndex = opts.showIndex ?? true;
+	const showDotfiles = opts.showDotfiles || false;
+	const { etagAlgorithm, showDirListing, quiet } = opts;
 
-	const url = new URL(req.url)
-	const decodedUrl = decodeURIComponent(url.pathname)
-	let normalizedPath = posixNormalize(decodedUrl)
+	const url = new URL(req.url);
+	const decodedUrl = decodeURIComponent(url.pathname);
+	let normalizedPath = normalize(decodedUrl);
 
 	if (urlRoot && !normalizedPath.startsWith("/" + urlRoot)) {
-		return createCommonResponse(Status.NotFound)
+		return new Response("missing a plate");
 	}
 
 	// Redirect paths like `/foo////bar` and `/foo/bar/////` to normalized paths.
 	if (normalizedPath !== decodedUrl) {
-		url.pathname = normalizedPath
-		return Response.redirect(url, 301)
+		url.pathname = normalizedPath;
+		return Response.redirect(url, 301);
 	}
 
 	if (urlRoot) {
-		normalizedPath = normalizedPath.replace(urlRoot, "")
+		normalizedPath = normalizedPath.replace(urlRoot, "");
 	}
 
 	// Remove trailing slashes to avoid ENOENT errors
 	// when accessing a path to a file with a trailing slash.
 	if (normalizedPath.endsWith("/")) {
-		normalizedPath = normalizedPath.slice(0, -1)
+		normalizedPath = normalizedPath.slice(0, -1);
 	}
 
-	const fsPath = join(target, normalizedPath)
-	const fileInfo = await Deno.stat(fsPath)
+	const fsPath = join(target, normalizedPath);
+	const fileInfo = await Deno.stat(fsPath);
 
 	// For files, remove the trailing slash from the path.
 	if (fileInfo.isFile && url.pathname.endsWith("/")) {
-		url.pathname = url.pathname.slice(0, -1)
-		return Response.redirect(url, 301)
+		url.pathname = url.pathname.slice(0, -1);
+		return Response.redirect(url, 301);
 	}
 	// For directories, the path must have a trailing slash.
 	if (fileInfo.isDirectory && !url.pathname.endsWith("/")) {
@@ -659,29 +658,29 @@ async function createServeDirResponse(req: Request, opts: ServeDirOptions) {
 		// relative URLs in the index file will resolve against the parent
 		// directory, rather than the current directory. To prevent that, we
 		// return a 301 redirect to the URL with a slash.
-		url.pathname += "/"
-		return Response.redirect(url, 301)
+		url.pathname += "/";
+		return Response.redirect(url, 301);
 	}
 
 	// if target is file, serve file.
 	if (!fileInfo.isDirectory) {
 		return serveFile(req, fsPath, {
 			etagAlgorithm,
-			fileInfo
-		})
+			fileInfo,
+		});
 	}
 
 	// if target is directory, serve index or dir listing.
 	if (showIndex) {
 		// serve index.html
-		const indexPath = join(fsPath, "index.html")
+		const indexPath = join(fsPath, "index.html");
 
-		let indexFileInfo: Deno.FileInfo | undefined
+		let indexFileInfo: Deno.FileInfo | undefined;
 		try {
-			indexFileInfo = await Deno.lstat(indexPath)
+			indexFileInfo = await Deno.lstat(indexPath);
 		} catch (error) {
 			if (!(error instanceof Deno.errors.NotFound)) {
-				throw error
+				throw error;
 			}
 			// skip Not Found error
 		}
@@ -689,21 +688,21 @@ async function createServeDirResponse(req: Request, opts: ServeDirOptions) {
 		if (indexFileInfo?.isFile) {
 			return serveFile(req, indexPath, {
 				etagAlgorithm,
-				fileInfo: indexFileInfo
-			})
+				fileInfo: indexFileInfo,
+			});
 		}
 	}
 
 	if (showDirListing) {
 		// serve directory list
-		return serveDirIndex(fsPath, {showDotfiles, target, quiet})
+		return serveDirIndex(fsPath, { showDotfiles, target, quiet });
 	}
 
-	return createCommonResponse(Status.NotFound)
+	return createCommonResponse(Status.NotFound);
 }
 
 function logError(error: unknown) {
-	console.error(red(error instanceof Error ? error.message : `${error}`))
+	console.error(red(error instanceof Error ? error.message : `${error}`));
 }
 
 function main() {
@@ -715,7 +714,7 @@ function main() {
 			"dotfiles",
 			"cors",
 			"verbose",
-			"version"
+			"version",
 		],
 		negatable: ["dir-listing", "dotfiles", "cors"],
 		collect: ["header"],
@@ -728,7 +727,7 @@ function main() {
 			host: "0.0.0.0",
 			port: "4507",
 			cert: "",
-			key: ""
+			key: "",
 		},
 		alias: {
 			p: "port",
@@ -737,35 +736,35 @@ function main() {
 			h: "help",
 			v: "verbose",
 			V: "version",
-			H: "header"
-		}
-	})
-	const port = Number(serverArgs.port)
-	const headers = serverArgs.header || []
-	const host = serverArgs.host
-	const certFile = serverArgs.cert
-	const keyFile = serverArgs.key
+			H: "header",
+		},
+	});
+	const port = Number(serverArgs.port);
+	const headers = serverArgs.header || [];
+	const host = serverArgs.host;
+	const certFile = serverArgs.cert;
+	const keyFile = serverArgs.key;
 
 	if (serverArgs.help) {
-		printUsage()
-		Deno.exit()
+		printUsage();
+		Deno.exit();
 	}
 
 	if (serverArgs.version) {
-		console.info(`Deno File Server ${VERSION}`)
-		Deno.exit()
+		console.info(`Deno File Server ${VERSION}`);
+		Deno.exit();
 	}
 
 	if (keyFile || certFile) {
 		if (keyFile === "" || certFile === "") {
-			console.error("--key and --cert are required for TLS")
-			printUsage()
-			Deno.exit(1)
+			console.error("--key and --cert are required for TLS");
+			printUsage();
+			Deno.exit(1);
 		}
 	}
 
-	const wild = serverArgs._ as string[]
-	const target = resolve(wild[0] ?? "")
+	const wild = serverArgs._ as string[];
+	const target = resolve(wild[0] ?? "");
 
 	const handler = (req: Request): Promise<Response> => {
 		return serveDir(req, {
@@ -774,11 +773,11 @@ function main() {
 			showDotfiles: serverArgs.dotfiles,
 			enableCors: serverArgs.cors,
 			quiet: !serverArgs.verbose,
-			headers
-		})
-	}
+			headers,
+		});
+	};
 
-	const useTls = !!(keyFile && certFile)
+	const useTls = !!(keyFile && certFile);
 
 	if (useTls) {
 		Deno.serve(
@@ -786,18 +785,18 @@ function main() {
 				port,
 				hostname: host,
 				cert: Deno.readTextFileSync(certFile),
-				key: Deno.readTextFileSync(keyFile)
+				key: Deno.readTextFileSync(keyFile),
 			},
-			handler
-		)
+			handler,
+		);
 	} else {
 		Deno.serve(
 			{
 				port,
-				hostname: host
+				hostname: host,
 			},
-			handler
-		)
+			handler,
+		);
 	}
 }
 
@@ -827,9 +826,9 @@ OPTIONS:
   -v, --verbose         Print request level logs
   -V, --version         Print version information
 
-  All TLS options are required when one is provided.`)
+  All TLS options are required when one is provided.`);
 }
 
 if (import.meta.main) {
-	main()
+	main();
 }
