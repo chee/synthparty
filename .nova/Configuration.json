@@ -1,0 +1,4 @@
+{
+  "co.gwil.deno.config.formatOnSave" : "true",
+  "deno.enable" : false
+}
